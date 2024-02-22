@@ -11,10 +11,8 @@ export default defineConfig({
 			},
 			sidebar: [
 				{
-					label: 'Guides',
-					items: [
-						{ label: 'Relational Algebra Primer', link: '/guides/primer/' },
-					],
+					label: 'Relational Algebra Primer',
+					autogenerate: { directory: 'ra-primer' },
 				},
 				{
 					label: 'Reference',

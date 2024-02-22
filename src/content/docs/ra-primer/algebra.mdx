@@ -1,0 +1,79 @@
+---
+title: Algebraic structures 
+sidebar:
+  order: 2
+---
+
+
+Let's say I owe you some money. You lent me 20 Euro last week and another 7 Euro yesterday. Now I want to pay you back. I ask you, Do you want the 20 first or the 7 first?
+
+What kind of a question is that? It makes no sense. But why doesn't it make any sense? It's because you know for a fact that:
+
+```
+20 + 7 = 7 + 20
+```
+
+The order in which I give you the money doesn't matter. That is, addition over integers is **commutative**.
+
+In many cases, of course, such questions do make sense. If we had agreed that I should pay you back by buying lunch instead, it would make perfect sense if I asked, Do you want the salad first or the ice cream first? Why? Because eating ice cream after salad is not the same as eating salad after ice cream (from the sensorial perspective). The operation of consuming food is not commutative!
+
+## A good section headline
+
+To take a less ridiculous example, concatenation of strings is also not commutative:
+
+```
+"HE" + "LLO" ≠ "LLO" + "HE"
+```
+
+This seems very basic. We all know intuitively that different operations on different datatypes behave differently. The point is that by knowing about a few general facts about the operations on a datatype, we can infer a lot about what we can do with it. For example, although addition over integers commutes whereas string concatenation doesn't, both operations are **associative**:
+
+
+```
+(1 + 2) + 3 = 1 + (2 + 3)
+```
+
+```
+("HE" + "LL") + "O" = "HE" + ("LL" + "O")
+```
+
+This is quite valuable to know, because it means that if I need to add together a trillion integers or concatenate a trillion strings, I can split up the work over arbitrarily many threads or processors or computer clusters -- the end result will always be the same.
+
+## The benefits of being algebraic
+
+Integer addition and string concatenation differ in some ways and are similar in others, but they are both well-defined *algebraic structures*. In order understand the imporatance of relational algebra being *an algebra* (ie an *algebraic structure* in its own right), we are mostly interested in understanding what properties all algebraic structures have in common. The most important of which are:
+
+**Based on an underlying set**: The sets in our previous examples were integers, food, and strings. Relational algebra is defined over the **set of relations**. We will discuss relations in the next section, but for now we can say that a relation is a database table. In other words the *values* we operate on are *relations* aka *tables*.
+
+**A clearly defined set of operations**: The most commonly studied algebraic structures come with one or two operations (like addition, multiplication, concatenation etc). Each operation has clearly defined characteristics such as commutativity, associativity, whether there is an inverse (ie whether the operation can always be "undone") etc. It is also clearly defined how operations interact with each other. Relational algebra defines several operations to work with relations.
+
+**Closure**: When you add two integers, the result is always an integer. When you concatenate two strings, the result is always a string. This property is called closure, and is a crucial feature of algebraic structures. In relational algebra, it's *always* relations in, relations out. In practical terms, this means that you can always string together arbitrarily many operations to query or transform data.
+
+**Algebraic substitution**: When we learn algebra in school, the primary skill we learn is to *rewrite* equations using exact rules: `x(y + z)` ⇒ `xy + xz`. This is possible precisely because of the previously explained properties of algebraic structures. When we know that operations *always* behave consistently and can handle any value from the underlying domain, then we can re-order operations in order to parallellize, simplify or optimize an equation. The same goes for relational algebra. SQL databases uses these neat algebraic equivalences in order to, for example, rewrite subqueries using joins.
+
+## Algebra is for programmers
+
+In the context of BMG, the most important quality of relational algebra is that it is easy for programmers to understand, and provides a very flexible framework for constructing complex and composable queries.
+
+SQL is a better language than it sometimes gets credit for, but it was not created with programmers in mind. Rather, the idea was that non-technical people should be able to query data for analysis or reports using "sentences" somewhat reminiscent of English. Programmers are used to breaking problems up into tiny parts which they can then assemble and re-assemble in different ways. This is very hard to do with SQL. (Although other RDBMS features like views can help a lot.)
+
+Libraries that try to put a nicer wrapper around SQL to make queries more modular typically flounder beyond basic use cases. That is because they still treat SQL as the fundamental underlying model of what queries look like. But relational algebra is a much cleaner model, and because it is indeed an algebraic structure, it provides excellent modularity.
+
+Here's a small teaser of what relational algebra in the BMG version looks like:
+
+```ruby
+purchases
+  .restrict(Predicate.neq(:product_type, 'sample')) 
+  .project([:product_id, :quantity])
+  .summarize([:product_id], :quantity => :sum)
+  .join(products, :id => :product_id)
+  .restrict(Predicate.eq(:category, 'cheese'))
+```
+
+All the different parts of that snippet are presented in depth elsewhere on this site, but note the following:
+
+1. This expression consists of a pipeline of discrete steps, where every step transforms the relation handed to it from the previous one. *Relations in, relations out.*
+1. It is trivial to insert another step at any place in the pipeline, and it's easy to mentally track what shape the relation has at each step.
+1. Perhaps most importantly, any arbitrary number of steps can be pulled out and encapsulated as a separate building block. Such building blocks are not *query fragments* but rather full relations in their own right. And that's because... everything is a relation!
+
+Before going into more depth on the particulars of relational algebra, let's get a clear understanding of that other crucial concept: relations.
+
