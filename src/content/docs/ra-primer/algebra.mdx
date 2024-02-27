@@ -4,8 +4,21 @@ sidebar:
   order: 2
 ---
 
+The word "algebra" has a few different meanings, which can be confusing. The term "relational algebra" signals that we are talking about a mathematical structure of a particular kind, namely an algebraic structure. Such a structure consists of
 
-Let's say I owe you some money. You lent me 20 Euro last week and another 7 Euro yesterday. Now I want to pay you back. I ask you, Do you want the 20 first or the 7 first?
+* A number of well-defined operations...
+* which can be applied to values of some kind...
+* to transform them into other values...
+* of the same kind...
+* and which obey certain simple algebric laws
+
+Abstract algebra, the study of algebraic structures, is a vast topic but the basics are quite easy to understand, and that's all we need in order to grasp the usefulness of relational algebra.
+
+Anyone who knows basic high-school mathematics is familiar with some algebric structures, and programmers even more so. Let's start with a couple of simple examples.
+
+## Addition and commutativity
+
+Let's say I owe you some money. You lent me 20 Euro last week and another 7 Euro yesterday. Now I want to pay you back. I ask you, Do you want the 20 first and then the 7, or the 7 first and then the 20?
 
 What kind of a question is that? It makes no sense. But why doesn't it make any sense? It's because you know for a fact that:
 
@@ -15,9 +28,9 @@ What kind of a question is that? It makes no sense. But why doesn't it make any 
 
 The order in which I give you the money doesn't matter. That is, addition over integers is **commutative**.
 
-In many cases, of course, such questions do make sense. If we had agreed that I should pay you back by buying lunch instead, it would make perfect sense if I asked, Do you want the salad first or the ice cream first? Why? Because eating ice cream after salad is not the same as eating salad after ice cream (from the sensorial perspective). The operation of consuming food is not commutative!
+In many cases, of course, such questions do make sense. If we had agreed that I should pay you back by buying lunch instead, it would make perfect sense if I asked, Do you want the soup first or the ice cream first? Why? Because eating ice cream after soup is not the same as eating soup after ice cream (from the sensorial perspective). The operation of consuming food is not commutative!
 
-## A good section headline
+## Operations over strings 
 
 To take a less ridiculous example, concatenation of strings is also not commutative:
 
@@ -25,7 +38,7 @@ To take a less ridiculous example, concatenation of strings is also not commutat
 "HE" + "LLO" ≠ "LLO" + "HE"
 ```
 
-This seems very basic. We all know intuitively that different operations on different datatypes behave differently. The point is that by knowing about a few general facts about the operations on a datatype, we can infer a lot about what we can do with it. For example, although addition over integers commutes whereas string concatenation doesn't, both operations are **associative**:
+This seems very basic. We all know intuitively that different operations on different datatypes behave differently. The point is that by knowing a few general facts about the operations on a datatype, we can infer a lot about what we can do with it. For example, although addition over integers commutes whereas string concatenation doesn't, both operations are **associative**:
 
 
 ```
@@ -36,11 +49,11 @@ This seems very basic. We all know intuitively that different operations on diff
 ("HE" + "LL") + "O" = "HE" + ("LL" + "O")
 ```
 
-This is quite valuable to know, because it means that if I need to add together a trillion integers or concatenate a trillion strings, I can split up the work over arbitrarily many threads or processors or computer clusters -- the end result will always be the same.
+This is quite valuable to know, because it means that if I need to add together a trillion integers or concatenate a trillion strings, I can split up the work over arbitrarily many threads or processors or computer clusters -- the end result will always be the same. Each process doesn't have to know anything about where in the list of strings it is working or what the other processes are doing, they can all just work in isolation on the strings or numbers they were given.
 
-## The benefits of being algebraic
+## The benefits of algebras
 
-Integer addition and string concatenation differ in some ways and are similar in others, but they are both well-defined *algebraic structures*. In order understand the imporatance of relational algebra being *an algebra* (ie an *algebraic structure* in its own right), we are mostly interested in understanding what properties all algebraic structures have in common. The most important of which are:
+Integer addition and string concatenation differ in some ways and are similar in others, but they are both well-defined *algebraic structures*. In order to understand the imporatance of relational algebra being *an algebra* (ie an *algebraic structure* in its own right), we are mostly interested in understanding what properties all algebraic structures have in common. The most important of which are:
 
 **Based on an underlying set**: The sets in our previous examples were integers, food, and strings. Relational algebra is defined over the **set of relations**. We will discuss relations in the next section, but for now we can say that a relation is a database table. In other words the *values* we operate on are *relations* aka *tables*.
 
@@ -50,15 +63,19 @@ Integer addition and string concatenation differ in some ways and are similar in
 
 **Algebraic substitution**: When we learn algebra in school, the primary skill we learn is to *rewrite* equations using exact rules: `x(y + z)` ⇒ `xy + xz`. This is possible precisely because of the previously explained properties of algebraic structures. When we know that operations *always* behave consistently and can handle any value from the underlying domain, then we can re-order operations in order to parallellize, simplify or optimize an equation. The same goes for relational algebra. SQL databases uses these neat algebraic equivalences in order to, for example, rewrite subqueries using joins.
 
+:::note
+Optimization in SQL databases is quite a messy affair, and they don't always make full use of algebraic properties of queries. For an approachable peek behind the curtain, check out [How Materialize and other databases optimize SQL subqueries](https://www.scattered-thoughts.net/writing/materialize-decorrelation) by Jamie Brandon.
+:::
+
 ## Algebra is for programmers
 
 In the context of BMG, the most important quality of relational algebra is that it is easy for programmers to understand, and provides a very flexible framework for constructing complex and composable queries.
 
-SQL is a better language than it sometimes gets credit for, but it was not created with programmers in mind. Rather, the idea was that non-technical people should be able to query data for analysis or reports using "sentences" somewhat reminiscent of English. Programmers are used to breaking problems up into tiny parts which they can then assemble and re-assemble in different ways. This is very hard to do with SQL. (Although other RDBMS features like views can help a lot.)
+SQL has its strengths, but it was not created with programmers in mind. Rather, the idea was that non-technical people should be able to query data for analysis or reports using "sentences" somewhat reminiscent of English. Programmers are used to breaking problems up into tiny parts which they can then assemble and re-assemble in different ways. This is very hard to do with SQL. (Although other RDBMS features like views can help a lot.)
 
-Libraries that try to put a nicer wrapper around SQL to make queries more modular typically flounder beyond basic use cases. That is because they still treat SQL as the fundamental underlying model of what queries look like. But relational algebra is a much cleaner model, and because it is indeed an algebraic structure, it provides excellent modularity.
+Libraries that try to put a nicer wrapper around SQL to make queries more modular typically flounder beyond basic use cases. That is because they still treat SQL as the fundamental underlying model of what queries look like, and SQL doesn't make modularity easy. Relational algebra is a much cleaner model, and precisely because it is an algebraic structure, it provides excellent modularity.
 
-Here's a small teaser of what relational algebra in the BMG version looks like:
+Here's a small teaser of what relational algebra in the BMG flavor looks like:
 
 ```ruby
 purchases
@@ -72,8 +89,9 @@ purchases
 All the different parts of that snippet are presented in depth elsewhere on this site, but note the following:
 
 1. This expression consists of a pipeline of discrete steps, where every step transforms the relation handed to it from the previous one. *Relations in, relations out.*
-1. It is trivial to insert another step at any place in the pipeline, and it's easy to mentally track what shape the relation has at each step.
-1. Perhaps most importantly, any arbitrary number of steps can be pulled out and encapsulated as a separate building block. Such building blocks are not *query fragments* but rather full relations in their own right. And that's because... everything is a relation!
+1. It is trivial to insert another step at any position in the pipeline
+1. It's easy to mentally track what shape the relation has at each step.
+1. Any arbitrary sequence of steps can be pulled out and encapsulated as a separate building block, and it's trivial to parameterize such building blocks. Such building blocks are not *query fragments* but rather full relations in their own right. And that's because... everything is a relation!
 
-Before going into more depth on the particulars of relational algebra, let's get a clear understanding of that other crucial concept: relations.
+Next, let's get a clear understanding of that other crucial component of relational algebra: relations.
 
