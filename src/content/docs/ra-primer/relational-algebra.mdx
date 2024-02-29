@@ -9,17 +9,17 @@ To sum up what we have learned in the preceding two sections (about [Algebraic s
 * Relational algebra consists of a number of operations
 * These operations are defined over relations
 * A relation is a set of tuples 
-* A table in a relational database defines a relation extensionally, ie by explicitly listing tuplesfor which the relation holds
+* A table in a relational database defines a relation extensionally, ie by explicitly listing tuples for which the relation holds
 
 ## Example relations in JSON
 
-To demystify all of this, let's consider two JSON objects:
+To demystify all of this, let's consider two JSON structures:
 
 ##### My friends
 ```json
 [
   { "name": "Emily", "yearsKnown": 10 },
-  { "name": "Stanisław", "yearsKnown": 15 }
+  { "name": "Stanisław", "yearsKnown": 15 },
   { "name": "Juan", "yearsKnown": 32 },
   { "name": "Ali", "yearsKnown": 27 }
 ]
@@ -36,9 +36,11 @@ To demystify all of this, let's consider two JSON objects:
 
 We can view each of the objects as a tuple with two attributes, and each array as an extensional definition of a relation. There is another important aspect of this representation: the attributes have a name and a type. In this case, each tuple have an attribute `name` of type string and an attribute `yearsKnown` of type integer.
 
-So here we have two relations: **My friends** and **Your friends.**. Now, let's say we're planning a party and want to invite both my friends and yours. How do we find out who to invite? By combining our friend relations, of course! To do that, we introduce our very first operation from relational algebra: **Union** (**∪**).
+So here we have two relations: **My friends** and **Your friends**. Now, let's say we're planning a party and want to invite both my friends and yours. How do we find out who to invite? By combining our friend relations, of course! To do that, we introduce our very first operation from relational algebra: **Union** (**∪**).
 
-*My friends* **∪** *Your friends*
+```
+MyFriends ∪ YourFriends
+```
 
 Or in pseudocode:
 
@@ -62,17 +64,21 @@ The result is a new relation:
 
 Note that **Union** is only possible between relations which are union-compatible, ie their tuples have the same number of attributes, with the same names (and types, also called *domains*).
 
-There is a problem here, of course, because Stanisław is now included twice. A very important fact about relations is that they are *sets*, in the mathematical sense, and therefore never contain more than one instance of each tuple. But since the two Stanisław tuples are different, because they do not have the same value for `yearsKnown`, they are both included.
+There is a problem here, of course, because Stanisław is now included twice. A very important fact about relations is that they are *sets*, in the mathematical sense, and therefore never contain more than one instance of each tuple. But since the two Stanisław tuples are different (because they do not have the same value for `yearsKnown`) they are both included.
 
-We would like to get rid of the `yearsKnown` attribute, and to do that we use another operator: **projection** (**π**), which lets us select which attributes we want from a relation.
+We would like to get rid of the `yearsKnown` attribute, and to do that we use another operator: **Project** (**π**), which lets us select which attributes we want from a relation.
 
-**π**(*name*)(*My friends* **∪** *Your friends*)
+```
+π(name)(MyFriends ∪ YourFriends)
+```
 
 Pseudocode:
 
 ```javascript
 project(["name"], union(myFriends, yourFriends))
 ```
+
+The output is the following relation, where every friend is included only one time.
 
 ```json
 [
@@ -85,16 +91,15 @@ project(["name"], union(myFriends, yourFriends))
 ]
 ```
 
-Now everyone is included only one time.
-
 :::note
-The corresponding query in SQL will **not** remove the duplicate tuple, because tables in SQL do not have set semantics and thus are not true relations. 
+The corresponding query in SQL would **not** remove the duplicate tuple, because tables in SQL do not have set semantics and thus are not true relations. 
 :::
 
 Note that we could rewrite this expression as:
 
-
-**π**(*name*) *My friends*  **∪**  **π**(*name*) *Your friends* 
+```
+π(name)(MyFriends) ∪ π(name)(YourFriends)
+```
 
 Pseudocode:
 
@@ -119,63 +124,70 @@ Let's now move on from JSON and settle on the standard way of talking about rela
 
 The *header* of the table defines the names of the attributes and their domains (or types). Each row represents a tuple and each column lists one attribute of the tuples.
 
+From now on, we will talk about tables and relations interchangeably, and likewise with rows and tuples.
+
 Every operation of relational algebra takes one or two relations as input and produces a new relation. The new relation will sometimes have the same header as the input relation(s), but more often it will produce a new header. Of the examples we have seen above, **Union** preserves the headers of the input relations, whereas the header of **Project** will only contain the attributes that were specified.
 
-In what follows, we will assume that the following relations are defined:
+## Common friends
 
-##### Actor
+To illustrate a couple more of the fundamental operators of relational algebra, let's say we want to answer this question: For those friends that we have in common, how long have I and you known that person?
 
-| Name : String | YearBorn : Integer |
-| ------------- | ------------------ |
-| Jennifer Jason Leigh | 1962 |
-| Peter Sellers | 1925               |
-| Robin Williams| 1949               |
-| Shelley Duval | 1949               |
+We can see by glancing at the JSON above that Stanisław is the only friend we have in common, and the number of years we have known him is 15 (for me) and 2 (for you). But how can we use relational algebra to get the same result?
 
-##### Role 
+TODO: add more explanations below
 
-| ActorName : String | Name : String | FilmName : String |
-| ------------------ | ------------- | ----------------- |
-| Jennifer Jason Leigh | Lois Kaiser | Short Cuts |
-| Jennifer Jason Leigh | Pauline Avery | In the Cut |
-| Peter Sellers | Dr. Strangelove | Dr. Strangelove |
-| Peter Sellers | Inspector Jacques Clouseau | The Pink Panther |
-| Robin Williams | Henry Sagan| The Fisher King |
-| Robin Williams | Popeye | Popeye |
-| Shelley Duval | Olive Oyl | Popeye |
-| Shelley Duval | Wendy Torrance| The Shining |
+Can't just select the tuples that are the same between both relations, since the YearsKnown attribute will be different.
 
-##### Film
+#### Rename
 
-| Name : String | ProductionYear : Integer | Director : String |
-| ------------- | ------------------------ | ----------------- |
-| Dr. Strangelove | 1964 | Stanley Kubrik |
-| Fast Times at Ridgemont High | 1982 | Amy Heckerling |
-| In the Cut | 2003 | Jane Campion |
-| Popeye      | 1980 | Robert Altman |
-| Short Cuts | 1993 | Robert Altman |
-| The Fisher King | 1991 | Terry Gilliam |
-| The Pink Panther | 1963 | Blake Edwards |
-| The Shining | 1980 | Stanley Kubrik |
+```apl
+MyFriends′ = ρ(Name1,YearsKnown1)(MyFriends)
+YourFriends′ = ρ(Name2,YearsKnown2)(YourFriends)
+```
 
-With this, we are ready to look at a few other fundamental operations of relational algebra.
+| Name1 | YearsKnown1 |
+| --------  | --------|
+| Emily     | 10      |
+| Stanisław | 15      |
+| ...       | ...     |
 
-## Select
+#### Cross product 
 
+```apl
+C = MyFriends′ × YourFriends′
+```
 
+Since every row of the first relation is combined with every row of the second relation, the resulting relation contains 12 (4*3) tuples:
 
+| Name1 | YearsKnown1 | Name2 | YearsKnown2 |
+| ----- | ----------- | ----- | ----------- | 
+| Emily     | 10      | Aisha | 35          |
+| Emily     | 10      | Belle | 17          |
+| Emily     | 10      | Stanisław | 2       |
+| Stanisław | 15      | Aisha | 35          |
+| Stanisław | 15      | Belle | 17          |
+| ...       | ...     | ...   | ...         |
+| Ali       | 27      | Belle | 17          |
+| Ali       | 27      | Stanisław | 2       |
 
+#### Restrict (name1 = name 2).
 
+Known as Select in RA, but we prefer Restrict to avoid confusion with SQL's `SELECT`.
 
+```apl
+S = σ(Name1 = Name2)(C)
+```
 
+| Name1 | YearsKnown1 | Name2 | YearsKnown2 |
+| ----- | ----------- | ----- | ----------- | 
+| Stanisław | 15      | Stanisław| 2        |
 
+#### Project
 
+```apl
+P = π(YearsKnown1,YearsKnown2)(S)
+```
 
-
-
-
-
-
-
-
-
+| YearsKnown1 | YearsKnown2 |
+| ----------- | ----------- | 
+| 15          | 2           |

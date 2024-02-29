@@ -59,11 +59,12 @@ This is what a relation means in a relational database. A table is a relation be
 
 ## Intensional and extensional definitions
 
-There are two fundamental ways of describing a relation. The first one is called **intensional** and is essentially a predicate. For example, for our first example we could simply use the formula *x < y* to describe which pairs of *(x, y)* fit the relation *is less than*. Another common way to write an intensional relation is to use *set builder notation*, which has a close cousin in *list comprehensions* in some programming languages. For example, in Python we could represent our *less than*-relation over integers 1-5 with this list comprehension:
+There are two fundamental ways of describing a relation. The first one is called **intensional** and is essentially a predicate. For example, for our first example we could simply use the formula *x < y* to describe which pairs of *(x, y)* fit the relation *is less than*. Another common way to write an intensional relation is to use *set builder notation*, which has a close cousin in *set comprehensions* in some programming languages. For example, in Python we could represent our *less than*-relation over integers 1-5 with this set comprehension:
 
 ```python
-{(x, y) for x in range(1, 5) for y in range(1,5) if x < y}
-# => {(2, 4), (1, 2), (3, 4), (1, 4), (2, 3), (1, 3)}
+# range(1,6) specifies numbers 1-5
+{(x, y) for x in range(1,6) for y in range(1,6) if x < y}
+# => {(2, 4), (1, 2), (3, 4), (1, 5), (1, 4), (2, 3), (4, 5), (2, 5), (1, 3), (3, 5)}
 ```
 
 The second way is called **extensional** and consists in simply listing the combinations of elements for which the relation holds. This is what we did for both *is less than** and *wearing* in the preceding sections, and this is also precisely what we do in database tables.
@@ -77,6 +78,10 @@ Tables in relational databases are extensional definitions of relations: they li
 :::note
 From a purist point of view, it is more correct to name database tables eg `user` rather than `users`, because a table is **a relation** rather than a list of things. But then again, an extensional definition of the `user` relation is precisely... a list of users.
 :::
+
+## On duplicate rows
+
+TODO: Why duplicate tuples is nonsense
 
 ## The power of extensions
 

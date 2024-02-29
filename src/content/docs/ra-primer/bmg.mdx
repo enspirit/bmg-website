@@ -39,8 +39,6 @@ In what follows, we will work out some queries for the following three relations
 | Shelley Duval | Olive Oyl | Popeye |
 | Shelley Duval | Wendy Torrance| The Shining |
 
-JJL <---RA---> SD <---RA---> RW <---> SK <---> PS
-
 ##### Film
 
 | name : String | production_year : Integer | director : String |
@@ -72,7 +70,7 @@ actors = Bmg::Relation.new([
 
 We can also work with relations based on JSON, CSV, a Redis database, or a SQL database. But here we will stick to plain relations.
 
-## Who worked with Stanley Kubrik?
+## Birth years of actors who worked with Stanley Kubrik?
 
 Let's start with a simple (though contrived) task: find the **birth years** of actors who appeared in films directed by Stanley Kubrik. To do this, we first filter the `Film` relation to obtain a relation with only those rows where `director = "Stanley Kubrik"`:
 

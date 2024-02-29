@@ -69,13 +69,13 @@ Optimization in SQL databases is quite a messy affair, and they don't always mak
 
 ## Algebra is for programmers
 
-In the context of BMG, the most important quality of relational algebra is that it is easy for programmers to understand, and provides a very flexible framework for constructing complex and composable queries.
+In the context of Bmg, the most important quality of relational algebra is that it is easy for programmers to understand, and provides a very flexible framework for constructing complex and composable queries.
 
 SQL has its strengths, but it was not created with programmers in mind. Rather, the idea was that non-technical people should be able to query data for analysis or reports using "sentences" somewhat reminiscent of English. Programmers are used to breaking problems up into tiny parts which they can then assemble and re-assemble in different ways. This is very hard to do with SQL. (Although other RDBMS features like views can help a lot.)
 
 Libraries that try to put a nicer wrapper around SQL to make queries more modular typically flounder beyond basic use cases. That is because they still treat SQL as the fundamental underlying model of what queries look like, and SQL doesn't make modularity easy. Relational algebra is a much cleaner model, and precisely because it is an algebraic structure, it provides excellent modularity.
 
-Here's a small teaser of what relational algebra in the BMG flavor looks like:
+Here's a small teaser of what relational algebra in the Bmg flavor looks like:
 
 ```ruby
 purchases
