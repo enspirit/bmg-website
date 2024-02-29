@@ -5,7 +5,7 @@ import starlight from '@astrojs/starlight';
 export default defineConfig({
 	integrations: [
 		starlight({
-			title: 'BMG - Relational Algebra for Ruby',
+			title: 'Bmg - Relational Algebra for Ruby',
 			social: {
 				github: 'https://github.com/enspirit/bmg',
 			},

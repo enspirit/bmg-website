@@ -2,7 +2,7 @@
 
 {
   # https://devenv.sh/basics/
-  env.GREET = "BMG documentation website";
+  env.GREET = "Bmg documentation website";
 
   # https://devenv.sh/packages/
   packages = [
