@@ -1,6 +1,237 @@
 ---
-title: BMG - Relational Algebra at your fingertips
+title: Bmg - Relational Algebra at your fingertips
 sidebar:
   order: 5
 ---
+
+In the previous section, we introduced the mathematical notation for some of the basic operations of relational algebra: Union (**∪**), Project (**π**), Cross product (**×**), and Restrict(**σ**).
+
+In this section, we will introduce Bmg library itself and go through some more advanced uses of relational algebra.
+
+
+:::note
+We will only consider the basic form of relational algebra here, without extensions like aggregations or outer joins. Those are described in [Advanced features](TODO), [SQL Interface](TODO), and in the [Operations Reference](TODO).
+:::
+
+## Preliminaries
+
+In what follows, we will work out some queries for the following three relations: 
+
+##### Actor
+
+| name : String | birth_year : Integer |
+| ------------- | -------------------- |
+| Jennifer Jason Leigh | 1962 |
+| Peter Sellers | 1925               |
+| Robin Williams| 1949               |
+| Shelley Duval | 1949               |
+
+##### Role 
+
+| actor_name : String | name : String | film_name : String |
+| ------------------- | ------------- | ------------------ |
+| Jennifer Jason Leigh | Lois Kaiser | Short Cuts |
+| Jennifer Jason Leigh | Pauline Avery | In the Cut |
+| Peter Sellers | Dr. Strangelove | Dr. Strangelove |
+| Peter Sellers | Inspector Jacques Clouseau | The Pink Panther |
+| Robin Williams | Henry Sagan | The Fisher King |
+| Robin Williams | Popeye | Popeye |
+| Shelley Duval | Olive Oyl | Popeye |
+| Shelley Duval | Wendy Torrance| The Shining |
+
+JJL <---RA---> SD <---RA---> RW <---> SK <---> PS
+
+##### Film
+
+| name : String | production_year : Integer | director : String |
+| ------------- | ------------------------- | ----------------- |
+| Dr. Strangelove | 1964 | Stanley Kubrik |
+| Fast Times at Ridgemont High | 1982 | Amy Heckerling |
+| In the Cut | 2003 | Jane Campion |
+| Popeye      | 1980 | Robert Altman |
+| Short Cuts | 1993 | Robert Altman |
+| The Fisher King | 1991 | Terry Gilliam |
+| The Pink Panther | 1963 | Blake Edwards |
+| The Shining | 1980 | Stanley Kubrik |
+
+In the tables below, we won't repeat the domain of the attributes, ie `String`/`Integer`.
+
+:::note[Remember]
+A **relation** can be viewed as a **table**. The table contains any number of **rows**/**tuples**, and also has an associated **header** which describes the **attributes** of the tuples. A relation *can not* contain any duplicate tuples.
+:::
+
+In Bmg, we can create these relations directly:
+
+```ruby
+actors = Bmg::Relation.new([
+  { name: "Jennifer Jason Leigh", birth_year: 1962 },
+  { name: "Peter Sellers", birth_year: 1925 },
+  # ...
+])
+```
+
+We can also work with relations based on JSON, CSV, a Redis database, or a SQL database. But here we will stick to plain relations.
+
+## Who worked with Stanley Kubrik?
+
+Let's start with a simple (though contrived) task: find the **birth years** of actors who appeared in films directed by Stanley Kubrik. To do this, we first filter the `Film` relation to obtain a relation with only those rows where `director = "Stanley Kubrik"`:
+
+```ruby
+sk_films = films.restrict(director: "Stanley Kubrik")
+```
+
+| name | production_year | director |
+| ---- | --------------- | -------- |
+| Dr. Strangelove | 1964 | Stanley Kubrik |
+| The Shining | 1980 | Stanley Kubrik |
+
+Next, we pick the roles associated with these films. To do that, we must use another central operator: **Join**. If you have any experience at all working with SQL or relational databases, you will be familiar with joins, but it might be worth bracketing that experience, because learning about **Join** from the ground up could give you another perspective.
+
+**Join** glues together tuples from two relations, just like **Cross join**, but also applies a condition on which tuples to include in the new relation, by matching attributes from the first relation with attributes on the second one. In this case, we want rows where the **name** attribute from `sk_films` equals the **film_name** attribute from `roles`:
+
+```ruby
+sk_roles = roles.join(sk_films, :film_name => :name)
+```
+
+| film_name | production_year | director | actor_name | name |
+| --------- | --------------- | -------- | ---------- | ---- |
+| Dr. Strangelove | 1964 | Stanley Kubrik | Peter Sellers | Dr. Strangelove |
+| The Shining | 1980 | Stanley Kubrik | Shelley Duval | Wendy Torrance |
+
+The new header contains all the attributes from both relations, except that **name** from `films` and **film_name** from `role` have been merged. That makes sense, because what we have done is precisely to pick out those tuples where one equals the other.
+
+The only attribute we need from this relation is `actor_name` so let's next perform a `project`:
+
+```ruby
+sk_roles2 = sk_roles.project([:actor_name])
+```
+
+| actor_name | 
+| ---------- |
+| Dr. Strangelove |
+| Wendy Torrance |
+
+And finally, we perform another **Join** to get the birth years:
+
+```ruby
+sk_roles2.join(actors, :actor_name => :name)
+```
+
+| actor_name | birth_year |
+| ---------- | ---------- |
+| Peter Sellers | 1925 |
+| Shelley Duval | 1949 |
+
+## Join = Rename + Cross product + Project
+
+Let's get even more clear about exactly how **Join** works. As we have seen, **Join** combines tuples from two relations, let's call them **R** and **S**, to form a new relation **T**, but only includes those pairs of tuples where the values of one or more attributes match up. In the simplest case ("natural join"), any tuples that have the same name are compared, and if they are the same in both tuples, they are included in the output.
+
+Consider these two relations:
+
+| X1 | Y1 | Z |
+| -- | -- | - |
+| 1  | 2  | 3 |
+| 5  | 6  | 7 |
+
+| X2 | Y2 | Z  |
+| -- | -- | -- |
+| 11 | 12 | 7  |
+| 15 | 16 | 13 |
+
+A **Natural join** produces:
+
+| X1 | Y1 | Z  | X2 | Y2 |
+| -- | -- | -- | -- | -- |
+| 5  | 6  | 7  | 11 | 12 |
+
+because exactly one pairing of tuples was found to have the same value in an attribute (`Z`) with the same name.
+
+To gain a deeper understanding of the underlying algebra, it helps to understand how joins can be built up from simpler operations (although that is not something you would normally ever do).
+
+The idea is to perform a **Cross product** to get **all** the combinations of tuples, followed by a **Restrict** to pick out the combinations that have matching attributes. However, since **Cross product** expects unique attributes (whereas **Natural join** expects at least one attribute to be shared), we first have to rename attributes. And as a last step, we have to remove extra attributes. Let's go through this step by step:
+
+**1. Rename attributes**
+
+We let the first relation be intact, and change `Z` in the second one, so it now has the header:
+
+| X2 | Y2 | Z2 |
+| -- | -- | -- |
+
+**2. Get the cross product**
+
+| X1 | Y1 | Z  | X2 | Y2 | Z2 |
+| -- | -- | -- | -- | -- | -- |
+| 1  | 2  | 3  | 11 | 12 | 7  |
+| 1  | 2  | 3  | 15 | 16 | 13 |
+| 5  | 6  | 7  | 11 | 12 | 7  |
+| 5  | 6  | 7  | 15 | 16 | 13  |
+
+**3. Restrict to keep only rows where `Z = Z2`**
+
+| X1 | Y1 | Z  | X2 | Y2 | Z2 |
+| -- | -- | -- | -- | -- | -- |
+| 5  | 6  | 7  | 11 | 12 | 7  |
+
+**4. Project, to keep all attributes except `Z2`**
+
+| X1 | Y1 | Z  | X2 | Y2 |
+| -- | -- | -- | -- | -- |
+| 5  | 6  | 7  | 11 | 12 |
+
+And this is the exact same result as we would get with a **Join**.
+
+In the case of our films and roles, the situation is slightly different: the attibute they share, `name`, is **not** the one we want to join on, becauese it means different things in the two relations. Instead, we want to match `film_name` from `role` with `name` from `films`. The solution follows the same steps. We rewrite:
+
+```ruby
+roles.join(sk_films, :film_name => :name)
+```
+
+as:
+
+```ruby
+sk_films2 = sk_films.rename(:name => :film_name2))  
+roles.join(sk_films2)
+     .restrict(Predicate.eq(:film_name, :film_name2))
+     .project([
+       :film_name, :production_year,
+       :director, :actor_name, :name
+     ])
+```
+
+:::note
+In Bmg, `join` without any attribute arguments is the same as the **Cross product**.
+:::
+
+Again, the point here is to demystify the **Join** operation and get a clear sense of the algebraic way of combining operations. Just as **Join** can be defined by simpler operations, we can use Bmg to create our own composable building blocks for data querying and transformation.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Misc
+Don't have to get confused about the semantics of GROUP BY (interaction with SELECT)
+
+RESTRICT / HAVING - no confusion
+
+SELECT ... FROM ... 
+
+WHERE ... AND
+
 
