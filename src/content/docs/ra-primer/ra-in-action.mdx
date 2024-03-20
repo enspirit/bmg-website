@@ -1,16 +1,17 @@
 ---
-title: Bmg - Relational Algebra at your fingertips
+title: RA in action 
 sidebar:
   order: 5
 ---
 
 In the previous section, we introduced the mathematical notation for some of the basic operations of relational algebra: Union (**∪**), Project (**π**), Cross product (**×**), and Restrict(**σ**).
 
-In this section, we will introduce Bmg library itself and go through some more advanced uses of relational algebra.
-
+In this section, we will go through a few slightly more advanced uses of relational algebra to get a feel for how it works. Rather than introducing more mathematical notation, we will start using Bmg for our examples.
 
 :::note
-We will only consider the basic form of relational algebra here, without extensions like aggregations or outer joins. Those are described in [Advanced features](TODO), [SQL Interface](TODO), and in the [Operations Reference](TODO).
+Although we we use Bmg in this section and the next one, we are only interested in presenting the fundamentals of relational algebra. The code shown here does not represent best practices for using Bmg!
+
+Furthermore, we only consider the basic form of relational algebra here, without extensions like aggregations or outer joins. Those are described in [Advanced features](TODO), [SQL Interface](TODO), and in the [Operations Reference](TODO).
 :::
 
 ## Preliminaries
@@ -85,7 +86,7 @@ sk_films = films.restrict(director: "Stanley Kubrik")
 
 Next, we pick the roles associated with these films. To do that, we must use another central operator: **Join**. If you have any experience at all working with SQL or relational databases, you will be familiar with joins, but it might be worth bracketing that experience, because learning about **Join** from the ground up could give you another perspective.
 
-**Join** glues together tuples from two relations, just like **Cross join**, but also applies a condition on which tuples to include in the new relation, by matching attributes from the first relation with attributes on the second one. In this case, we want rows where the **name** attribute from `sk_films` equals the **film_name** attribute from `roles`:
+**Join** glues together tuples from two relations, just like **Cross product**, but also applies a condition on which tuples to include in the new relation, by matching attributes from the first relation with attributes on the second one. In this case, we want rows where the **name** attribute from `sk_films` equals the **film_name** attribute from `roles`:
 
 ```ruby
 sk_roles = roles.join(sk_films, :film_name => :name)
@@ -122,7 +123,7 @@ sk_roles2.join(actors, :actor_name => :name)
 
 ## Join = Rename + Cross product + Project
 
-Let's get even more clear about exactly how **Join** works. As we have seen, **Join** combines tuples from two relations, let's call them **R** and **S**, to form a new relation **T**, but only includes those pairs of tuples where the values of one or more attributes match up. In the simplest case ("natural join"), any tuples that have the same name are compared, and if they are the same in both tuples, they are included in the output.
+Let's get even more clear about exactly how **Join** works. As we have seen, **Join** combines tuples from two relations, let's call them **R** and **S**, to form a new relation **T**, but only includes those pairs of tuples where the values of one or more attributes match up. In the simplest case ("natural join"), any tuples that have the same name are compared, and if their values are the same in both tuples, they are included in the output.
 
 Consider these two relations:
 
@@ -146,11 +147,11 @@ because exactly one pairing of tuples was found to have the same value in an att
 
 To gain a deeper understanding of the underlying algebra, it helps to understand how joins can be built up from simpler operations (although that is not something you would normally ever do).
 
-The idea is to perform a **Cross product** to get **all** the combinations of tuples, followed by a **Restrict** to pick out the combinations that have matching attributes. However, since **Cross product** expects unique attributes (whereas **Natural join** expects at least one attribute to be shared), we first have to rename attributes. And as a last step, we have to remove extra attributes. Let's go through this step by step:
+The idea is to perform a **Cross product** to get **all** the combinations of tuples, followed by a **Restrict** to pick out the combinations that have matching attributes. However, since **Cross product** expects unique attributes (whereas **Natural join** expects at least one attribute to be shared), we first have to rename attributes. And as a last step, we remove the extra attributes created by the rename. Let's go through this step by step:
 
 **1. Rename attributes**
 
-We let the first relation be intact, and change `Z` in the second one, so it now has the header:
+We let the first relation be intact, and change `Z` in the second one to `Z2`, so it now has the header:
 
 | X2 | Y2 | Z2 |
 | -- | -- | -- |
@@ -178,7 +179,7 @@ We let the first relation be intact, and change `Z` in the second one, so it now
 
 And this is the exact same result as we would get with a **Join**.
 
-In the case of our films and roles, the situation is slightly different: the attibute they share, `name`, is **not** the one we want to join on, becauese it means different things in the two relations. Instead, we want to match `film_name` from `role` with `name` from `films`. The solution follows the same steps. We rewrite:
+In the case of our films and roles, the situation is slightly different: the attibute they share, `name`, is **not** the one we want to join on, because it means different things in the two relations. Instead, we want to match `film_name` from `role` with `name` from `films`. The solution follows the same steps. We rewrite:
 
 ```ruby
 roles.join(sk_films, :film_name => :name)
@@ -188,7 +189,7 @@ as:
 
 ```ruby
 sk_films2 = sk_films.rename(:name => :film_name2))  
-roles.join(sk_films2)
+roles.cross_product(sk_films2)
      .restrict(Predicate.eq(:film_name, :film_name2))
      .project([
        :film_name, :production_year,
@@ -196,13 +197,57 @@ roles.join(sk_films2)
      ])
 ```
 
-:::note
-In Bmg, `join` without any attribute arguments is the same as the **Cross product**.
-:::
-
 Again, the point here is to demystify the **Join** operation and get a clear sense of the algebraic way of combining operations. Just as **Join** can be defined by simpler operations, we can use Bmg to create our own composable building blocks for data querying and transformation.
 
+## Actors who appeared in the same film
+
+For our next exercise, let's find pairs of actors who appeared in the same film. Taking a quick look at the **Role** relation at the beginning of this section, we immediately see that there is only one film that appears twice (namely *Popeye*), so we expect only one pair of actors.
+
+To get our answer, we need to join the **Role** relation with itself. To do that, we create a new relation that is exactly the same as **Role** but with `actor_name` renamed to `actor_name2`, because we need both names in our output relation. The last step is to project only `actor_name` and `actor_name2`.
+
+```ruby
+roles2 = roles.rename(:actor_name => :actor_name2)
+roles2.join(roles, [:film_name])
+      .project([:actor_name, :actor_name2])
+```
+
+| actor_name | actor_name2 |
+| ---------- | ----------- |
+| Jennifer Jason Leigh | Jennifer Jason Leigh |
+| Peter Sellers | Peter Sellers |
+| Robin Williams | Robin Williams |
+| Shelley Duval | Robin Williams |
+| Robin Williams | Shelley Duval |
+| Shelley Duval | Shelley Duval |
+
+Hmm, that's not right. We are getting "pairs" where both actors are the same one. After all, every actor appeared in the same film as themselves (at least from the viewpoint of relational algebra). We need to further restrict this relation to only include tuples where `actor_name` and `actor_name2` are not the same.
+
+```ruby ins={4}
+roles2.join(roles, [:film_name])
+      .project([:actor_name, :actor_name2])
+      .restrict(Predicate.neq(:actor_name, :actor_name2))
+```
+
+| actor_name | actor_name2 |
+| ---------- | ----------- |
+| Shelley Duval | Robin Williams |
+| Robin Williams | Shelley Duval |
+
+Still not right. We're getting the same pair twice, in opposite order. To make sure it's only included once, we change the condition that they are different to the stronger condition that the first one is *smaller than* the second. This works since there is a strict ordering between strings.
+
+```ruby {4}; ins="lt"
+roles2.join(roles, [:film_name])
+      .project([:actor_name, :actor_name2])
+      .restrict(Predicate.lt(:actor_name, :actor_name2))
+```
+
+| actor_name | actor_name2 |
+| ---------- | ----------- |
+| Robin Williams | Shelley Duval |
+
+
 ## Who knows who?
+
 
 
 
