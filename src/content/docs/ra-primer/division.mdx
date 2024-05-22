@@ -1,0 +1,207 @@
+---
+title: "Advanced example: Division"
+sidebar:
+  order: 7
+---
+
+We will conclude this primer with a somewhat more advanced example of composing operations in Relational Algebra to construct a new operation. **Division** is one of the classical operations of Relational Algebra, but it hasn't been implemented in SQL and is relatively unknown. Nevertheless, once you know about it, it can come in handy in many situations.
+
+:::note
+The examples and equations in this section only work because relations have set semantics, meaning they can have no duplicate tuples.
+:::
+
+What does it mean to divide one relation by another? It means the inverse of a Cross product, similar to how, in arithmetic, division is the inverse of multiplication. In other words, division is a way to "undo" multiplication, and multiplication is a way to "undo" division. If **X = Y * Z**, then **X / Y = Z** and **X / Z = Y**. It's the same thing with divison in Relational Algebra: if a relation **R1** is formed as the Cross product of **R2** and **R3**, then **R1 ÷ R2 = R3** and **R1 ÷ R3 = R2**.
+
+## A First Approximation
+
+Let's bring back the example of relations describe the wearing of garments from the section on relations. We start with the following two relations:
+
+**R1** 
+| name | garment |
+| ---- | ------- |
+| Alice | t-shirt |
+| Bernard | sweater |
+
+**R2**
+| color |
+| ----- |
+| yellow |
+| red |
+
+We form the cross product **R = P x Q**:
+
+**R3**
+| name | garment | color |
+| ---- | ------- | ----- |
+| Alice | t-shirt | yellow |
+| Alice | t-shirt | red |
+| Bernard | sweater | yellow |
+| Bernard | sweater | red |
+
+(Yes, we are now dealing with people wearing multiple sweaters or T-shirts.)
+
+We can get **R1** by dividing **R3** by **R2**, and vice versa. In other words: **R3 ÷ R2 = R1**, and **R3 ÷ R1 = R2**.
+
+Let's introduce a bit of terminology: In this example, **R3** is the *dividend* which we divide by a *divisor* to get a *quotient*. We may note a few things about the divisor and the quotient:
+
+1. Both the divisor and the quotient can have one or more attributes in their header
+1. The headers of the divisor and quotient must each be a subset of the header of the dividend, and they may not overlap
+1. Thus, the header of the quotient consists of exactly those attributes of the dividend that are not in the divisor
+1. The tuples in the quotient are simply what you get if you project its attributes from the divisor
+
+In this example, we could get the quotient of **R3 ÷ R1** by noticing that the quotient's header has a single attribute (`color`), which we get by removing the attributes of **R1** from the attribute list of **R3**. Using Bmg, we can get the quotient like this: `r.project([:color])` and since tuples in a relation are unique, with no duplicates, this will yield exactly **R2** as shown above.
+
+## Division with remainder
+
+In reality, very few relations can be constructed as cross products. We want to define division so that it works for any relation. The key is this observation: a relation which is a perfect cross product is a special case. Any other relation can be formed by taking such a cross product and adding or removing some tuples.
+
+Moreover, even if there is a divisor that divides a relation perfectly, most other divisors do not. This is analogous to integer division (where all three of dividend, divisor, and quotient are integers). For example, `12 / 2 = 6`, `12 / 4 = 3`, etc. But `12 / 5 = 2`, with a *remainder* of 2. If we reverse the operation (`5 * 2 = 10`), we do *not* get back the original dividend. In the same way, relational division may also yield a remainder of tuples that are in the dividend but not in the cross product of divisor and quotient.
+
+A bit informally, we might describe the problem like this: *Construct a quotient which, when multiplied by the divisor, yields the largest result which is fully contained within the dividend.* In the integer example, `2` is the largest number which, when multiplied by `5` yields a result which is not bigger than `12`. (In this sense, `10` is "contained" in `12`.) Make sure you have internalized this intuitive definition before reading on!
+
+Now, given a relation **R** and a divisor **D**, how do we find the quotient **Q** which is the largest relation so that the cross product **C = D x Q** is contained within **R** (meaning the tuples in **C** are a subset of those in **R**)? (We are not asking about the header of **Q**, it is already known. *Largest* here means: having the most number of tuples.)
+
+To illustrate this, let's modify the example above so that we start with this relation:
+
+**R**
+| name | color |
+| ---- | ----- |
+| Alice | yellow |
+| Alice | red |
+| Bernard | yellow |
+| Mariam | blue |
+
+(We have omitted the `wearing` attribute, but the intended meaning is still that *a person with a particular name is wearing a particular color*.)
+
+And this divisor:
+
+**D**
+| color |
+| ----- |
+| yellow |
+| red |
+
+We know the header of **Q** is `(name)`, so we can start by simply projecting this from **R** to form an intermediate relation, **Q0**:
+
+| name |
+| ---- |
+| Alice |
+| Bernard |
+| Mariam |
+
+It's clear that **C0 = D x Q0** does not equal **R** because it contains tuples that are not in **R**, marked with *italics* below:
+
+**C0**
+| name | color |
+| ---- | ----- |
+| Alice | yellow |
+| Alice | red |
+| Bernard | yellow |
+| *Bernard* | *red* |
+| *Mariam* | *yellow* |
+| *Mariam* | *red* |
+
+**C0** has three tuples that are not in **R** and thus, **C0** is not "contained" in **R**. To get the actual quotient, we want to remove from **Q0** those tuples which cause **C0** to become "too large", namely `(Bernard)` and `(Mariam)`.
+
+Remember, in a relation produced by a cross join between two relations, every tuple from the first relation is paired with every tuple in the second relation. Here, we are looking for those tuples in **Q0** for which **R** does not have all the pairings that occur in **C0**. To do that, we remove from **C0** all tuples from **R**.
+
+**C1**
+| name | color |
+| ---- | ----- |
+| Bernard | red |
+| Mariam | yellow |
+| Mariam | red |
+
+Now we have a list of tuples that are "missing" in **R** compared to **C0** (which is the cause of **C0** being too large.) Notice that **Alice is not included in this list**!
+
+To get the actual quotient, we now remove the names in **C1** from **Q0**:
+
+**Q**
+| name |
+| ---- |
+| Alice |
+
+And that's it! We have formed the quotient of **R ÷ D**. Which question did we answer by doing that? The usual way to express it is:
+
+> *Which tuples in **Q0** are paired (in **R**) with *all* tuples in **D**?*
+
+A bit cryptic! Let's rephrase that in terms of our example:
+
+> *Given a list of colors, which persons are wearing all the colors in the list?*
+
+It is easy to see that Alice is indeed the only person wearing both yellow and red. As an exercise, you could go through the steps above with different color lists (for example `[yellow]`, or `[blue]`, or `[red, blue]`) to check that we get the intended results.
+
+We can of course also as the opposite question:
+
+> *Given a list of people, which colors are worn by all people in the list?*
+
+Hopefully, the usefulness of the division operation is starting to become apparent. Here are a few other examples of questions that can easily be expressed using relational division:
+
+> *Which customers have bought every product from the deluxe line?*
+
+> *Which recipies contain all specified ingredients?*
+
+> *Which candidates have all of the required skills?*
+
+> *Are there any team members that have worked on all of these sub-projects?*
+
+## Division in Bmg
+
+Let's wrap up the solution above in a reusable formula. To recap, given a relation **R** and a divisor **D**, we want to produce the quotient **Q**. We know the attributes of **Q** are those of **R** minus those from **D**. Let's call **Q**:s attribute set `qatt`. The steps to obtain **Q** are (with name assignments in paranthesis):
+
+1. Project `qatt` from **R** (**Q0**) 
+1. Form the cross product of **D** and **Q0** (**C0**)
+1. Subtract **R** from **C0** (**C1**)
+1. Project `qatt` from **C1** (**Q1**)
+1. Subtract **Q1** from **Q0** (**Q**) 
+
+Ignoring some of the details, we can summarize the process like this:
+
+* Produce all possible tuple pairings
+* Remove the pairings that we actually have, to get those that we don't have
+* Knowing which pairings we don't have, remove corresponding tuples from the candidate quotient
+
+Again, the resulting quotient is *the largest relation which, when cross joined with the divisor, yields a relation which is a subset of the original relation*.
+
+Using Bmg, we can create a Ruby method that encapsulates the entire procedure:
+
+```ruby
+def divide(relation, divisor)
+  qattr = relation.type.attrlist - divisor.type.attrlist
+
+  q0 = relation.project(qattr)   # Candidates
+  c0 = q0.cross_product(divisor) # All pairings
+  c1 = c0.minus(relation)        # Pairings minus those we have
+  q1 = c1.project(qattr)
+  q0.minus(q1)                   # Remove candidates with missing pairings
+end
+```
+
+Picking one of the examples given above, we can use `divide` like this:
+
+```ruby
+deluxe_products = products.restrict(category: :deluxe)
+                          .project([:product_id])
+customers_products = purchases.project([:customer_id, :product_id])
+vip_customers = divide(customers_products, deluxe_products)
+```
+
+:::note
+Bmg provides a `divide` operation with some extra optimizations, in particular when used with relations from a SQL database.
+:::
+
+## Further reading
+
+https://www2.cs.arizona.edu/~mccann/research/divpresentation.pdf
+
+https://stackoverflow.com/questions/34978533/how-to-understand-u-r%C3%B7s-the-division-operator-in-relational-algebra
+
+## Appendix: Division in SQL
+
+As mentioned abov
+
+
+https://www.red-gate.com/simple-talk/databases/sql-server/t-sql-programming-sql-server/divided-we-stand-the-sql-of-relational-division/
+
+https://www.red-gate.com/simple-talk/databases/sql-server/learn/high-performance-relational-division-in-sql-server/
+
