@@ -1,0 +1,16 @@
+---
+title: With a SQL database backend
+description: Foo
+sidebar:
+  order: 1
+---
+
+```ruby
+require 'bmg'
+require 'bmg/sequel'
+DB = Sequel.connect("sqlite://./spec/suppliers-and-parts.db")
+parts = Bmg.sequel(:parts, DB)
+cities = Bmg.sequel(:cities, DB)
+supplies = Bmg.sequel(:supplies, DB)
+suppliers = Bmg.sequel(:suppliers, DB)
+```

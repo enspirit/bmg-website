@@ -15,7 +15,15 @@ export default defineConfig({
 					autogenerate: { directory: 'ra-primer' },
 				},
 				{
-					label: 'Reference',
+					label: 'Usage',
+					autogenerate: { directory: 'usage' },
+				},
+				{
+					label: 'Recipies',
+					autogenerate: { directory: 'recipies' },
+				},
+				{
+					label: 'Operations reference',
 					autogenerate: { directory: 'reference' },
 				},
 			],

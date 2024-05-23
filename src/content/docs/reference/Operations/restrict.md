@@ -1,0 +1,5 @@
+---
+title: restrict
+description: Foo
+---
+
