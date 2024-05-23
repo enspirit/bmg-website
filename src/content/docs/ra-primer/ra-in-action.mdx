@@ -121,7 +121,7 @@ sk_roles2.join(actors, :actor_name => :name)
 | Peter Sellers | 1925 |
 | Shelley Duval | 1949 |
 
-## Join = Rename + Cross product + Project
+## Join = Cross product + Restrict
 
 Let's get even more clear about exactly how **Join** works. As we have seen, **Join** combines tuples from two relations, let's call them **R** and **S**, to form a new relation **T**, but only includes those pairs of tuples where the values of one or more attributes match up. In the simplest case ("natural join"), any tuples that have the same name are compared, and if their values are the same in both tuples, they are included in the output.
 
@@ -147,7 +147,7 @@ because exactly one pairing of tuples was found to have the same value in an att
 
 To gain a deeper understanding of the underlying algebra, it helps to understand how joins can be built up from simpler operations (although that is not something you would normally ever do).
 
-The idea is to perform a **Cross product** to get **all** the combinations of tuples, followed by a **Restrict** to pick out the combinations that have matching attributes. However, since **Cross product** expects unique attributes (whereas **Natural join** expects at least one attribute to be shared), we first have to rename attributes. And as a last step, we remove the extra attributes created by the rename. Let's go through this step by step:
+In essence, the idea is: **Cross product** + **Restrict** -- first do a **Cross product** to get **all** the combinations of tuples, then a **Restrict** to pick out the combinations that have matching attributes. However, since **Cross product** expects unique attributes, we first have to rename overlapping attributes. And as a last step, we remove the extra attributes created by the rename. Let's go through this step by step:
 
 **1. Rename attributes**
 
@@ -222,7 +222,7 @@ roles2.join(roles, [:film_name])
 
 Hmm, that's not right. We are getting "pairs" where both actors are the same one. After all, every actor appeared in the same film as themselves (at least from the viewpoint of relational algebra). We need to further restrict this relation to only include tuples where `actor_name` and `actor_name2` are not the same.
 
-```ruby ins={4}
+```ruby ins={3}
 roles2.join(roles, [:film_name])
       .project([:actor_name, :actor_name2])
       .restrict(Predicate.neq(:actor_name, :actor_name2))
@@ -248,7 +248,9 @@ roles2.join(roles, [:film_name])
 
 ## Who knows who?
 
-
+1. Each Actor-Director pair (actor1, director1)
+2. Add to each tuple other actors who worked with the same director (actor2) - can't be same as actor1
+3. Add any director 
 
 
 
