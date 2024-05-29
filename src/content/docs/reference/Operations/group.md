@@ -43,6 +43,34 @@ suppliers.group([:sid, :name, :status], :my_group).to_a
  {:city=>"Athens", :my_group=>(in_memory #<Set: {{:sid=>"S5", :name=>"Adams", :status=>30}}>)}]
 ```
 
+Here is a formatted representation of the result:
+
+```
++--------+----------------------------+
+| :city  | :my_group                  |
++--------+----------------------------+
+| London | +------+-------+---------+ |
+|        | | :sid | :name | :status | |
+|        | +------+-------+---------+ |
+|        | | S1   | Smith |      20 | |
+|        | | S4   | Clark |      20 | |
+|        | +------+-------+---------+ |
+|--------+----------------------------+
+| Paris  | +------+-------+---------+ |
+|        | | :sid | :name | :status | |
+|        | +------+-------+---------+ |
+|        | | S2   | Jones |      10 | |
+|        | | S3   | Blake |      30 | |
+|        | +------+-------+---------+ |
+|--------+----------------------------+
+| Athens | +------+-------+---------+ |
+|        | | :sid | :name | :status | |
+|        | +------+-------+---------+ |
+|        | | S5   | Adams |      30 | |
+|        | +------+-------+---------+ |
++--------+----------------------------+
+```
+
 ##### Generated SQL
 
 Bmg does not currently compile `group` operations into SQL. The `GROUP BY` clause in SQL behaves quite differently, since SQL doesn't support nested relations. A similar behavior can be produced by using support for array or JSON values, depending on the database system. (The SQL:2023 standard introduced a JSON data type, but it's not yet widely supported.)
