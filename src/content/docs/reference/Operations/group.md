@@ -10,11 +10,27 @@ rel.group([:a, :b, ...], :my_group, array: true)
 
 `group` splits the attributes of the input relation into two sets: those that are specified as the first argument, and all the remaining ones. Let's call the former `grouped-attrs` and the latter `grouping-attrs`.
 
-`group` created a relation which groups together `grouped-attrs`-tuples from the input and pairs those groups with the corresponding `grouping-attrs`.
+`group` groups together `grouped-attrs`-tuples from the input, and pairs those groups with the corresponding `grouping-attrs`.
 
 To be more specific: the output consists of the unique tuples obtained by [projecting](reference/operations/project) the `grouping-attrs` from the input, and extending each such tuple with a [nested relation](/ra-primer/relations-as-attributes) with the `grouped-attrs`, such that for each combination of values in the input, a corresponding tuple is found in each nested relation.
 
-This sounds complicated, but is quite intuitive when you see it in action! See the example below.
+If this sounds complicated, is will be quite intuitive when you see it in action! See the example below.
+
+A simple implementation of the count operation might look like this:
+
+```ruby
+def group(rel, grouped_attrs)
+  # TODO: any reason to use TupleAlgebra ?
+  grouping_attrs = rel.type.attrlist - grouped_attrs
+  rel.allbut(grouped_attrs)
+     .extend(
+       group: -> (tuple) {
+         rel.matching(tuple.to_relation, [:city])
+            .project(grouped_attrs)
+       }
+     )
+end
+```
 
 Optionally, `as`, the name of the attribute containing the nested relations, can be given. The default is `:group`.
 
