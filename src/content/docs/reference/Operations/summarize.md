@@ -25,7 +25,7 @@ rel.project(grouping_attrs)
    .allbut([:nested])
 ```
 
-Let's see how this works step by step. We start with the `supplies` relations (described in the [Overview section](/reference/overview)):
+Let's see how this works step by step. We start with the `supplies` relations (described in the [Overview page](/reference/overview)):
 
 We now want to know, *How many products does each supplier stock, and what is the total quantity of items in stock for each supplier?*.
 

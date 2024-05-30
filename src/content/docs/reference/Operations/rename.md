@@ -13,7 +13,7 @@ The specified attributes must be part of the input relation's header.
 
 ### Examples
 
-*Consult the [Overview section](/reference/overview) for the data model used in this example.*
+*Consult the [Overview page](/reference/overview) for the data model used in this example.*
 
 ```ruby
 suppliers.rename(:sid => :supplier_id).to_a

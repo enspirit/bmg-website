@@ -30,7 +30,7 @@ The specified attributes referenced by the predicate must be part of the input r
 
 ### Examples
 
-*Consult the [Overview section](/reference/overview) for the data model used in these examples.*
+*Consult the [Overview page](/reference/overview) for the data model used in these examples.*
 
 #### With regular predicate
 

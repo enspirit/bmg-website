@@ -44,7 +44,7 @@ If `array: true` is given, then the `as` argument **must** also be given.
 
 ### Examples
 
-*Consult the [Overview section](/reference/overview) for the data model used in these examples.*
+*Consult the [Overview page](/reference/overview) for the data model used in these examples.*
 
 ```ruby
 suppliers.group([:sid, :name, :status], :my_group).to_a

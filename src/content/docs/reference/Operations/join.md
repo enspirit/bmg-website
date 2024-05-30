@@ -21,7 +21,7 @@ The second variant first renames some attributes in right, then uses the renamed
 
 #### Without renaming
 
-*Consult the [Overview section](/reference/overview) for the data model used in this example.*
+*Consult the [Overview page](/reference/overview) for the data model used in this example.*
 
 ```ruby
 parts.join(cities, [:city]).to_a

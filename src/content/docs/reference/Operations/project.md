@@ -15,7 +15,7 @@ The specified attributes must be part of the input relation's header.
 
 ### Examples
 
-*Consult the [Overview section](/reference/overview) for the data model used in this example.*
+*Consult the [Overview page](/reference/overview) for the data model used in this example.*
 
 ```ruby
 suppliers.project([:city]).to_a
