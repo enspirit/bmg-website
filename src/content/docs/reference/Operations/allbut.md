@@ -6,6 +6,14 @@ title: allbut
 rel.allbut([:a, :b, ...])
 ```
 
+### Problem
+
+Remove some attributes from a relation (this might cause some tuples to become duplicates of others and thus be removed).
+
+Example: *What are the different T-shirt variants we stock, if we disregard colors?*
+
+### Description
+
 Identical to [`project`](/reference/Operations/project) except that it keeps all attributes *except* those specified in the argument.
 
 ### Requirements

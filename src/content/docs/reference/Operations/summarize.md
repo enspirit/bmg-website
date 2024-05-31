@@ -7,6 +7,13 @@ rel.summarize([:a, :b, ...], x: :sum, y: :max, ...)
 rel.summarize([:a, :b, ...], x: -> (t,m) { m ? (m + t[:x]) : t[:x] } )
 # TODO: Is the proc version intended as a public API? It's not user friendly.
 ```
+### Problem
+
+Place tuples in groups and calculate aggregate values for each group.
+
+Example: *For every city where we have stores, how big is the total revenue per city?*
+
+### Description
 
 The first argument specifies attributes to group by, the second argument is a hash with attribute names as keys and aggregation operations as values.
 

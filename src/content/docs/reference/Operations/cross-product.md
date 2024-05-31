@@ -6,6 +6,14 @@ title: cross_product
 left.cross_product(right)
 ```
 
+### Problem
+
+Find every combination of tuples from two relations.
+
+Example: *Given these sizes and these colors, what are all the different T-shirt variants?*
+
+### Description
+
 The cross product of two relations is produced by combining every tuple from the left relation with every tuple from the right relation.
 
 The result's header contains all attributes from left plus all attributes from right.

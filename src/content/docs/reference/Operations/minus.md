@@ -6,6 +6,14 @@ title: minus
 left.minus(right)
 ```
 
+### Problem
+
+Given two relations with the same header, remove all of the tuples in one from the other.
+
+Example: *I want all the products except those in the list of discontinued products.*
+
+### Description
+
 The set difference of two relations. The result contains those tuples that are in `left` but not in `right`. 
 
 The result's header is identical with that of the inputs'.

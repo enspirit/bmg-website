@@ -5,6 +5,15 @@ title: rename
 ```ruby
 rel.rename(:a => :x, :b => :y, ...])
 ```
+
+### Problem
+
+Rename one or several attributes.
+
+Example: *I want the product list, but `pid` should be called `product_id` instead.*
+
+### Description
+
 Creates a new relation identical with the input, except with any number of attributes renamed.
 
 ### Requirements

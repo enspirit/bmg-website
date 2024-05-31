@@ -6,6 +6,13 @@ title: join
 left.join(right, [:a, :b, ...])
 left.join(right, :a => :x, :b => :y, ...) 
 ```
+### Problem
+
+Extend tuples from one relation with matching tuples from another relation, by comparing their attributes according to a given criterion. 
+
+Example: *I want all customers along with their addresses.*
+
+### Description
 
 The join of two relations is produced by selecting tuples from left and right relations by one or more matching attributes, and for every match, combine the tuples 
 

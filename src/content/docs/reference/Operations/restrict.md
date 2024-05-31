@@ -10,6 +10,14 @@ rel.restrict(->(t) { t[:a] == "foo" })
 
 Alias: `where`
 
+### Problem
+
+Remove tuples from a relation according to a given criterion. 
+
+Example: *Which are all the products with price less than 500?*
+
+### Description
+
 Creates a new relation by selecting some tuples of the original using a predicate, so that the tuples of the output are a subset of the tuples of the original.
 
 Predicates are instances of the [`predicate` gem](https://github.com/enspirit/predicate), which also handles conversion of predicates to SQL. This means predicates can be created and composed in a flexible and composable way. Read more about creating and composing predicates on the [Predicates](/usage/predicates) page.

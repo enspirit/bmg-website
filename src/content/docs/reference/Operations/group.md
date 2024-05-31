@@ -8,6 +8,14 @@ rel.group([:a, :b, ...], :my_group)
 rel.group([:a, :b, ...], :my_group, array: true)
 ```
 
+### Problem
+
+Place tuples in groups based on common values for some attributes.
+
+Example: *Which are all our stores listed by city, with full details on each store?*
+
+### Description
+
 `group` splits the attributes of the input relation into two sets: those that are specified as the first argument, and all the remaining ones. Let's call the former `grouped-attrs` and the latter `grouping-attrs`.
 
 `group` groups together `grouped-attrs`-tuples from the input, and pairs those groups with the corresponding `grouping-attrs`.
