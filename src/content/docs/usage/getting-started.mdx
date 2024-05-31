@@ -1,7 +1,69 @@
 ---
 title: Getting started
-description: Foo
 sidebar:
   order: 1
 ---
 
+The quickest way to start experimenting with Bmg is to create a simple script and set up a relation.
+
+```ruby title="my_bmg_script.rb"
+require 'bundler/inline'
+
+gemfile do
+  source 'https://rubygems.org'
+  gem 'bmg'
+  gem 'json'
+end
+
+suppliers = Bmg::Relation.new([
+  { sid: "S1", name: "Smith", status: 20, city: "London" },
+  { sid: "S2", name: "Jones", status: 10, city: "Paris"  },
+  { sid: "S3", name: "Blake", status: 30, city: "Paris"  },
+  { sid: "S4", name: "Clark", status: 20, city: "London" },
+  { sid: "S5", name: "Adams", status: 30, city: "Athens" }
+])
+
+by_city = suppliers
+  .exclude(status: 30)
+  .extend(upname: ->(t){ t[:name].upcase })
+  .group([:sid, :name, :upname, :status], :suppliers_in)
+
+puts JSON.pretty_generate(by_city)
+```
+
+This script will output:
+
+```
+[
+  {
+    "city": "London",
+    "suppliers_in": [
+      {
+        "sid": "S1",
+        "name": "Smith",
+        "status": 20,
+        "upname": "SMITH"
+      },
+      {
+        "sid": "S4",
+        "name": "Clark",
+        "status": 20,
+        "upname": "CLARK"
+      }
+    ]
+  },
+  {
+    "city": "Paris",
+    "suppliers_in": [
+      {
+        "sid": "S2",
+        "name": "Jones",
+        "status": 10,
+        "upname": "JONES"
+      }
+    ]
+  }
+]
+```
+
+Here, we created a relation from an array of hashes. Relations can in fact be created using any Enumerable which yields hashes.
