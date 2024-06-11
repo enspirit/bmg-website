@@ -5,9 +5,13 @@ sidebar:
   order: 1
 ---
 
-**Relational algebra** is the fundamental mathematical framework upon which all relational databases are built. These databases are accessed by means of various dialects of SQL, and have highly specialized code to execute SQL as efficiently as possible. They don't use relational algebra under the hood. Nevertheless, relational algebra is the mathematical underpinning of SQL.
+**Relational algebra** is a part of the relational model, a mathematical framework invented in the late 1960s, upon which all relational databases (such as PostgreSQL, MySQL, and SQLite) are built. However, both internally and externally, such databases deviate quite a bit from the relational model.
 
-There are two reasons why you might want to learn more about relational algebra:
+Internally, they don't adhere strictly to relational algebra for querying and optimization. Externally, they all use dialects of the SQL language, which lacks many of the qualities of relational algebra. Nevertheless, the enduring power and popularity of SQL databases mostly derive from their roots in relational algebra.
+
+**Bmg** is an implementation of relational algebra in Ruby. It can be used to query and transform in-memory datasets, which can be very convenient but not a replacement for a proper database system. Bmg can also be used in conjunction an external SQL database, in which case Bmg functions as a convenient and very flexible interface to the underlying database.
+
+There are thus two reasons why you might want to learn more about relational algebra:
 
 1) To gain a deeper understanding of SQL-based databases and make better use of their features
 1) To query and process data with Bmg, using the full power of relational algebra

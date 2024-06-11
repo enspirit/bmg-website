@@ -4,23 +4,22 @@ sidebar:
   order: 3 
 ---
 
-The notion of "relation" in relational database systems is sometimes misunderstood. We often draw Entity Relation diagrams like this one:
+The notion of "relation" in relational database systems is sometimes misunderstood. We often draw Entity-Relation Diagrams like this one:
 
 ```
-    +--------------+                      +----------+
-    | Organization | <---- works for ---- | Employee |
-    +--------------+                      +----------+
+    +----------+                     +--------------+
+    | Employee | ---- works for ---> | Organization |
+    +----------+                     +--------------+
 ```
 TODO: https://code.juliancataldo.com/component/astro-diagram/
 
-Here we have two entities (*Organization* and *Employee*) and one relation (*works for*). However, this idea of a relation does not correspond to relations in relational algebra.
+Here we have two entities (*Employee* and *Organization*) and one relation (*works for*). However, this idea of a relation does not correspond to relations in relational algebra.
 
 ## Binary relations
 
-Consider the idea *is less than*. This is a *binary relation* that involves two natural numbers. To keep things simple, let's consider the set of numbers 1-5.
+Consider the idea *is less than*. This is a *binary relation*. Binary because it is defined over two variables, namely two natural numbers. To keep things simple, let's consider the set of numbers 1-5.
 
-
-##### Is less than
+##### is less than
 |       | 1 | 2 | 3 | 4 | 5 |
 | -     | - | - | - | - | - |
 | **1** | n | y | y | y | y |
@@ -35,7 +34,7 @@ One way of describing this is: *For every pair of numbers 1-5, pick out the ones
 
 ## General relations
 
-A relation doesn't have to deal with only two sets, but can be defined over arbitrarily many elements. Here's an example: **wearing(alice, t-shirt, yellow)**, which expresses that Alice is wearing a yellow T-shirt. Where do the three elements of this relation come from? Presumably they are drawn from three different sets.
+A relation doesn't have to deal with only pairs of values, but can be defined over tuples of arbitrarily many elements. Here's an example: **wearing(alice, t-shirt, yellow)**, which expresses that Alice is wearing a yellow T-shirt. Where do the three elements of this relation come from? Presumably they are drawn from three different sets.
 
 **People = \{alice, bernard, mariam,...\}**
 
@@ -52,28 +51,27 @@ Now we can see how relations are represented in relational databases:
 | bernard | sweater | red    |
 | mariam  | hat     | blue   |
 
-This is a table which describes a relation (**wearing**) between the three sets **People**, **Garments**, and **Colors**. The relation picks out those combinations of one value from each set that fulfills some criterion, in this case the criterion: *the **person** is wearing a **garment** with a certain **color***. 
+This is a table which describes a relation (**wearing**) over the three sets **People**, **Garments**, and **Colors**. The relation picks out those combinations of one value from each set that fulfills some criterion, in this case the criterion: *the **person** is wearing a **garment** with a certain **color***. 
 
 This is what a relation means in a relational database. A table is a relation because it picks out those combinations of `person`, `garment`, and `color` for which the relation **wearing** holds.
 
-
 ## Intensional and extensional definitions
 
-There are two fundamental ways of describing a relation. The first one is called **intensional** and is essentially a predicate. For example, for our first example we could simply use the formula *x < y* to describe which pairs of *(x, y)* fit the relation *is less than*. Another common way to write an intensional relation is to use *set builder notation*, which has a close cousin in *set comprehensions* in some programming languages. For example, in Python we could represent our *less than*-relation over integers 1-5 with this set comprehension:
+There are two fundamental ways of defining a relation. The first one is called **intensional** and is essentially a predicate. For example, in our first example we could simply use the formula *x < y* to describe which pairs of *(x, y)* fit the relation *is less than*. Another common way to write an intensional relation is to use *set builder notation*, which has a close cousin in *set comprehensions* in some programming languages. For example, in Python we could represent our *less than*-relation over integers 1-5 with this set comprehension:
 
 ```python
-# range(1,6) specifies numbers 1-5
+# note: range(1,6) specifies numbers 1-5
 {(x, y) for x in range(1,6) for y in range(1,6) if x < y}
 # => {(2, 4), (1, 2), (3, 4), (1, 5), (1, 4), (2, 3), (4, 5), (2, 5), (1, 3), (3, 5)}
 ```
 
-The second way is called **extensional** and consists in simply listing the combinations of elements for which the relation holds. This is what we did for both *is less than** and *wearing* in the preceding sections, and this is also precisely what we do in database tables.
+The second way is called **extensional** and consists in simply listing the combinations of elements for which the relation holds. This is what we did for both *is less than* and *wearing* in the preceding sections, and it is also what we do in database tables.
 
-Both intensional and extensional definitions define a subset of the Cartesian product of the sets involved in the relation. In our first example, we have a set **S** = \{1, 2, 3, 4, 5\}. The Cartesian product **S⨯S** is: \{(1, 1), (1,2), ..., (2, 1), (2, 2), ..., (5, 5)\}, and the *less than* relation includes a subset of those pairs.
+Both intensional and extensional definitions define a subset of the *Cartesian product* of the sets involved in the relation. In our first example, we have a set **S** = \{1, 2, 3, 4, 5\}. The Cartesian product **S⨯S** is: `{(1, 1), (1,2), ..., (2, 1), (2, 2), ..., (5, 5)}`, and the *less than* relation consists of a subset of those pairs.
 
-Likewise, the Cartesian product of the three sets **People**, **Garments**, and **Colors**, consists of 3-tuples: \{(alice, t-shirt, red), (alice, sweater, red), ..., (mariam, hat, yellow)\}, and the relation *wearing* includes a subset of those 3-tuples.
+Likewise, the Cartesian product of the three sets **People**, **Garments**, and **Colors**, consists of 3-tuples: `{(alice, t-shirt, red), (alice, sweater, red), ..., (mariam, hat, yellow)}`, and the relation *wearing* consists of a subset of those 3-tuples.
 
-Tables in relational databases are extensional definitions of relations: they list the tuples for which a certain relation holds. On the other hand, views in relational databases are intensional definitions of relations: they introduce additional predicates on top of already defined tables (or other views).
+Tables in relational databases are extensional definitions of relations: they list the tuples for which a certain relation holds. Views in relational databases are intensional definitions of relations: they define new relations by introducing additional predicates on top of already defined tables (or other views).
 
 :::note
 From a purist point of view, it is more correct to name database tables eg `user` rather than `users`, because a table is **a relation** rather than a list of things. But then again, an extensional definition of the `user` relation is precisely... a list of users.
@@ -81,12 +79,31 @@ From a purist point of view, it is more correct to name database tables eg `user
 
 ## On duplicate rows
 
-TODO: Why duplicate tuples is nonsense
+Fans of the relational model often criticize the fact that SQL databases allow for duplicate rows. This is not just a matter of taste, but goes back to the very concept of a relation we have just explained: an extensional definition of a relation lists thoses tuples for which the relation holds. For example, we include `(1, 2)` in the *is less than* relation. Having done that, what would it mean to include `(1, 2)` one more time? Would it add anything? Would it be even more true that 1 is less than 2? Of course not, and that is the reason why duplicate tuples simply make no sense.
+
+This might sound like a somewhat philosophical point, but it has very practical implications. As we discussed in the [section on algebra](/algebra), one of the distinguishing features of algebraic structures is that operations adhere to simple laws like commutativity or associativity. This is what makes algebra the supreme example of composability, which is what programmers always chase but rarely achieve.
+
+As will become apparent later on, allowing duplicate tuples in relations leads to unexpected results and makes it harder to reason about what queries mean and how they compose.
+
+:::note
+As a very simple example, consider this SQL query:
+
+```sql
+SELECT person.name, person.email, department.name as dept_name
+FROM person
+JOIN project ON project.owner_id = person.id
+JOIN department ON department.id = person.department_id 
+```
+
+The intention here would seem to be: *give me the name, email address, and department of each person who is the owner of a project*. But this query might return the same row multiple times, if the person is the owner of more than one project.
+
+If you *did* want to eg send several emails to the same person, one for each project they own, you would naturally include `project.name as proj_name` or somesuch in the `SELECT` clause. In that query, you would get several rows for the same person, but they would differ in having different `proj_name`. Allowing duplicate rows obscures this important difference.
+:::
 
 ## The power of extensions
 
 In contrast to the pure and elegant characteristics of algebraic structures, extensional definitions of relations are entirely *ad hoc*, and this is precisely what makes them so useful. The real world is full of random and contingent facts which can't be described by a neat predicate. Describing relations by means of simpe lists is a way of having it both ways: we get the neat mathematical precision of working with relations, but we don't have to be neat when we put together those relations.
 
-In closing, let us revisit the diagram from the top of this page. It is now clear that the entities *Organization* and *Employee* from the relational point of view are both relations: they would each be represented by a table which picks out tuples that together describe an organization (name, address, etc) or an employee (name, title, etc). Moreover, the *works for* arrow, which in the Entity-Relation diagram shows a relation, could *also* be represented as a relation in a database, ie be represented by a separate table (or view). In general, there is no 1-1 mapping between ER diagrams and database designs. Understanding this is quite important in order to start thinking *in relations* rather than in terms of entities or objects.
+In closing, let us revisit the diagram from the top of this page. It is now clear that the entities *Organization* and *Employee* are both, from the relational point of view, relations: they would each be represented by a table which picks out tuples that together describe an organization (name, address, etc) or an employee (name, title, etc). Moreover, the *works for* arrow, which in the Entity-Relation Diagram shows a relation, might also be represented as a table (or view) in a database, but it could also simply be represented by a so-called foreign key. In general, there is no 1-1 mapping between ER diagrams and database designs. Understanding this is quite important in order to start thinking *in relations* rather than in terms of entities or objects.
 
 Now that we have a basic understanding of the terms Algebra and Relation, let's turn to the wonders of Relational Algebra.

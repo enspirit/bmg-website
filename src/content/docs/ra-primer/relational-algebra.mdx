@@ -62,13 +62,13 @@ The result is a new relation:
 ]
 ```
 
-Note that **Union** is only possible between relations which are union-compatible, ie their tuples have the same number of attributes, with the same names (and types, also called *domains*).
+Note that **Union** is only possible between relations which are *union-compatible*, ie their tuples have the same number of attributes, with the same names (and types, also called *domains*).
 
-There is a problem here, of course, because Stanisław is now included twice. A very important fact about relations is that they are *sets*, in the mathematical sense, and therefore never contain more than one instance of each tuple. But since the two Stanisław tuples are different (because they do not have the same value for `yearsKnown`) they are both included.
+There is a problem here, of course, because Stanisław is now included twice. As we have seen, a very important fact about relations is that they are *sets*, in the mathematical sense, and therefore never contain more than one instance of each tuple. But since the two Stanisław tuples are different (because they do not have the same value for `yearsKnown`) they are both included.
 
 We would like to get rid of the `yearsKnown` attribute, and to do that we use another operator: **Project** (**π**), which lets us select which attributes we want from a relation.
 
-```
+```apl
 π(name)(MyFriends ∪ YourFriends)
 ```
 
@@ -97,7 +97,7 @@ The corresponding query in SQL would **not** remove the duplicate tuple, because
 
 Note that we could rewrite this expression as:
 
-```
+```apl
 π(name)(MyFriends) ∪ π(name)(YourFriends)
 ```
 
@@ -110,7 +110,7 @@ union(
 )
 ```
 
-This is not very interesting in itself, but gives a first taste of the algebraic flavor of relational algebra. **Project** *distributes over* **Union** in the same way that multiplication distributes over addition: *a(b+c) = ab + ac*.
+Here, we get a first taste of the algebraic flavor of relational algebra. **Project** *distributes over* **Union** in the same way that multiplication distributes over addition: *a(b+c) = ab + ac*.
 
 ## Tables, headers and rows 
 
@@ -124,27 +124,40 @@ Let's now move on from JSON and settle on the standard way of talking about rela
 
 The *header* of the table defines the names of the attributes and their domains (or types). Each row represents a tuple and each column lists one attribute of the tuples.
 
+:::note
+To keep things more compact, we will usually not include the domains (types) of attributes in headers, but they are always implied.
+:::
+
 From now on, we will talk about tables and relations interchangeably, and likewise with rows and tuples.
 
 Every operation of relational algebra takes one or two relations as input and produces a new relation. The new relation will sometimes have the same header as the input relation(s), but more often it will produce a new header. Of the examples we have seen above, **Union** preserves the headers of the input relations, whereas the header of **Project** will only contain the attributes that were specified.
 
 ## Common friends
 
-To illustrate a couple more of the fundamental operators of relational algebra, let's say we want to answer this question: For those friends that we have in common, how long have I and you known that person?
+To illustrate a couple more of the fundamental operators of relational algebra, let's say we want to answer this question: *For those friends that we have in common, how long have I and you known that person?*
 
 We can see by glancing at the JSON above that Stanisław is the only friend we have in common, and the number of years we have known him is 15 (for me) and 2 (for you). But how can we use relational algebra to get the same result?
 
-TODO: add more explanations below
+The first idea that comes to mind might be to combine the two relations (using **Union**) and then somehow selecting those tuples we have in common. But how would we do that? The tuples would not be identical, since the **YearsKnown** attribute will be different (that's the whole point), and if they *were* identical, only one would show up since tuples in a relation are unique.
 
-Can't just select the tuples that are the same between both relations, since the YearsKnown attribute will be different.
+We need a way to combine tuples so that my attributes and your attributes end up in the same tuple. Once we have done that, we can filter out those tuples that represent common friends. Let's see how to do that.
 
 #### Rename
 
+The first problem is that the attributes in both relations have the same names (namely **Name** and **YearsKnown**). Since attribute names must be unique, we start by usng the **Rename** operator, denoted **ρ**. **ρ(X/Y)** means that we rename the attribute **Y** to **X**. 
+
 ```apl
-MyFriends′ = ρ(Name1,YearsKnown1)(MyFriends)
-YourFriends′ = ρ(Name2,YearsKnown2)(YourFriends)
+MyFriends′ = ρ(Name1/Name,YearsKnown1/YearsKnown)(MyFriends)
+YourFriends′ = ρ(Name2/Name,YearsKnown2/YearsKnown)(YourFriends)
 ```
 
+Pseudocode:
+
+```haskell
+MyFriends' = rename(MyFriends, Name => Name1, YearsKnown => YearsKnown1)
+```
+
+##### MyFriends'
 | Name1 | YearsKnown1 |
 | --------  | --------|
 | Emily     | 10      |
@@ -153,12 +166,21 @@ YourFriends′ = ρ(Name2,YearsKnown2)(YourFriends)
 
 #### Cross product 
 
+Now that we have two relations with no attribute names in common, we can combine their tuples using the **Cross product** operation, denoted **×**. This operations takes every tuple from its first operand and combines each with every tuple from the other operand. So if, for example, the operands have 5 tuples each, the resulting relation will have 25 tuples. The result will also have all attributes from the two input relations.
+
 ```apl
 C = MyFriends′ × YourFriends′
 ```
 
+Pseudocode:
+
+```haskell
+C = cross_product(MyFriends', YourFriends') 
+```
+
 Since every row of the first relation is combined with every row of the second relation, the resulting relation contains 12 (4*3) tuples:
 
+##### C
 | Name1 | YearsKnown1 | Name2 | YearsKnown2 |
 | ----- | ----------- | ----- | ----------- | 
 | Emily     | 10      | Aisha | 35          |
@@ -170,24 +192,59 @@ Since every row of the first relation is combined with every row of the second r
 | Ali       | 27      | Belle | 17          |
 | Ali       | 27      | Stanisław | 2       |
 
-#### Restrict (name1 = name 2).
+Now that we have every possible combination of tuples, we can pick out the ones we are actually interested in, which are those in which **Name1** and **Name2** are identical, because those represent the friends we have in common.
 
-Known as Select in RA, but we prefer Restrict to avoid confusion with SQL's `SELECT`. (Most closely related to `WHERE`.)
+#### Restrict 
+
+To select tuples we are interested in, we use the **Restrict** operation.
+
+:::note
+In relational algebra texts, this operation is usually called **Select**, but we prefer **Restrict** to avoid confusion with SQL:s `SELECT` clause. The SQL analogue to **Restrict** is `WHERE`.
+:::
 
 ```apl
-S = σ(Name1 = Name2)(C)
+CommonFriends = σ(Name1 = Name2)(C)
 ```
 
+Pseudocode:
+```haskell
+CommonFriends = restrict(C, Name1 = Name2)
+```
+
+##### CommonFriends
 | Name1 | YearsKnown1 | Name2 | YearsKnown2 |
 | ----- | ----------- | ----- | ----------- | 
 | Stanisław | 15      | Stanisław| 2        |
 
+And here we have our single common friend.
+
 #### Project
 
+All that remains to do is to project the two attributes we want: the amount of years each of us have known our common friend:
+
 ```apl
-P = π(YearsKnown1,YearsKnown2)(S)
+Years = π(YearsKnown1,YearsKnown2)(CommonFriends)
 ```
 
+Pseudocode:
+```haskell
+Years = project(CommonFriends, [YearsKnown1, YearsKnown2]
+```
+
+##### Years
 | YearsKnown1 | YearsKnown2 |
 | ----------- | ----------- | 
 | 15          | 2           |
+
+
+## Bmg version
+
+In Bmg, this whole transformation would look like this:
+
+```ruby
+my_friends2 = my_friends.rename(:name => :name1, :years_known => :years_known2)
+your_friends2 = your_friends.rename(:name => :name2, :years_known => :years_known2)
+my_friends2.cross_product(your_friends2)
+           .restrict(Predicate.eq(:name1, :name2))
+           .project([:years_known1, :years_known2)
+```
