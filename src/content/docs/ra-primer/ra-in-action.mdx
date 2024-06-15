@@ -1,5 +1,5 @@
 ---
-title: RA in action 
+title: Relational Algebra in Action
 sidebar:
   order: 5
 ---
@@ -9,9 +9,9 @@ In the previous section, we introduced the mathematical notation for some of the
 In this section, we will go through a few slightly more advanced uses of relational algebra to get a feel for how it works. Rather than introducing more mathematical notation, we will start using Bmg for our examples.
 
 :::note
-Although we we use Bmg in this section and the next one, we are only interested in presenting the fundamentals of relational algebra. The code shown here does not represent best practices for using Bmg!
+Although we use Bmg in this section and the two remaining ones, we are only interested in presenting the fundamentals of relational algebra. The code shown here does not represent best practices for using Bmg!
 
-Furthermore, we only consider the basic form of relational algebra here, without extensions like aggregations or outer joins. Those are described in [Advanced features](TODO), [SQL Interface](TODO), and in the [Operations Reference](TODO).
+Furthermore, we only consider the basic form of relational algebra here, without extensions like aggregations or outer joins. Those are described in [Advanced features](TODO), [SQL Interface](TODO), and in the [Operations Reference](http://localhost:4321/reference/overview/).
 :::
 
 ## Preliminaries
@@ -84,9 +84,11 @@ sk_films = films.restrict(director: "Stanley Kubrik")
 | Dr. Strangelove | 1964 | Stanley Kubrik |
 | The Shining | 1980 | Stanley Kubrik |
 
-Next, we pick the roles associated with these films. To do that, we must use another central operator: **Join**. If you have any experience at all working with SQL or relational databases, you will be familiar with joins, but it might be worth bracketing that experience, because learning about **Join** from the ground up could give you another perspective.
+Next, we pick the roles associated with these films. To do that, we use another central operator: **Join**. If you have any experience at all working with SQL or relational databases, you will be familiar with joins, but it might be worth bracketing that experience, because learning about **Join** from the ground up could give you another perspective.
 
-**Join** glues together tuples from two relations, just like **Cross product**, but also applies a condition on which tuples to include in the new relation, by matching attributes from the first relation with attributes on the second one. In this case, we want rows where the **name** attribute from `sk_films` equals the **film_name** attribute from `roles`:
+**Join** glues together tuples from two relations, just like **Cross product**, but also applies a condition on which tuples to include in the new relation, by comparing, for each row, attributes from the first relation with attributes from the second one.
+
+In this case, we want rows where the **name** attribute from `sk_films` equals the **film_name** attribute from `roles`:
 
 ```ruby
 sk_roles = roles.join(sk_films, :film_name => :name)
@@ -97,7 +99,7 @@ sk_roles = roles.join(sk_films, :film_name => :name)
 | Dr. Strangelove | 1964 | Stanley Kubrik | Peter Sellers | Dr. Strangelove |
 | The Shining | 1980 | Stanley Kubrik | Shelley Duval | Wendy Torrance |
 
-The new header contains all the attributes from both relations, except that **name** from `films` and **film_name** from `role` have been merged. That makes sense, because what we have done is precisely to pick out those tuples where one equals the other.
+The new header contains all the attributes from both relations, except that **name** from `films` and **film_name** from `role` have been merged. That makes sense, because what we have done is precisely to pick out those tuples where one equals the other. To include both would be redundant.
 
 The only attribute we need from this relation is `actor_name` so let's next perform a `project`:
 
@@ -109,6 +111,10 @@ sk_roles2 = sk_roles.project([:actor_name])
 | ---------- |
 | Dr. Strangelove |
 | Wendy Torrance |
+
+:::note
+This illustrates an important and very common pattern. Although **Join** glues together tuples, very often we are not really interested in those joined tuples. Instead, we often use **Join** just like in this example, to filter one relation (`roles`) by the existence of corresponding tuples in another relation (`sk_films`).
+:::
 
 And finally, we perform another **Join** to get the birth years:
 
@@ -137,7 +143,7 @@ Consider these two relations:
 | 11 | 12 | 7  |
 | 15 | 16 | 13 |
 
-A **Natural join** produces:
+A **Natural join** compares any attributes with the same name for equality. In this case, it produces:
 
 | X1 | Y1 | Z  | X2 | Y2 |
 | -- | -- | -- | -- | -- |
@@ -197,13 +203,13 @@ roles.cross_product(sk_films2)
      ])
 ```
 
-Again, the point here is to demystify the **Join** operation and get a clear sense of the algebraic way of combining operations. Just as **Join** can be defined by simpler operations, we can use Bmg to create our own composable building blocks for data querying and transformation.
+Again, the point here is to demystify the **Join** operation and get a clear sense of the algebraic way of combining operations. Just as **Join** can be defined by simpler operations, we can use relations algebra to create our own composable building blocks for data querying and transformation.
 
 ## Actors who appeared in the same film
 
-For our next exercise, let's find pairs of actors who appeared in the same film. Taking a quick look at the **Role** relation at the beginning of this section, we immediately see that there is only one film that appears twice (namely *Popeye*), so we expect only one pair of actors.
+For our next exercise, let's ask: *Which pairs of actors appeared in the same film?* Taking a quick look at the **Role** relation at the beginning of this section, we immediately see that there is only one film that appears twice (namely *Popeye*), so we expect only one pair of actors.
 
-To get our answer, we need to join the **Role** relation with itself. To do that, we create a new relation that is exactly the same as **Role** but with `actor_name` renamed to `actor_name2`, because we need both names in our output relation. The last step is to project only `actor_name` and `actor_name2`.
+To get our answer, we need to join the **Role** relation with itself. To do that, we first create a new relation that is exactly the same as **Role** but with `actor_name` renamed to `actor_name2`, because we need both actors' names in our output relation. The last step is to project only `actor_name` and `actor_name2`.
 
 ```ruby
 roles2 = roles.rename(:actor_name => :actor_name2)
@@ -248,25 +254,139 @@ roles2.join(roles, [:film_name])
 
 ## Who knows who?
 
-1. Each Actor-Director pair (actor1, director1)
-2. Add to each tuple other actors who worked with the same director (actor2) - can't be same as actor1
-3. Add any director 
+For our last example in this section, we will consider the following question: *Which actors have worked with the same director (even if not in the same films)?* The answer will take the form of a table like this:
 
+| actor1 | director | actor2 |
+| ------ | -------- | ------ |
+| Robin Williams | Robert Altman | Jennifer Jason Leigh |
+| Shelley Duval | Robert Altman | Jennifer Jason Leigh |
+| ... | ... | ... |
 
+To get started, we'll create a relation containing only actors:
 
+```ruby
+actors = roles.project([:actor_name])
+              .rename(:actor_name => :actor1)
+```
+| actor1 |
+| ------ |
+| Jennifer Jason Leigh |
+| Peter Sellers |
+| Robin Williams |
+| Shelley Duval |
 
+(This might seem like an unnecessary and inefficient step, but it will make things more streamlined later on.)
 
+Next, we want to pair each actor with every director they've worked with (according to our small database). To do that, we join the `actors` relation with `roles`, to get film names, and then do another join with the `films` relation to get the directors' names, then keep only the actor and director attributes:
 
+```ruby
+friends = actors.join(roles, :actor1 => :actor_name)
+                .join(films, :film_name => :name)
+                .project([:actor1, :director])
+```
 
+| director | actor1 |
+| -------- | ------ |
+| Robert Altman | Jennifer Jason Leigh |
+| Jane Campion | Jennifer Jason Leigh |
+| ... | ... |
 
+Finally, we use *this* relation to find other actors who worked with the same director. Again, we must use the `roles` and `films` relations to link directors and actors, but this time we do the traversal in the other direction, starting with `films`. Like with our previous example, we make a restriction that the two actors are not the same, and cannot occur together twice (in reverse order), by using the *less than* predicate:
 
+```ruby
+friends = friends.join(films, :director => :director)
+                 .join(roles, :name => :film_name)
+                 .project([:actor1, :director, :actor_name])
+                 .rename(:actor_name => :actor2)
+                 .restrict(Predicate.lt(:actor1, :actor2))
+```
 
+| actor2 | director | actor1 |
+| ------ | -------- | ------ |
+| Robin Williams | Robert Altman | Jennifer Jason Leigh |
+| Shelley Duval | Robert Altman | Jennifer Jason Leigh |
+| Shelley Duval | Stanley Kubrik | Peter Sellers |
+| Shelley Duval | Robert Altman | Robin Williams |
 
+### A Friend of a Friend
 
+Now, let's ramp this up a bit. What if we wanted to make this chain of who-knows-who longer, and include in each tuple actors one more degree removed. That is, we want tuples like this:
 
+| actor3 | director2 | actor2 | director1 | actor1 |
+| ------ | --------- | ------ | --------- | ------ |
+| Peter Sellers | Stanley Kubrik | Shelley Duval | Robert Altman | Jennifer Jason Leigh |
+| ... | ... | ... | ... | ... |
 
+We already have a solution for the first degree of separation ("Who worked with the same director?"). How can we extend this solution to handle our new requirement?
 
+With Bmg, as we have mentioned before, it's trivial to extract reusable algebraic transformations. This is partly because we have the power of a full programming language (Ruby) at our disposal, but the key enabling factor is the modular nature of relational algebra itself.
 
+Let's start by rewriting what we did above using a couple of methods:
 
+```ruby
+actors = roles.project([:actor_name])
+              .rename(:actor_name => :actor1)
 
+def add_director(rel, from_actor, name, films, roles)
+  rel.join(roles, from_actor => :actor_name)
+     .join(films, :film_name => :name)
+     .allbut([:film_name, :name, :production_year])
+     .rename(:director => name)
+end
+
+def add_actor(rel, from_director, name, films, roles)
+  rel.join(films, from_director => :director)
+     .join(roles, :name => :film_name)
+     .allbut([:film_name, :name, :production_year])
+     .rename(:actor_name => name)
+end
+
+friends = add_director(actors, :actor1, :director1, films, roles)
+friends = add_actor(friends, :director1, :actor2, films, roles)
+friends = friends.restrict(Predicate.lt(:actor1, :actor2))
+```
+
+| actor2 | director | actor1 |
+| ------ | -------- | ------ |
+| Robin Williams | Robert Altman | Jennifer Jason Leigh |
+| ... | ... | ... |
+
+:::note
+[`allbut`](/reference/operations/allbut) is the opposite of `project` -- it keeps only those attributes that are *not* listed in the arguments.
+:::
+
+Without going into all the details, this is a slightly modified version of what we did before. Each method adds new actors or directors to the relation that is passed in, then removes attributes we are not interested in, and finally renames the new attribute.
+
+With this in hand, it is easy to extend our query:
+
+```ruby
+friends = add_director(actors, :actor1, :director1, films, roles)
+friends = add_actor(friends, :director1, :actor2, films, roles)
+friends = add_director(friends, :actor2, :director2, films, roles)
+friends = add_actor(friends, :director2, :actor3, films, roles)
+
+friends = friends.restrict(
+  Predicate.dsl {
+    lt(:actor1, :actor3) &
+    neq(:actor1, :actor2) &
+    neq(:actor2, :actor3)
+  }
+)
+```
+
+| actor3 | director2 | actor2 | director1 | actor1 |
+| ------ | --------- | ------ | --------- | ------ |
+| Shelley Duval | Robert Altman | Robin Williams | Robert Altman | Jennifer Jason Leigh |
+| Robin Williams | Robert Altman | Shelley Duval | Robert Altman | Jennifer Jason Leigh |
+| Peter Sellers | Stanley Kubrik | Shelley Duval | Robert Altman | Jennifer Jason Leigh |
+| Robin Williams | Robert Altman | Shelley Duval | Stanley Kubrik | Peter Sellers |
+| Shelley Duval | Robert Altman | Jennifer Jason Leigh | Robert Altman | Robin Williams |
+
+Like before, the final `restrict` makes sure the "beginning" and "end" of the chain are ordered, to exclude tuples that are identical but in reverse order. However, we only impose the condition that `actor1` and `actor2` are *different* not ordered, and likewise for `actor2` and `actor3`. Otherwise we would have excluded valid tuples.
+
+From the resulting relation, we can for example learn that:
+
+> Peter Sellers and Jennifer Jason Leigh are related in that Sellers worked with Stanley Kubrik, who also worked with Shelley Duval, who in turn worked with Robert Altman, who also worked with Sellers!
+
+Extending our query required only two invokations of the extracted methods, and a modification of the final `restrict`. This kind of modularity is in general impossible to achieve in SQL, unless you succumb to concatenating query strings. This might seem like an unfair comparison, since we are using a general-purpose programming language. However, even [Object-Relational Mappings](https://en.wikipedia.org/wiki/Object%E2%80%93relational_mapping) and other database wrappers have problems expressing this kind of composition in a natural way. As we have noted earlier, this is because they use SQL as the underlying query model, and SQL is inherently poor at composition.
 
