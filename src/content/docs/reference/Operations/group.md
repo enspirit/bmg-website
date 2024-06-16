@@ -46,7 +46,7 @@ If the option `array: true` is passed, the nested relations will be turned into 
 
 ### Requirements
 
-The specified attributes must be part of the input relation's header.
+The specified attributes must be part of the input relation's heading.
 
 If `array: true` is given, then the `as` argument **must** also be given.
 

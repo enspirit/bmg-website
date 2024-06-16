@@ -34,7 +34,7 @@ In some contexts it can also be convenient to create a predicate which selects e
 
 ### Requirements
 
-The specified attributes referenced by the predicate must be part of the input relation's header.
+The specified attributes referenced by the predicate must be part of the input relation's heading.
 
 ### Examples
 

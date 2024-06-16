@@ -7,7 +7,7 @@ left.union(right)
 ```
 ### Problem
 
-Given two relations with the same header, create a relation with all tuples from both relations.
+Given two relations with the same heading, create a relation with all tuples from both relations.
 
 Example: *I want the list of all managers plus all employees.*
 
@@ -15,11 +15,11 @@ Example: *I want the list of all managers plus all employees.*
 
 The set union of two relations. The result contains all tuples from `left` as well as all tuples from `right`. 
 
-The result's header is identical with that of the inputs'.
+The result's heading is identical with that of the inputs'.
 
 ### Requirements
 
-The headers of the two relations must be identical.
+The headings of the two relations must be identical.
 
 ### Example
 

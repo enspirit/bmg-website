@@ -112,7 +112,7 @@ union(
 
 Here, we get a first taste of the algebraic flavor of relational algebra. **Project** *distributes over* **Union** in the same way that multiplication distributes over addition: *a(b+c) = ab + ac*.
 
-## Tables, headers and rows 
+## Tables, headings and rows 
 
 Let's now move on from JSON and settle on the standard way of talking about relations. As we have seen, a relation is a set of tuples, and those tuples must all share the same number of attributes, which must have the same names and domains. The usual way of visualizing this is as a table:
 
@@ -122,15 +122,15 @@ Let's now move on from JSON and settle on the standard way of talking about rela
 | Stanisław     | 15                   |
 | ...           | ...                  |
 
-The *header* of the table defines the names of the attributes and their domains (or types). Each row represents a tuple and each column lists one attribute of the tuples.
+The *heading* of the table defines the names of the attributes and their domains (or types). Each row represents a tuple and each column lists one attribute of the tuples.
 
 :::note
-To keep things more compact, we will usually not include the domains (types) of attributes in headers, but they are always implied.
+To keep things more compact, we will usually not include the domains (types) of attributes in headings, but they are always implied.
 :::
 
 From now on, we will talk about tables and relations interchangeably, and likewise with rows and tuples.
 
-Every operation of relational algebra takes one or two relations as input and produces a new relation. The new relation will sometimes have the same header as the input relation(s), but more often it will produce a new header. Of the examples we have seen above, **Union** preserves the headers of the input relations, whereas the header of **Project** will only contain the attributes that were specified.
+Every operation of relational algebra takes one or two relations as input and produces a new relation. The new relation will sometimes have the same heading as the input relation(s), but more often it will produce a new heading. Of the examples we have seen above, **Union** preserves the headings of the input relations, whereas the heading of **Project** will only contain the attributes that were specified.
 
 ## Common friends
 

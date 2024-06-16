@@ -8,7 +8,7 @@ left.minus(right)
 
 ### Problem
 
-Given two relations with the same header, remove all of the tuples in one from the other.
+Given two relations with the same heading, remove all of the tuples in one from the other.
 
 Example: *I want all the products except those in the list of discontinued products.*
 
@@ -16,11 +16,11 @@ Example: *I want all the products except those in the list of discontinued produ
 
 The set difference of two relations. The result contains those tuples that are in `left` but not in `right`. 
 
-The result's header is identical with that of the inputs'.
+The result's heading is identical with that of the inputs'.
 
 ### Requirements
 
-The headers of the two relations must be identical.
+The headings of the two relations must be identical.
 
 ### Example
 

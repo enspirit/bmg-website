@@ -18,7 +18,7 @@ Creates a new relation identical with the input, except with any number of attri
 
 ### Requirements
 
-The specified attributes must be part of the input relation's header.
+The specified attributes must be part of the input relation's heading.
 
 ### Examples
 

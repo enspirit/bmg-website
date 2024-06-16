@@ -16,11 +16,11 @@ Example: *Given these sizes and these colors, what are all the different T-shirt
 
 The cross product of two relations is produced by combining every tuple from the left relation with every tuple from the right relation.
 
-The result's header contains all attributes from left plus all attributes from right.
+The result's heading contains all attributes from left plus all attributes from right.
 
 ### Requirements
 
-The headers of the two relations must not overlap, ie they can have no attributes with the same names.
+The headings of the two relations must not overlap, ie they can have no attributes with the same names.
 
 ### Example
 

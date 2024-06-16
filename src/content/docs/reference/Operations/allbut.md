@@ -18,7 +18,7 @@ Identical to [`project`](/reference/Operations/project) except that it keeps all
 
 ### Requirements
 
-The specified attributes must be part of the input relation's header.
+The specified attributes must be part of the input relation's heading.
 
 ### Examples
 

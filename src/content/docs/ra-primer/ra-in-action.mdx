@@ -56,7 +56,7 @@ In what follows, we will work out some queries for the following three relations
 In the tables below, we won't repeat the domain of the attributes, ie `String`/`Integer`.
 
 :::note[Remember]
-A **relation** can be viewed as a **table**. The table contains any number of **rows**/**tuples**, and also has an associated **header** which describes the **attributes** of the tuples. A relation *can not* contain any duplicate tuples.
+A **relation** can be viewed as a **table**. The table contains any number of **rows**/**tuples**, and also has an associated **heading** which describes the **attributes** of the tuples. A relation *can not* contain any duplicate tuples.
 :::
 
 In Bmg, we can create these relations directly:
@@ -99,7 +99,7 @@ sk_roles = roles.join(sk_films, :film_name => :name)
 | Dr. Strangelove | 1964 | Stanley Kubrik | Peter Sellers | Dr. Strangelove |
 | The Shining | 1980 | Stanley Kubrik | Shelley Duval | Wendy Torrance |
 
-The new header contains all the attributes from both relations, except that **name** from `films` and **film_name** from `role` have been merged. That makes sense, because what we have done is precisely to pick out those tuples where one equals the other. To include both would be redundant.
+The new heading contains all the attributes from both relations, except that **name** from `films` and **film_name** from `role` have been merged. That makes sense, because what we have done is precisely to pick out those tuples where one equals the other. To include both would be redundant.
 
 The only attribute we need from this relation is `actor_name` so let's next perform a `project`:
 
@@ -157,7 +157,7 @@ In essence, the idea is: **Cross product** + **Restrict** -- first do a **Cross 
 
 **1. Rename attributes**
 
-We let the first relation be intact, and change `Z` in the second one to `Z2`, so it now has the header:
+We let the first relation be intact, and change `Z` in the second one to `Z2`, so it now has the heading:
 
 | X2 | Y2 | Z2 |
 | -- | -- | -- |

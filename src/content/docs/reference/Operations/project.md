@@ -14,13 +14,13 @@ Example: *What are the different T-shirt variants we stock, if we only consider 
 
 ### Description
 
-Creates a new relation with a header whose attributes is a subset of that of the original.
+Creates a new relation with a heading whose attributes is a subset of that of the original.
 
 To understand the name, think of a three-dimensional object casting a shadow on a two-dimensional plane. The shadow preserves some of the object's shape. It is a *projection* of the three-dimensional object. In the same way, the `project` operation reduces the dimensionality of a relation.
 
 ### Requirements
 
-The specified attributes must be part of the input relation's header.
+The specified attributes must be part of the input relation's heading.
 
 ### Examples
 

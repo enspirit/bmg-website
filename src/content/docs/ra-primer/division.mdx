@@ -44,12 +44,12 @@ We can get **R1** by dividing **R3** by **R2**, and vice versa. In other words: 
 
 Let's introduce a bit of terminology: In this example, **R3** is the *dividend* which we divide by a *divisor* to get a *quotient*. We may note a few things about the divisor and the quotient:
 
-1. Both the divisor and the quotient can have one or more attributes in their header
-1. The headers of the divisor and quotient must each be a subset of the header of the dividend, and they may not overlap
-1. Thus, the header of the quotient consists of exactly those attributes of the dividend that are not in the divisor
+1. Both the divisor and the quotient can have one or more attributes in their heading
+1. The headings of the divisor and quotient must each be a subset of the heading of the dividend, and they may not overlap
+1. Thus, the heading of the quotient consists of exactly those attributes of the dividend that are not in the divisor
 1. The tuples in the quotient are simply what you get if you project its attributes from the divisor
 
-In this example, we could get the quotient of **R3 ÷ R1** by noticing that the quotient's header has a single attribute (`color`), which we get by removing the attributes of **R1** from the attribute list of **R3**. Using Bmg, we can get the quotient like this: `r.project([:color])` and since tuples in a relation are unique, with no duplicates, this will yield exactly **R2** as shown above.
+In this example, we could get the quotient of **R3 ÷ R1** by noticing that the quotient's heading has a single attribute (`color`), which we get by removing the attributes of **R1** from the attribute list of **R3**. Using Bmg, we can get the quotient like this: `r.project([:color])` and since tuples in a relation are unique, with no duplicates, this will yield exactly **R2** as shown above.
 
 ## Division with remainder
 
@@ -59,7 +59,7 @@ Moreover, even if there is a divisor that divides a relation perfectly, most oth
 
 A bit informally, we might describe the problem like this: *Construct a quotient which, when multiplied by the divisor, yields the largest result which is fully contained within the dividend.* In the integer example, `2` is the largest number which, when multiplied by `5` yields a result which is not bigger than `12`. (In this sense, `10` is "contained" in `12`.) Make sure you have internalized this intuitive definition before reading on!
 
-Now, given a relation **R** and a divisor **D**, how do we find the quotient **Q** which is the largest relation so that the cross product **C = D x Q** is contained within **R** (meaning the tuples in **C** are a subset of those in **R**)? (We are not asking about the header of **Q**, it is already known. *Largest* here means: having the most number of tuples.)
+Now, given a relation **R** and a divisor **D**, how do we find the quotient **Q** which is the largest relation so that the cross product **C = D x Q** is contained within **R** (meaning the tuples in **C** are a subset of those in **R**)? (We are not asking about the heading of **Q**, it is already known. *Largest* here means: having the most number of tuples.)
 
 To illustrate this, let's modify the example above so that we start with this relation:
 
@@ -81,7 +81,7 @@ And this divisor:
 | yellow |
 | red |
 
-We know the header of **Q** is `(name)`, so we can start by simply projecting this from **R** to form an intermediate relation, **Q0**:
+We know the heading of **Q** is `(name)`, so we can start by simply projecting this from **R** to form an intermediate relation, **Q0**:
 
 | name |
 | ---- |

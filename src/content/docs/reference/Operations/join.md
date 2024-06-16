@@ -16,7 +16,7 @@ Example: *I want all customers along with their addresses.*
 
 The join of two relations is produced by selecting tuples from left and right relations by one or more matching attributes, and for every match, combine the tuples 
 
-The result's header contains all attributes from left plus all attributes from right. 
+The result's heading contains all attributes from left plus all attributes from right. 
 
 The first variant specifies the names of attributes used for matching. This is used when the attributes to match on have the same names in both tuples.
 
