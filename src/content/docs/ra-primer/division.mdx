@@ -14,7 +14,7 @@ What does it mean to divide one relation by another? It means the inverse of a C
 
 ## A First Approximation
 
-Let's bring back the example of relations describe the wearing of garments from the section on relations. We start with the following two relations:
+Let's bring back the example of relations that describe the wearing of garments from the [section on relations](/ra-primer/relations). We start with the following two relations:
 
 **R1** 
 | name | garment |
@@ -28,7 +28,7 @@ Let's bring back the example of relations describe the wearing of garments from 
 | yellow |
 | red |
 
-We form the cross product **R = P x Q**:
+From these, we form the cross product **R3 = R1 x R2**:
 
 **R3**
 | name | garment | color |
@@ -45,11 +45,11 @@ We can get **R1** by dividing **R3** by **R2**, and vice versa. In other words: 
 Let's introduce a bit of terminology: In this example, **R3** is the *dividend* which we divide by a *divisor* to get a *quotient*. We may note a few things about the divisor and the quotient:
 
 1. Both the divisor and the quotient can have one or more attributes in their heading
-1. The headings of the divisor and quotient must each be a subset of the heading of the dividend, and they may not overlap
+1. The headings of the divisor and quotient must each be a subset of the heading of the dividend, and they must not overlap
 1. Thus, the heading of the quotient consists of exactly those attributes of the dividend that are not in the divisor
 1. The tuples in the quotient are simply what you get if you project its attributes from the divisor
 
-In this example, we could get the quotient of **R3 ÷ R1** by noticing that the quotient's heading has a single attribute (`color`), which we get by removing the attributes of **R1** from the attribute list of **R3**. Using Bmg, we can get the quotient like this: `r.project([:color])` and since tuples in a relation are unique, with no duplicates, this will yield exactly **R2** as shown above.
+In this example, we could get the quotient of **R3 ÷ R1** by noticing that the quotient's heading has a single attribute (`color`), which we get by removing the attributes of **R1** from the heading of **R3**. Using Bmg, we can get the quotient like this: `r.project([:color])` and since tuples in a relation are unique, with no duplicates, this will yield exactly **R2** as shown above.
 
 ## Division with remainder
 
@@ -190,18 +190,22 @@ vip_customers = divide(customers_products, deluxe_products)
 Bmg provides a `divide` operation with some extra optimizations, in particular when used with relations from a SQL database.
 :::
 
-## Further reading
-
-https://www2.cs.arizona.edu/~mccann/research/divpresentation.pdf
-
-https://stackoverflow.com/questions/34978533/how-to-understand-u-r%C3%B7s-the-division-operator-in-relational-algebra
 
 ## Appendix: Division in SQL
 
-As mentioned abov
+As mentioned above, SQL databases do not provide the **Division** operator. There are several approaches to how to achieve relational division in SQL. Most commonly, they mimic the two `minus` operations with nested `EXCEPT` or `NOT EXISTS` clauses.
 
+If you want to dive into the topic, these slides are very helpful: [On Making Relational Division Comprehensible](https://www2.cs.arizona.edu/~mccann/research/divpresentation.pdf)
 
-https://www.red-gate.com/simple-talk/databases/sql-server/t-sql-programming-sql-server/divided-we-stand-the-sql-of-relational-division/
+This concise paper makes a case for a simple solution which is also typically more performant than usual double `NOT EXIST`: [A Simpler (and Better) SQL Approach to Relational Division](https://aisel.aisnet.org/cgi/viewcontent.cgi?article=1614&context=jise)
 
-https://www.red-gate.com/simple-talk/databases/sql-server/learn/high-performance-relational-division-in-sql-server/
+tl;dr Our final query above would be implemented with the following SQL:
 
+```sql
+SELECT customer_id
+FROM customers_products
+WHERE product_id IN ( SELECT product_id FROM deluxe_products )
+GROUP BY product_id
+HAVING COUNT(*) =
+  ( SELECT COUNT (*) FROM deluxe_products );
+```
