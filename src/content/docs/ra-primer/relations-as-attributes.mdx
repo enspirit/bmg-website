@@ -4,4 +4,88 @@ sidebar:
   order: 6
 ---
 
+The relational model allows for individual values in a tuple to themselves be relations. Here is an example:
 
+```
++---------+----------------------+
+| :person | :pets                |
++---------+----------------------+
+| Olivia  | +-------+----------+ |
+|         | | :name | :species | |
+|         | +-------+----------+ |
+|         | | Zoe   | cat      | |
+|         | | Kim   | dog      | |
+|         | +-------+----------+ |
++---------+----------------------+
+| Rafaele | +-------+----------+ |
+|         | | :name | :species | |
+|         | +-------+----------+ |
+|         | | Pam   | guppy    | |
+|         | | Kaa   | python   | |
+|         | +-------+----------+ |
++---------+----------------------+
+```
+
+From the point of view of relational algebra, such relation values are simply values. They can be compared, projected etc. This can be powerful. Modern SQL databases have introduced attribute types like arrays and XML and JSON structures. Relation-valued attributes offer similar functionality while staying entirely within the relational framework.
+
+## Why nested relations should (mostly) be avoided
+
+However, while nested relations are cool and powerful, it is not generally recommended to push their usage very far. In fact, in in his seminal paper *A Relational Model of Data for Large Shared Data Banks*, the inventor of the relational model, Edgar F. Codd, mentions that tuples "may have relations as elements" (his example is a salary history for an employee) only to immediately after explain why it is preferable *not* to use nested data.
+
+In fact, one of the core contributions of the relational model was to move away from hierarchical representations of data. Codd showed how a model of flat relations not only equals hierarchical databases in power, but is much more flexible and easy to work with.
+
+In that very same paper, Codd shows how nested relations can instead be normalized into flat relations with "simple" values. This is what is knowns as *First Normal Form*.
+
+:::note
+First Normal Form is an often misunderstood idea, mostly because almost no existing database systems actually support relations/tables as values. See the excellent post [What does First Normal Form actually mean?](https://www.cargocultcode.com/what-does-first-normal-form-mean/) for a clear explanation.
+:::
+
+As an example, our relation above would be split into these relations:
+
+| person  |
+|---------|
+| Olivia  |
+| Rafaele |
+
+| name | species | owner   |
+|------|---------|---------|
+| Zoe  | cat     | Olivia  |
+| Kim  | dog     | Olivia  |
+| Pam  | guppy   | Rafaele |
+| Kaa  | python  | Rafaele |
+
+You might be completely unsurprised by this representation, since it's the standard way of slicing up data in relational databases. Thank E. F. Codd and his relational model to thank for that!
+
+## When are nested relations useful?
+
+With all that being said, nested relations can still be useful. Our nested relation above is not a great representation to build queries on top of, but it might be good as the final *output* from a query. Often, the application requesting the data is interested in hierarchical relationships. Instead of post-processing the tuples, you can achieve the nesting as part of the query.
+
+As an example, if we start out with the relations `persons` and `pets` as shown above, and we want the pets grouped by person and also the total number of pets for each person, we can accomplish all of that with a single query:
+
+```ruby
+persons.join(pets, :person => :owner)
+       .group([:name, :species], :owned_pets)
+       .extend(npets: ->(t) { t[:owned_pets].count })
+```
+
+```
++---------+----------------------+--------+
+| :person | :owned_pets          | :npets |
++---------+----------------------+--------+
+| Olivia  | +-------+----------+ | 2      |
+|         | | :name | :species | |        |
+|         | +-------+----------+ |        |
+|         | | Zoe   | cat      | |        |
+|         | | Kim   | dog      | |        |
+|         | +-------+----------+ |        |
++---------+----------------------+--------+
+| Rafaele | +-------+----------+ | 2      |
+|         | | :name | :species | |        |
+|         | +-------+----------+ |        |
+|         | | Pam   | guppy    | |        |
+|         | | Kaa   | python   | |        |
+|         | +-------+----------+ |        |
++---------+----------------------+--------+
+```
+
+See the documentation for [`group`](/reference/operations/group), [`ungroup`](/reference/operations/ungroup), and [`extend`](/reference/operations/extend) for more information.
