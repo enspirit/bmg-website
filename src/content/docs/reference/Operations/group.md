@@ -16,15 +16,15 @@ Example: *Which are all our stores listed by city, with full details on each sto
 
 ### Description
 
-`group` splits the attributes of the input relation into two sets: those that are specified as the first argument, and all the remaining ones. Let's call the former `grouped-attrs` and the latter `grouping-attrs`.
+`group` splits the attributes of the input relation into two sets: the attributes given in the first argument, and all the remaining ones, called the *grouping* attributes. Below, we refer to these disjoint sets as `grouped-attrs` and `grouping-attrs` respectively.
 
-`group` groups together `grouped-attrs`-tuples from the input, and pairs those groups with the corresponding `grouping-attrs`.
+`group` creates groups of `grouped-attrs`-tuples from the input, and pairs those groups with the corresponding `grouping-attrs`. We say that we *group by* the `grouping-attrs`, or, equivalently, that we *group over* the `grouped-attrs`.
 
 To be more specific: the output consists of the unique tuples obtained by [projecting](reference/operations/project) the `grouping-attrs` from the input, and extending each such tuple with a [nested relation](/ra-primer/relations-as-attributes) with the `grouped-attrs`, such that for each combination of values in the input, a corresponding tuple is found in each nested relation.
 
 If this sounds complicated, is will be quite intuitive when you see it in action! See the example below.
 
-A simple implementation of the count operation might look like this:
+A simple implementation might look like this:
 
 ```ruby
 def group(rel, grouped_attrs)
