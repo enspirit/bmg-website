@@ -96,7 +96,7 @@ JOIN department ON department.id = person.department_id
 
 The intention here would seem to be: *give me the name, email address, and department of each person who is the owner of a project*. But this query might return the same row multiple times, if the person is the owner of more than one project.
 
-If you *did* want to eg send several emails to the same person, one for each project they own, you would naturally include `project.name as proj_name` or somesuch in the `SELECT` clause. In that query, you would get several rows for the same person, but they would differ in having different `proj_name`. Allowing duplicate rows obscures this important difference.
+If you *did* want to eg send several emails to the same person, one for each project they own, you would naturally include `project.name as proj_name` or some such in the `SELECT` clause. In that query, you would get several rows for the same person, but they would differ in having different `proj_name`. Allowing duplicate rows obscures this important difference.
 :::
 
 ## The power of extensions
