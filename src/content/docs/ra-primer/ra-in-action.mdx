@@ -114,6 +114,8 @@ sk_roles2 = sk_roles.project([:actor_name])
 
 :::note
 This illustrates an important and very common pattern. Although **Join** glues together tuples, very often we are not really interested in those joined tuples. Instead, we often use **Join** just like in this example, to filter one relation (`roles`) by the existence of corresponding tuples in another relation (`sk_films`).
+
+Given that those use cases are very common, Bmg provides shortcut operators such as `matching` and `not_matching`.
 :::
 
 And finally, we perform another **Join** to get the birth years:
