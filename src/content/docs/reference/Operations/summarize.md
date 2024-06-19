@@ -5,7 +5,6 @@ title: summarize
 ```ruby
 rel.summarize([:a, :b, ...], x: :sum, y: :max, ...)
 rel.summarize([:a, :b, ...], x: -> (t,m) { m ? (m + t[:x]) : t[:x] } )
-# TODO: Is the proc version intended as a public API? It's not user friendly.
 ```
 ### Problem
 

@@ -28,7 +28,6 @@ A simple implementation might look like this:
 
 ```ruby
 def group(rel, grouped_attrs)
-  # TODO: any reason to use TupleAlgebra ?
   grouping_attrs = rel.type.attrlist - grouped_attrs
   rel.allbut(grouped_attrs)
      .extend(
