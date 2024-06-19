@@ -240,9 +240,12 @@ Years = project(CommonFriends, [YearsKnown1, YearsKnown2]
 In Bmg, this whole transformation would look like this:
 
 ```ruby
-my_friends2 = my_friends.rename(:name => :name1, :years_known => :years_known2)
-your_friends2 = your_friends.rename(:name => :name2, :years_known => :years_known2)
-my_friends2.cross_product(your_friends2)
-           .restrict(Predicate.eq(:name1, :name2))
-           .project([:years_known1, :years_known2)
+my_friends2 = my_friends
+  .rename(:name => :name1, :years_known => :years_known1)
+your_friends2 = your_friends
+  .rename(:name => :name2, :years_known => :years_known2)
+my_friends2
+  .cross_product(your_friends2)
+  .restrict(Predicate.eq(:name1, :name2))
+  .project([:years_known1, :years_known2)
 ```
