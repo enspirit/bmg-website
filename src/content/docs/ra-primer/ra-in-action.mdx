@@ -94,10 +94,10 @@ In this case, we want rows where the **name** attribute from `sk_films` equals t
 sk_roles = roles.join(sk_films, :film_name => :name)
 ```
 
-| film_name | production_year | director | actor_name | name |
-| --------- | --------------- | -------- | ---------- | ---- |
-| Dr. Strangelove | 1964 | Stanley Kubrik | Peter Sellers | Dr. Strangelove |
-| The Shining | 1980 | Stanley Kubrik | Shelley Duval | Wendy Torrance |
+| film_name | production_year | director | actor_name |
+| --------- | --------------- | -------- | ---------- |
+| Dr. Strangelove | 1964 | Stanley Kubrik | Peter Sellers |
+| The Shining | 1980 | Stanley Kubrik | Shelley Duval |
 
 The new heading contains all the attributes from both relations, except that **name** from `films` and **film_name** from `role` have been merged. That makes sense, because what we have done is precisely to pick out those tuples where one equals the other. To include both would be redundant.
 
