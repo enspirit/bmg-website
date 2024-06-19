@@ -211,7 +211,7 @@ Again, the point here is to demystify the **Join** operation and get a clear sen
 
 For our next exercise, let's ask: *Which pairs of actors appeared in the same film?* Taking a quick look at the **Role** relation at the beginning of this section, we immediately see that there is only one film that appears twice (namely *Popeye*), so we expect only one pair of actors.
 
-To get our answer, we need to join the **Role** relation with itself. To do that, we first create a new relation that is exactly the same as **Role** but with `actor_name` renamed to `actor_name2`, because we need both actors' names in our output relation. The last step is to project only `actor_name` and `actor_name2`.
+To get our answer, we need to join the **Role** relation with itself on the `film_name` attribute. To do that, we first create a new relation that is exactly the same as **Role** but with `actor_name` renamed to `actor_name2`, because we need both actors' names in our output relation. The last step is to project only `actor_name` and `actor_name2`.
 
 ```ruby
 roles2 = roles.rename(:actor_name => :actor_name2)
