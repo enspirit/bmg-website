@@ -1,11 +1,9 @@
 ---
-title: Bmg - Relational Algebra for Modern Times
+title: B⋈G - Relational Algebra for Modern Times
 description: A Ruby library for data querying and tranformation using relational algebra
 template: splash
 hero:
   tagline: Draw on the full power of relational algebra in your Ruby projects 
-  image:
-    file: ../../assets/houston.webp
   actions:
     - text: Read the primer
       link: /ra-primer/introduction/
@@ -18,15 +16,25 @@ hero:
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
 
-<CardGrid stagger>
+```ruby
+# List the total number of purchases, excluding samples,
+# for each product in the cheeze category
+purchases
+  .restrict(Predicate.neq(:product_type, 'sample')) 
+  .join(products, :product_id => :id)
+  .restrict(Predicate.eq(:category, 'cheeze'))
+  .project([:product_id, :quantity])
+  .summarize([:product_id], :quantity => :sum)
+```
+<CardGrid>
 	<Card title="A solid foundation">
-	  Bmg stays faithful to the mathematical foundations of relational databases.	
-	</Card>
-	<Card title="Unlimited composability">
-	  Since *everything is a relation*, new relations can effortlessly be built from existing ones.
+	  Bmg stays faithful to the mathematical foundations of relational databases. Everything is a relation and operations can always be chained.
 	</Card>
 	<Card title="Works with any data">
-	  Query, transform, and combine data from SQL databases, CSV files, spreadsheets and more.
+	  Query, transform, and combine data from SQL databases, CSV files, spreadsheets, Redis and more.
+	</Card>
+	<Card title="Unlimited composability">
+	  It's trivial to extract and compose operations on relations in Bmg. 
 	</Card>
 	<Card title="Fits in any project.">
 	  You can use Bmg in any Ruby codebase, by itself or alongside ActiveRecord or any other database wrapper.	
