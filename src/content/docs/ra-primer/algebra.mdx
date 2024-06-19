@@ -55,7 +55,11 @@ This is quite valuable to know, because it means that if I need to add together 
 
 Integer addition and string concatenation differ in some ways and are similar in others, but they are both well-defined *algebraic structures*. In order to understand the importance of relational algebra being *an algebra* (ie an *algebraic structure* in its own right), we are mostly interested in understanding which properties all algebraic structures have in common. The most important of which are:
 
-**Based on an underlying set**: The sets in our previous examples were integers, food, and strings. Relational algebra is defined over the **set of relations**. We will discuss relations in the next section, but for now we can say that a relation is a database table. In other words the *values* we operate on are *relations* aka *tables*.
+**Based on an underlying set**: The sets in our previous examples were integers, food, and strings. Relational algebra is defined over the **set of relations**. We will discuss relations in the next section, but for now you can think of a relation as a database or spreadsheet table. In other words the *values* we operate on are *relations* aka *tables*.
+
+:::caution
+Altough tables can conveniently represent relations, there are important differences between relations and database tables. 
+:::
 
 **A clearly defined set of operations**: The most commonly studied algebraic structures come with one or two operations (like addition, multiplication, concatenation etc). Each operation has clearly defined characteristics such as commutativity, associativity, whether there is an inverse (ie whether the operation can always be "undone") etc. It is also clearly defined how operations interact with each other. Relational algebra defines several operations to work with relations.
 
