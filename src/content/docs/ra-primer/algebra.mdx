@@ -1,5 +1,5 @@
 ---
-title: Algebraic structures 
+title: Algebraic structures
 sidebar:
   order: 2
 ---
@@ -30,7 +30,7 @@ The order in which I give you the money doesn't matter. That is, addition over i
 
 In many cases, of course, such questions do make sense. If we had agreed that I should pay you back by buying lunch instead, it would make perfect sense if I asked, Do you want the soup first or the ice cream first? Why? Because eating ice cream after soup is not the same as eating soup after ice cream (from the sensorial perspective). The operation of consuming food is not commutative!
 
-## Operations over strings 
+## Operations over strings
 
 To take a less ridiculous example, concatenation of strings is also not commutative:
 
@@ -81,7 +81,7 @@ Here's a small teaser of what relational algebra in the Bmg flavor looks like:
 # "List the total number of purchases, excluding samples,
 #  for each product in the cheeze category"
 purchases
-  .restrict(Predicate.neq(:product_type, 'sample')) 
+  .restrict(Predicate.neq(:product_type, 'sample'))
   .project([:product_id, :quantity])
   .summarize([:product_id], :quantity => :sum)
   .join(products, :id => :product_id)
@@ -93,7 +93,7 @@ All the different parts of that snippet are presented in depth elsewhere on this
 1. This expression consists of a pipeline of discrete steps, where every step transforms the relation handed to it from the previous one. *Relations in, relations out.*
 1. It is trivial to insert another step at any position in the pipeline.
 1. It's easy to mentally track what shape the relation has at each step.
-1. Any arbitrary sequence of steps can be pulled out and encapsulated as a separate building block, and it's trivial to parameterize such building blocks. The extracted building blocks are not *query fragments* but rather relational operations in their own right. 
+1. Any arbitrary sequence of steps can be pulled out and encapsulated as a separate building block, and it's trivial to parameterize such building blocks. The extracted building blocks are not *query fragments* but rather relational operations in their own right.
 
 Next, let's get a clear understanding of that other crucial component of relational algebra: relations.
 

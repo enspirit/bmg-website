@@ -16,7 +16,7 @@ What does it mean to divide one relation by another? It means the inverse of a C
 
 Let's bring back the example of relations that describe the wearing of garments from the [section on relations](/ra-primer/relations). We start with the following two relations:
 
-**R1** 
+**R1**
 | name | garment |
 | ---- | ------- |
 | Alice | t-shirt |
@@ -149,11 +149,11 @@ Hopefully, the usefulness of the division operation is starting to become appare
 
 Let's wrap up the solution above in a reusable formula. To recap, given a relation **R** and a divisor **D**, we want to produce the quotient **Q**. We know the attributes of **Q** are those of **R** minus those from **D**. Let's call **Q**:s attribute set `qatt`. The steps to obtain **Q** are (with name assignments in paranthesis):
 
-1. Project `qatt` from **R** (**Q0**) 
+1. Project `qatt` from **R** (**Q0**)
 1. Form the cross product of **D** and **Q0** (**C0**)
 1. Subtract **R** from **C0** (**C1**)
 1. Project `qatt` from **C1** (**Q1**)
-1. Subtract **Q1** from **Q0** (**Q**) 
+1. Subtract **Q1** from **Q0** (**Q**)
 
 Ignoring some of the details, we can summarize the process like this:
 

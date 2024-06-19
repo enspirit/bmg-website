@@ -8,7 +8,7 @@ To sum up what we have learned in the preceding two sections (about [Algebraic s
 
 * Relational algebra consists of a number of operations
 * These operations are defined over relations
-* A relation is a set of tuples 
+* A relation is a set of tuples
 * A table in a relational database defines a relation extensionally, ie by explicitly listing tuples for which the relation holds
 
 ## Example relations in JSON
@@ -92,7 +92,7 @@ The output is the following relation, where every friend is included only one ti
 ```
 
 :::note
-The corresponding query in SQL would **not** remove the duplicate tuple, because tables in SQL do not have set semantics and thus are not true relations. 
+The corresponding query in SQL would **not** remove the duplicate tuple, because tables in SQL do not have set semantics and thus are not true relations.
 :::
 
 Note that we could rewrite this expression as:
@@ -112,7 +112,7 @@ union(
 
 Here, we get a first taste of the algebraic flavor of relational algebra. **Project** *distributes over* **Union** in the same way that multiplication distributes over addition: *a(b+c) = ab + ac*.
 
-## Tables, headings and rows 
+## Tables, headings and rows
 
 Let's now move on from JSON and settle on the standard way of talking about relations. As we have seen, a relation is a set of tuples, and those tuples must all share the same number of attributes, which must have the same names and domains. The usual way of visualizing this is as a table:
 
@@ -144,7 +144,7 @@ We need a way to combine tuples so that my attributes and your attributes end up
 
 #### Rename
 
-The first problem is that the attributes in both relations have the same names (namely **Name** and **YearsKnown**). Since attribute names must be unique, we start by usng the **Rename** operator, denoted **ρ**. **ρ(X/Y)** means that we rename the attribute **Y** to **X**. 
+The first problem is that the attributes in both relations have the same names (namely **Name** and **YearsKnown**). Since attribute names must be unique, we start by usng the **Rename** operator, denoted **ρ**. **ρ(X/Y)** means that we rename the attribute **Y** to **X**.
 
 ```apl
 MyFriends′ = ρ(Name1/Name,YearsKnown1/YearsKnown)(MyFriends)
@@ -164,7 +164,7 @@ MyFriends' = rename(MyFriends, Name => Name1, YearsKnown => YearsKnown1)
 | Stanisław | 15      |
 | ...       | ...     |
 
-#### Cross product 
+#### Cross product
 
 Now that we have two relations with no attribute names in common, we can combine their tuples using the **Cross product** operation, denoted **×**. This operations takes every tuple from its first operand and combines each with every tuple from the other operand. So if, for example, the operands have 5 tuples each, the resulting relation will have 25 tuples. The result will also have all attributes from the two input relations.
 
@@ -175,14 +175,14 @@ C = MyFriends′ × YourFriends′
 Pseudocode:
 
 ```haskell
-C = cross_product(MyFriends', YourFriends') 
+C = cross_product(MyFriends', YourFriends')
 ```
 
 Since every row of the first relation is combined with every row of the second relation, the resulting relation contains 12 (4*3) tuples:
 
 ##### C
 | Name1 | YearsKnown1 | Name2 | YearsKnown2 |
-| ----- | ----------- | ----- | ----------- | 
+| ----- | ----------- | ----- | ----------- |
 | Emily     | 10      | Aisha | 35          |
 | Emily     | 10      | Belle | 17          |
 | Emily     | 10      | Stanisław | 2       |
@@ -194,7 +194,7 @@ Since every row of the first relation is combined with every row of the second r
 
 Now that we have every possible combination of tuples, we can pick out the ones we are actually interested in, which are those in which **Name1** and **Name2** are identical, because those represent the friends we have in common.
 
-#### Restrict 
+#### Restrict
 
 To select tuples we are interested in, we use the **Restrict** operation.
 
@@ -213,7 +213,7 @@ CommonFriends = restrict(C, Name1 = Name2)
 
 ##### CommonFriends
 | Name1 | YearsKnown1 | Name2 | YearsKnown2 |
-| ----- | ----------- | ----- | ----------- | 
+| ----- | ----------- | ----- | ----------- |
 | Stanisław | 15      | Stanisław| 2        |
 
 And here we have our single common friend.
@@ -233,7 +233,7 @@ Years = project(CommonFriends, [YearsKnown1, YearsKnown2]
 
 ##### Years
 | YearsKnown1 | YearsKnown2 |
-| ----------- | ----------- | 
+| ----------- | ----------- |
 | 15          | 2           |
 
 

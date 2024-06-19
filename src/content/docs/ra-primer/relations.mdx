@@ -1,7 +1,7 @@
 ---
 title: Relations
 sidebar:
-  order: 3 
+  order: 3
 ---
 
 The notion of "relation" in relational database systems is sometimes misunderstood. We often draw Entity-Relation Diagrams like this one:
@@ -44,14 +44,14 @@ A relation doesn't have to deal with only pairs of values, but can be defined ov
 
 Now we can see how relations are represented in relational databases:
 
-##### wearing 
+##### wearing
 | person | garment  | color  |
 | ----- | --------  | ------ |
 | alice   | t-shirt | yellow |
 | bernard | sweater | red    |
 | mariam  | hat     | blue   |
 
-This is a table which describes a relation (**wearing**) over the three sets **People**, **Garments**, and **Colors**. The relation picks out those combinations of one value from each set that fulfills some criterion, in this case the criterion: *the **person** is wearing a **garment** with a certain **color***. 
+This is a table which describes a relation (**wearing**) over the three sets **People**, **Garments**, and **Colors**. The relation picks out those combinations of one value from each set that fulfills some criterion, in this case the criterion: *the **person** is wearing a **garment** with a certain **color***.
 
 This is what a relation means in a relational database. A table is a relation because it picks out those combinations of `person`, `garment`, and `color` for which the relation **wearing** holds.
 
@@ -92,7 +92,7 @@ As a very simple example, consider this SQL query:
 SELECT person.name, person.email, department.name as dept_name
 FROM person
 JOIN project ON project.owner_id = person.id
-JOIN department ON department.id = person.department_id 
+JOIN department ON department.id = person.department_id
 ```
 
 The intention here would seem to be: *give me the name, email address, and department of each person who is the owner of a project*. But this query might return the same row multiple times, if the person is the owner of more than one project.
