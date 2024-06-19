@@ -47,7 +47,7 @@ Let's introduce a bit of terminology: In this example, **R3** is the *dividend* 
 1. Both the divisor and the quotient can have one or more attributes in their heading
 1. The headings of the divisor and quotient must each be a subset of the heading of the dividend, and they must not overlap
 1. Thus, the heading of the quotient consists of exactly those attributes of the dividend that are not in the divisor
-1. The tuples in the quotient are simply what you get if you project its attributes from the divisor
+1. The tuples in the quotient are simply what you get if you project its attributes from the dividend
 
 In this example, we could get the quotient of **R3 ÷ R1** by noticing that the quotient's heading has a single attribute (`color`), which we get by removing the attributes of **R1** from the heading of **R3**. Using Bmg, we can get the quotient like this: `r.project([:color])` and since tuples in a relation are unique, with no duplicates, this will yield exactly **R2** as shown above.
 
