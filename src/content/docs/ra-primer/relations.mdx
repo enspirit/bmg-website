@@ -27,7 +27,7 @@ Consider the idea *is less than*. This is a *binary relation*. Binary because it
 | **4** | n | n | n | n | y |
 | **5** | n | n | n | n | n |
 
-One way of describing this is: *For every pair of numbers 1-5, pick out the ones where the first is smaller than the second.* If we write the pairs like this: *(x, y)*, the relation picks out this list:
+One way of describing this is: *For every pair of numbers 1-5, pick out the ones where the first is smaller than the second.* If we write the pairs like this: *(x, y)*, the relation picks out the list below, and conveys a clear semantics "*x* is less than *y*":
 
 **`{(1, 2), (1, 3), (1, 4), (1, 5), (2, 3), (2, 4), ...}`**
 
@@ -50,7 +50,7 @@ Now we can see how relations are represented in relational databases:
 | bernard | sweater | red    |
 | mariam  | hat     | blue   |
 
-This is a table which describes a relation (**wearing**) over the three sets **People**, **Garments**, and **Colors**. The relation picks out those combinations of one value from each set that fulfills some criterion, in this case the criterion: *the **person** is wearing a **garment** with a certain **color***.
+This is a table which describes a relation (**wearing**) over the three sets **People**, **Garments**, and **Colors**. The relation picks out those combinations of one value from each set that fulfills some criterion, in this case the criterion (also called *semantics*): *the **person** is wearing a **garment** with a certain **color***.
 
 This is what a relation means in a relational database. A table is a relation because it picks out those combinations of `person`, `garment`, and `color` for which the relation **wearing** holds.
 
