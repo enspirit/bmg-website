@@ -144,7 +144,7 @@ We need a way to combine tuples so that my attributes and your attributes end up
 
 #### Rename
 
-The first problem is that the attributes in both relations have the same names (namely **Name** and **YearsKnown**). Since attribute names must be unique, we start by usng the **Rename** operator, denoted **ρ**. **ρ(X/Y)** means that we rename the attribute **Y** to **X**. 
+The first problem is that the attributes in both relations have the same names (namely **Name** and **YearsKnown**). Since attribute names must be unique, we start by using the **Rename** operator, denoted **ρ**. **ρ(X/Y)** means that we rename the attribute **Y** to **X**. 
 
 ```apl
 MyFriends′ = ρ(Name1/Name,YearsKnown1/YearsKnown)(MyFriends)
