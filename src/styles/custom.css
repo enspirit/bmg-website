@@ -1,0 +1,11 @@
+.sl-markdown-content ol {
+  list-style: decimal;
+  list-style-position: inside;
+}
+.sl-markdown-content ul {
+  list-style: disc;
+  list-style-position: inside;
+}
+.hero h1 {
+  font-size: 96px;
+}

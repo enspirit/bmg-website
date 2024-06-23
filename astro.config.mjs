@@ -8,6 +8,9 @@ export default defineConfig({
   integrations: [starlight({
     title: 'Bmg - Relational Algebra for Ruby',
     favicon: '/favicon.ico',
+    customCss: [
+      './src/styles/custom.css',
+    ],
     social: {
       github: 'https://github.com/enspirit/bmg'
     },
