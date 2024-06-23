@@ -1,20 +1,35 @@
 ---
-title: B⋈G - Relational Algebra for Modern Times
+title: B⋈G 
 description: A Ruby library for data querying and tranformation using relational algebra
 template: splash
 hero:
-  tagline: Draw on the full power of relational algebra in your Ruby projects 
-  actions:
-    - text: Read the primer
-      link: /ra-primer/introduction/
-      icon: right-arrow
-      variant: primary
-    - text: Quick start 
-      link: /guides/quick-start 
-      icon: rocket
+  tagline: Relational Algebra for Modern Times 
+  image:
+    file: ../../assets/impossible-object.png
 ---
 
-import { Card, CardGrid } from '@astrojs/starlight/components';
+import { Aside, Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+<CardGrid>
+	<LinkCard
+	  title="Want to learn relational algebra?"
+	  description="Dive into our comprehensive primer on relational algebra."
+	  href="/ra-primer/introduction"
+	>
+	</LinkCard>
+	<LinkCard
+	  title="Want to use Bmg in your Ruby project?"
+	  description="Get started in no time with our tutorials and operations reference."
+	  href="/usage/getting-started/"
+	>
+	</LinkCard>
+</CardGrid>
+
+<div class="text-4xl pt-12 pb-4 underline decoration-amber-400">
+  <span class="">
+  What does it look like?
+  </span>
+</div>
 
 ```ruby
 # List the total number of purchases, excluding samples,
@@ -26,6 +41,13 @@ purchases
   .project([:product_id, :quantity])
   .summarize([:product_id], :quantity => :sum)
 ```
+
+<Aside type="note" title="Keep scrolling for more examples!">
+</Aside>
+
+<div class="text-4xl pt-12 pb-4 underline decoration-amber-400">
+  What is it good for?
+</div>
 <CardGrid>
 	<Card title="A solid foundation">
 	  Bmg stays faithful to the mathematical foundations of relational databases. Everything is a relation and operations can always be chained.

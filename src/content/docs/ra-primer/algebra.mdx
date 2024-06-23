@@ -18,7 +18,7 @@ Anyone who knows basic high-school mathematics is familiar with some algebric st
 
 ## Addition and commutativity
 
-Let's say I owe you some money. You lent me 20 Euro last week and another 7 Euro yesterday. Now I want to pay you back. I ask you, Do you want the 20 first and then the 7, or the 7 first and then the 20?
+Let's say I owe you some money. You lent me 20 Euro last week and another 7 Euro yesterday. Now I want to pay you back. I ask you, *Do you want the 20 first and then the 7, or the 7 first and then the 20?*
 
 What kind of a question is that? It makes no sense. But why doesn't it make any sense? It's because you know for a fact that:
 
@@ -82,10 +82,10 @@ Here's a small teaser of what relational algebra in the Bmg flavor looks like:
 #  for each product in the cheeze category"
 purchases
   .restrict(Predicate.neq(:product_type, 'sample')) 
+  .join(products, :product_id => :id)
+  .restrict(Predicate.eq(:category, 'cheeze'))
   .project([:product_id, :quantity])
   .summarize([:product_id], :quantity => :sum)
-  .join(products, :id => :product_id)
-  .restrict(Predicate.eq(:category, 'cheeze'))
 ```
 
 All the different parts of that snippet are presented in depth elsewhere on this site, but note the following:
