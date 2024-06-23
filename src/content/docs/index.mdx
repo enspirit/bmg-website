@@ -25,7 +25,7 @@ import { Aside, Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
 	</LinkCard>
 </CardGrid>
 
-<div class="text-4xl pt-12 pb-4 underline decoration-amber-400">
+<div class="text-4xl pt-12 pb-4 underline decoration-amber-500">
   <span class="">
   What does it look like?
   </span>
@@ -42,10 +42,11 @@ purchases
   .summarize([:product_id], :quantity => :sum)
 ```
 
-<Aside type="note" title="Keep scrolling for more examples!">
-</Aside>
+<div class="min-w-fit max-w-fit bg-orange-500/75 py-2 px-4 font-bold rounded-md">
+Keep scrolling for more examples!
+</div>
 
-<div class="text-4xl pt-12 pb-4 underline decoration-amber-400">
+<div class="text-4xl pt-12 pb-4 underline decoration-amber-500">
   What is it good for?
 </div>
 <CardGrid>
@@ -58,7 +59,7 @@ purchases
 	<Card title="Unlimited composability">
 	  It's trivial to extract and compose operations on relations in Bmg. 
 	</Card>
-	<Card title="Fits in any project.">
+	<Card title="Fits in any project">
 	  You can use Bmg in any Ruby codebase, by itself or alongside ActiveRecord or any other database wrapper.	
 	</Card>
 </CardGrid>
