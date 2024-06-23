@@ -24,7 +24,7 @@
   languages = {
     typescript.enable = true;
     javascript.enable = true;
-    javascript.package = pkgs.nodejs_21;
+    javascript.package = pkgs.nodejs_22;
     javascript.corepack.enable = true;
   };
 
