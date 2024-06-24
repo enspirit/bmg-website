@@ -102,12 +102,12 @@ Bmg does not currently compile `group` operations into SQL. The `GROUP BY` claus
 An example for Postgres might look like this:
 
 ```sql
-SELECT 
+SELECT
     city,
     ARRAY_AGG(ROW(sid, name, status)) AS group
-FROM 
+FROM
     suppliers
-GROUP BY 
+GROUP BY
     city;
 ```
 

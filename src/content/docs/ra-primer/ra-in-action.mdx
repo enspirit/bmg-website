@@ -16,7 +16,7 @@ Furthermore, we only consider the basic form of relational algebra here, without
 
 ## Preliminaries
 
-In what follows, we will work out some queries for the following three relations: 
+In what follows, we will work out some queries for the following three relations:
 
 ##### Actor
 
@@ -27,7 +27,7 @@ In what follows, we will work out some queries for the following three relations
 | Robin Williams| 1949               |
 | Shelley Duval | 1949               |
 
-##### Role 
+##### Role
 
 | actor_name : String | name : String | film_name : String |
 | ------------------- | ------------- | ------------------ |
@@ -107,7 +107,7 @@ The only attribute we need from this relation is `actor_name` so let's next perf
 sk_roles2 = sk_roles.project([:actor_name])
 ```
 
-| actor_name | 
+| actor_name |
 | ---------- |
 | Dr. Strangelove |
 | Wendy Torrance |
@@ -194,7 +194,7 @@ roles.join(sk_films, :film_name => :name)
 as:
 
 ```ruby
-sk_films2 = sk_films.rename(:name => :film_name2))  
+sk_films2 = sk_films.rename(:name => :film_name2))
 roles.cross_product(sk_films2)
      .restrict(Predicate.eq(:film_name, :film_name2))
      .project([

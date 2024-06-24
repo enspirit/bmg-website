@@ -14,7 +14,7 @@ Example: *I want all the products except those in the list of discontinued produ
 
 ### Description
 
-The set difference of two relations. The result contains those tuples that are in `left` but not in `right`. 
+The set difference of two relations. The result contains those tuples that are in `left` but not in `right`.
 
 The result's heading is identical with that of the inputs'.
 
@@ -52,7 +52,7 @@ SELECT `t1`.`product_id`, `t1`.`quantitiy`
 FROM `my_purchases` AS 't1'
 EXCEPT
 SELECT `t1`.`product_id`, `t1`.`quantitiy`
-FROM `your_purchases` AS 't1' 
+FROM `your_purchases` AS 't1'
 ```
 
 Note that the scoping of the table alias `t1` is limited to the respective `SELECT` clauses, which is why the same alias is used in both clauses.

@@ -12,7 +12,7 @@ Alias: `where`
 
 ### Problem
 
-Remove tuples from a relation according to a given criterion. 
+Remove tuples from a relation according to a given criterion.
 
 Example: *Which are all the products with price less than 500?*
 

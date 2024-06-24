@@ -13,7 +13,7 @@ Example: *I want the list of all managers plus all employees.*
 
 ### Description
 
-The set union of two relations. The result contains all tuples from `left` as well as all tuples from `right`. 
+The set union of two relations. The result contains all tuples from `left` as well as all tuples from `right`.
 
 The result's heading is identical with that of the inputs'.
 
@@ -56,7 +56,7 @@ SELECT `t1`.`product_id`, `t1`.`quantitiy`
 FROM `my_purchases` AS 't1'
 UNION
 SELECT `t1`.`product_id`, `t1`.`quantitiy`
-FROM `your_purchases` AS 't1' 
+FROM `your_purchases` AS 't1'
 ```
 
 Note that the scoping of the table alias `t1` is limited to the respective `SELECT` clauses, which is why the same alias is used in both clauses.

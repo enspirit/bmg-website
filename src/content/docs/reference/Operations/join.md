@@ -4,19 +4,19 @@ title: join
 
 ```ruby
 left.join(right, [:a, :b, ...])
-left.join(right, :a => :x, :b => :y, ...) 
+left.join(right, :a => :x, :b => :y, ...)
 ```
 ### Problem
 
-Extend tuples from one relation with matching tuples from another relation, by comparing their attributes according to a given criterion. 
+Extend tuples from one relation with matching tuples from another relation, by comparing their attributes according to a given criterion.
 
 Example: *I want all customers along with their addresses.*
 
 ### Description
 
-The join of two relations is produced by selecting tuples from left and right relations by one or more matching attributes, and for every match, combine the tuples 
+The join of two relations is produced by selecting tuples from left and right relations by one or more matching attributes, and for every match, combine the tuples
 
-The result's heading contains all attributes from left plus all attributes from right. 
+The result's heading contains all attributes from left plus all attributes from right.
 
 The first variant specifies the names of attributes used for matching. This is used when the attributes to match on have the same names in both tuples.
 

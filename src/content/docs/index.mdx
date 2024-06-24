@@ -1,9 +1,9 @@
 ---
-title: B⋈G 
+title: B⋈G
 description: A Ruby library for data querying and tranformation using relational algebra
 template: splash
 hero:
-  tagline: Relational Algebra for Modern Times 
+  tagline: Relational Algebra for Modern Times
   image:
     file: ../../assets/impossible-object.png
 ---
@@ -35,7 +35,7 @@ import { Aside, Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
 # List the total number of purchases, excluding samples,
 # for each product in the cheeze category
 purchases
-  .restrict(Predicate.neq(:product_type, 'sample')) 
+  .restrict(Predicate.neq(:product_type, 'sample'))
   .join(products, :product_id => :id)
   .restrict(Predicate.eq(:category, 'cheeze'))
   .project([:product_id, :quantity])
@@ -57,7 +57,7 @@ Keep scrolling for more examples!
 	  Query, transform, and combine data from SQL databases, CSV files, spreadsheets, Redis and more.
 	</Card>
 	<Card title="Unlimited composability">
-	  It's trivial to extract and compose operations on relations in Bmg. 
+	  It's trivial to extract and compose operations on relations in Bmg.
 	</Card>
 	<Card title="Fits in any project">
 	  You can use Bmg in any Ruby codebase, by itself or alongside ActiveRecord or any other database wrapper.	

@@ -1,5 +1,5 @@
 ---
-title: cross_product 
+title: cross_product
 ---
 
 ```ruby

@@ -1,13 +1,13 @@
 ---
 title: Introduction
-description: A light theoretical overview of Relational Algebra and Bmg 
+description: A light theoretical overview of Relational Algebra and Bmg
 sidebar:
   order: 1
 ---
 
 **Relational algebra** is a part of the relational model, a mathematical framework for data management invented in the late 1960s. All relational databases (such as PostgreSQL, MySQL, and SQLite) are based on this foundation, and much of their enduring power and popularity derive from these roots. Nevertheless, both internally and externally, relational databases as we know them deviate quite a bit from the relational model.
 
-Internally, they don't adhere strictly to relational algebra for querying and optimization. Externally, they all use dialects of the SQL language, which lacks many of the qualities of relational algebra. 
+Internally, they don't adhere strictly to relational algebra for querying and optimization. Externally, they all use dialects of the SQL language, which lacks many of the qualities of relational algebra.
 
 **Bmg** is an implementation of relational algebra in Ruby. It can be used to query and transform in-memory datasets, which is very convenient in a range of situations, but not a replacement for a proper database system. Therefore, Bmg can also be used in conjunction with an external SQL database, in which case Bmg functions as a powerful and very flexible interface to the underlying database.
 
