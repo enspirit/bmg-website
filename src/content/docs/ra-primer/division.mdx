@@ -186,11 +186,6 @@ customers_products = purchases.project([:customer_id, :product_id])
 vip_customers = divide(customers_products, deluxe_products)
 ```
 
-:::note
-Bmg provides a `divide` operation with some extra optimizations, in particular when used with relations from a SQL database.
-:::
-
-
 ## Appendix: Division in SQL
 
 As mentioned above, SQL databases do not provide the **Division** operator. There are several approaches to how to achieve relational division in SQL. Most commonly, they mimic the two `minus` operations with nested `EXCEPT` or `NOT EXISTS` clauses.
