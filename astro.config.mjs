@@ -42,11 +42,6 @@ export default defineConfig({
         directory: 'usage'
       }
     }, {
-      label: 'Recipies',
-      autogenerate: {
-        directory: 'recipies'
-      }
-    }, {
       label: 'Operations reference',
       autogenerate: {
         directory: 'reference'
