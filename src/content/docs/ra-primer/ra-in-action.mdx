@@ -4,7 +4,7 @@ sidebar:
   order: 5
 ---
 
-In the previous section, we introduced the mathematical notation for some of the basic operations of relational algebra: Union (**∪**), Project (**π**), Cross product (**×**), and Restrict(**σ**).
+In the previous section, we introduced the mathematical notation for some of the basic operations of relational algebra: Union (**∪**), Project (**π**), Cross product (**×**), Rename (**ρ**), and Restrict(**σ**).
 
 In this section, we will go through a few slightly more advanced uses of relational algebra to get a feel for how it works. Rather than introducing more mathematical notation, we will start using Bmg for our examples.
 
@@ -84,7 +84,10 @@ sk_films = films.restrict(director: "Stanley Kubrik")
 | Dr. Strangelove | 1964 | Stanley Kubrik |
 | The Shining | 1980 | Stanley Kubrik |
 
-Next, we pick the roles associated with these films. To do that, we use another central operator: **Join**. If you have any experience at all working with SQL or relational databases, you will be familiar with joins, but it might be worth bracketing that experience, because learning about **Join** from the ground up could give you another perspective.
+
+### Join (⋈)
+
+Next, we pick the roles associated with these films. To do that, we use another central operator: **Join (⋈)**. If you have any experience at all working with SQL or relational databases, you will be familiar with joins, but it might be worth bracketing that experience, because learning about **Join** from the ground up could give you another perspective.
 
 **Join** glues together tuples from two relations, just like **Cross product**, but also applies a condition on which tuples to include in the new relation, by comparing, for each row, attributes from the first relation with attributes from the second one.
 
@@ -390,5 +393,5 @@ From the resulting relation, we can for example learn that:
 
 > Peter Sellers and Jennifer Jason Leigh are related in that Sellers worked with Stanley Kubrik, who also worked with Shelley Duval, who in turn worked with Robert Altman, who also worked with Sellers!
 
-Extending our query required only two invokations of the extracted methods, and a modification of the final `restrict`. This kind of modularity is in general impossible to achieve in SQL, unless you succumb to concatenating query strings. This might seem like an unfair comparison, since we are using a general-purpose programming language. However, even [Object-Relational Mappings](https://en.wikipedia.org/wiki/Object%E2%80%93relational_mapping) and other database wrappers have problems expressing this kind of composition in a natural way. As we have noted earlier, this is because they use SQL as the underlying query model, and SQL is inherently poor at composition.
+Extending our query required only two invokations of the extracted methods, and a modification of the final `restrict`. This kind of modularity is in general impossible to achieve in SQL, unless you succumb to concatenating query strings. This might seem like an unfair comparison, since we are using a general-purpose programming language. However, even [Object-Relational Mappings](https://en.wikipedia.org/wiki/Object%E2%80%93relational_mapping) and other database wrappers have problems expressing this kind of composition in a natural way. As we have noted earlier, this is because they target SQL:s *syntax*, which, as we have noted earlier, was not created with composability in mind.  
 

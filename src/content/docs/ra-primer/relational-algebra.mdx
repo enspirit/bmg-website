@@ -126,15 +126,38 @@ Let's now move on from JSON and settle on the standard way of talking about rela
 | Stanisław     | 15                   |
 | ...           | ...                  |
 
-The *heading* of the table defines the names of the attributes and their domains (or types). Each row represents a tuple and each column lists one attribute of the tuples.
+The *heading* of the table defines the names of the attributes and their domains (or types). Each row represents a tuple and each column lists one attribute of the tuples. The set of tuples itself is sometimes called the *body* of the relation.
 
 :::note
 To keep things more compact, we will usually not include the domains (types) of attributes in headings, but they are always implied.
 :::
 
-Every operation of relational algebra takes one or two relations as input and produces a new relation. The new relation will sometimes have the same heading as the input relation(s), but more often it will produce a new heading. Of the examples we have seen above, **Union** preserves the headings of the input relations, whereas the heading of **Project** will only contain the attributes that were specified.
+Every operation of relational algebra takes one or two relations as input and produces a new relation. The new relation will sometimes have the same heading as the input relation(s), but more often it will produce a new heading. Of the examples we have seen above, the output of **Project** will have a different heading than the input, whereas **Union** preserves the headings of the input relations.
 
-## Example: Find Common friends
+This means that **Union** acts *only* on the set of tuples of the relation, not the heading. That being the case, **Union** is identical to **set union**. 
+
+### Difference (−)
+
+What if we want to do the opposite of **Union**? Let's say we know the full list of friends (`AllFriends = MyFriends ∪ YourFriends`) and we know who my friends are. We can then find out who *your* friends are using **Difference (−)**. Like **Union**, **Difference** is identical to the **set difference**: given a set **A** and a set **B**, it removes from A those values (in this case tuples) that are also included in **B**.
+
+```apl
+YourFriends = AllFriends − MyFriends
+```
+
+Pseudocode:
+
+```javascript
+YourFriends = minus(AllFriends, MyFriends)
+```
+
+##### YourFriends
+| Name | YearsKnown |
+| ---- | ---------- |
+| Aisha | 35 |
+| Belle | 17 |
+| Stanisław | 2 |
+
+## Finding Common friends
 
 To illustrate a couple more of the fundamental operators of relational algebra, let's say we want to answer this question: *For those friends that we have in common, how long have I and you known that person?*
 
@@ -239,17 +262,34 @@ Years = project(CommonFriends, [YearsKnown1, YearsKnown2]
 | 15          | 2           |
 
 
-## Bmg version
+### Intersection (∩)
 
-In Bmg, this whole transformation would look like this:
+If we only wanted to find the names of our common friends, we could use **Intersection (∩)**, which (like **Union** and **Difference**) is a set operation. Given relations **A** and **B**, **Intersection** constructs a relation containing only those tuples they have in common.
 
-```ruby
-my_friends2 = my_friends
-  .rename(:name => :name1, :years_known => :years_known1)
-your_friends2 = your_friends
-  .rename(:name => :name2, :years_known => :years_known2)
-my_friends2
-  .cross_product(your_friends2)
-  .restrict(Predicate.eq(:name1, :name2))
-  .project([:years_known1, :years_known2)
+Like with **Union** and **Difference*, the two input relations must be **union-compatible**, ie have identical headings, and the output relation will also have the same heading as the two inputs.
+
+To obtain the names of our common friends, we first project only **Name** from **MyFriends** and **YourFriends** and then perform **Intersection**:
+
+```apl
+CommonFriendNames = π(name)(MyFriends) ∪ π(name)(YourFriends)
 ```
+
+Pseudocode:
+```haskell
+CommonFriendNames = intersection(project(MyFriends, [Name]),
+                                 project(YourFriends, [Name]))
+```
+
+##### CommonFriendNames
+| Name | 
+| ---- |
+| Stanisław |
+
+
+## Minimal Relational Algebra
+
+The operations presented up to this point form a complete relational algebra: it can be proved that any transformation that might be considered the core of the relational model can be constructed out of these operations. In fact, we could make do with just five: **Restrict**, **Project**, **Cross product**, **Union**, and **Difference**. Any other operations can be derived from just these five.
+
+Nevertheless, several other operations are commonly introduced. Some are essentially convenient shortcuts for combinations of the core operations. Most important of these are **Join (⋈)** which we will introduce in the next section.
+
+Other operations extend the capabilities beyond the core of relational model, most notably the **Group** and **Summarize** operations. **Group** is presented briefly in the section on [Relations as Attributes](/ra-primer/relations-as-attributes/). For more information on **Summarize**, consult the [operation reference](/reference/operations/summarize/).

@@ -30,7 +30,7 @@ From the point of view of relational algebra, such relation values are simply va
 
 ## Why nested relations should (mostly) be avoided
 
-However, while nested relations are cool and powerful, it is not generally recommended to push their usage very far. In fact, in in his seminal paper *A Relational Model of Data for Large Shared Data Banks*, the inventor of the relational model, Edgar F. Codd, mentions that tuples "may have relations as elements" (his example is a salary history for an employee) only to immediately after explain why it is preferable *not* to use nested data.
+However, while nested relations are cool and powerful, it is not generally recommended to push their usage very far. In fact, in his seminal paper *A Relational Model of Data for Large Shared Data Banks*, the inventor of the relational model, Edgar F. Codd, mentions that tuples "may have relations as elements" (his example is the salary history for an employee) only to immediately after explain why it is preferable *not* to use nested data.
 
 In fact, one of the core contributions of the relational model was to move away from hierarchical representations of data. Codd showed how a model of flat relations not only equals hierarchical databases in power, but is much more flexible and easy to work with.
 
@@ -54,7 +54,7 @@ As an example, our relation above would be split into these relations:
 | Pam  | guppy   | Rafaele |
 | Kaa  | python  | Rafaele |
 
-You might be completely unsurprised by this representation, since it's the standard way of slicing up data in relational databases. Thank E. F. Codd and his relational model to thank for that!
+You might be completely unsurprised by this representation, since it's the standard way of slicing up data in relational databases. Thank E. F. Codd and his relational model for that!
 
 ## When are nested relations useful?
 
