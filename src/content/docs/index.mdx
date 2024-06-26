@@ -10,6 +10,11 @@ hero:
 
 import { Aside, Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
 
+import { Image } from "astro:assets";
+
+import enspiritLogoLight from "../../assets/enspirit-logo-light.png";
+import enspiritLogoDark from "../../assets/enspirit-logo-dark.png";
+
 <CardGrid>
 	<LinkCard
 	  title="Want to learn relational algebra?"
@@ -63,3 +68,21 @@ Keep scrolling for more examples!
 	  You can use Bmg in any Ruby codebase, by itself or alongside ActiveRecord or any other database wrapper.	
 	</Card>
 </CardGrid>
+
+<div class="h-8 !mt-16 w-full flex justify-center">
+  <span class="text-lg object-contain">Created with ♥️ by</span>
+  <a class="flex h-full size-fit py-1.5 w-32 float-end"
+     href="https://www.enspirit.dev">
+      <Image
+	src={enspiritLogoLight}
+	alt="Enspirit logo"
+	class="dark:sl-hidden object-contain"
+      />
+      <Image
+	src={enspiritLogoDark}
+	alt="Enspirit logo"
+	class="light:sl-hidden object-contain !m-0"
+      />
+  </a>
+</div>
+
