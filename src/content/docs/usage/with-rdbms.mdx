@@ -26,19 +26,16 @@ gemfile do
   gem 'sqlite3'
 end
 
+require 'json'
 require 'bmg/sequel'
 
-DB = Sequel.connect("sqlite://./suppliers-and-parts.db")
+db = Bmg::Database.sequel("sqlite://./suppliers-and-parts.db")
 
-parts = Bmg.sequel(:parts, DB)
-supplies = Bmg.sequel(:supplies, DB)
-suppliers = Bmg.sequel(:suppliers, DB)
-
-parts_in_paris = suppliers
+parts_in_paris = db.suppliers
   .restrict(Predicate.eq(:city, "Paris"))
   .project([:sid])
-  .join(supplies, [:sid])
-  .join(parts, [:pid])
+  .join(db.supplies, [:sid])
+  .join(db.parts, [:pid])
   .project([:name, :weight, :qty])
 
 puts "SQL:"
@@ -98,6 +95,38 @@ Total weights in Paris:
 
 If you want to understand exactly what this query does, just try removing one line at a time from the bottom (starting with `summarize`) and re-run the script!
 
-:::note
-We can't run `to_sql` on the second relation (`total_weights_in_paris`) because `summarize` isn't translated to SQL. However, Bmg does its best to delegate as much work as possible to the SQL database, even in the presence of operations which can't be compiled, by reordering operations when possible.
-:::
+## Understanding SQL Compilation
+
+In the example above, we can't run `to_sql` on the second relation (`total_weights_in_paris`) because the `extend` is written in pure Ruby, which prevents both `extend` and `summarize` to be translated to SQL.
+
+```shell
+with-rdbms.rb:24:in `<main>': undefined method `to_sql' for (summarize (NoMethodError)
+```
+
+To better understand why the query works (`JSON.pretty_generate` returned expected result), let debug the query tree (`.debug` can always be chained, it returns the relation itself):
+
+```ruby
+total_weights_in_paris.debug
+
+(summarize
+  (extend
+    (sequel SELECT DISTINCT `t2`.`qty`, `t3`.`name`, `t3`.`weight` FROM `suppliers` AS 't1' INNER JOIN `supplies` AS 't2' ON (`t1`.`sid` = `t2`.`sid`) INNER JOIN `parts` AS 't3' ON (`t2`.`pid` = `t3`.`pid`) WHERE (`t1`.`city` = 'Paris'))
+    {:total_weight=>#<Proc:0x0000000103809798 with-rdbms.rb:19 (lambda)>})
+  [:name]
+  {:total_weight=>#<Bmg::Summarizer::Sum:0x0000000103808c08 @options={}, @functor=:total_weight>})
+```
+
+As you can see, `extend` and `summarize` enclose the SQL query and will be executed by Bmg itself. This does not prevent chaining further, Bmg will even optimize queries and push everything it can to the SQL engine. In the example below, observe how the restriction on 'Smith' yields a WHERE clause in SQL while the `restrict` operator is not the top of the tree:
+
+```ruby
+total_weights_in_paris
+  .restrict(name: 'Smith')
+  .debug
+
+(summarize
+  (extend
+    (sequel SELECT DISTINCT `t2`.`qty`, `t3`.`name`, `t3`.`weight` FROM `suppliers` AS 't1' INNER JOIN `supplies` AS 't2' ON (`t1`.`sid` = `t2`.`sid`) INNER JOIN `parts` AS 't3' ON (`t2`.`pid` = `t3`.`pid`) WHERE ((`t1`.`city` = 'Paris') AND (`t3`.`name` = 'Smith')))
+    {:total_weight=>#<Proc:0x0000000107d289c8 with-rdbms.rb:19 (lambda)>})
+  [:name]
+  {:total_weight=>#<Bmg::Summarizer::Sum:0x0000000107d27e38 @options={}, @functor=:total_weight>})
+```
