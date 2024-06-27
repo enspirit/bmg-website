@@ -31,7 +31,6 @@ require 'bmg/sequel'
 DB = Sequel.connect("sqlite://./suppliers-and-parts.db")
 
 parts = Bmg.sequel(:parts, DB)
-cities = Bmg.sequel(:cities, DB)
 supplies = Bmg.sequel(:supplies, DB)
 suppliers = Bmg.sequel(:suppliers, DB)
 
