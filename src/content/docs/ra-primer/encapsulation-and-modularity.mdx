@@ -1,0 +1,96 @@
+---
+title: Encapsulation and modularity
+sidebar:
+  order: 6
+---
+
+We have mentioned several times that relational algebra provides an excellent basis for modularization, and makes it trivial to pull out any number of chained transformations into reusable units. These units can also easily be parameterized. We will now illustrate this with a simple example.
+
+:::note
+By now, it might have become apparent that "queries" are nothing other than transformations of relations from one form to another. There is nothing at all that makes a query different from a transformation.
+:::
+
+## A Friend of a Friend
+
+Let's continue the example from [Using joins](/ra-primer/using-joins/) and ramp it up a bit. What if we wanted to make this chain of who-knows-who longer, and include in each tuple actors one more degree removed. That is, we want tuples like this:
+
+| actor3 | director2 | actor2 | director1 | actor1 |
+| ------ | --------- | ------ | --------- | ------ |
+| Peter Sellers | Stanley Kubrik | Shelley Duval | Robert Altman | Jennifer Jason Leigh |
+| ... | ... | ... | ... | ... |
+
+We already have a solution for the first degree of separation ("Who worked with the same director?"). How can we extend this solution to handle our new requirement?
+
+## Extract operations
+
+Let's start by rewriting what we did above using a couple of methods:
+
+```ruby
+actors = roles.project([:actor_name])
+              .rename(:actor_name => :actor1)
+
+def add_director(rel, from_actor, name, films, roles)
+  rel.join(roles, from_actor => :actor_name)
+     .join(films, :film_name => :name)
+     .allbut([:film_name, :name, :production_year])
+     .rename(:director => name)
+end
+
+def add_actor(rel, from_director, name, films, roles)
+  rel.join(films, from_director => :director)
+     .join(roles, :name => :film_name)
+     .allbut([:film_name, :name, :production_year])
+     .rename(:actor_name => name)
+end
+
+friends = add_director(actors, :actor1, :director1, films, roles)
+friends = add_actor(friends, :director1, :actor2, films, roles)
+friends = friends.restrict(Predicate.lt(:actor1, :actor2))
+```
+
+| actor2 | director | actor1 |
+| ------ | -------- | ------ |
+| Robin Williams | Robert Altman | Jennifer Jason Leigh |
+| ... | ... | ... |
+
+:::note
+[`allbut`](/reference/operations/allbut) is the opposite of `project` -- it keeps only those attributes that are *not* listed in the arguments.
+:::
+
+Without going into all the details, this is a slightly modified version of what we did before. Each method adds new actors or directors to the relation that is passed in, then removes attributes we are not interested in, and finally renames the new attribute.
+
+## Compose operations
+
+With this in hand, it is easy to extend our query:
+
+```ruby
+friends = add_director(actors, :actor1, :director1, films, roles)
+friends = add_actor(friends, :director1, :actor2, films, roles)
+friends = add_director(friends, :actor2, :director2, films, roles)
+friends = add_actor(friends, :director2, :actor3, films, roles)
+
+friends = friends.restrict(
+  Predicate.dsl {
+    lt(:actor1, :actor3) &
+    neq(:actor1, :actor2) &
+    neq(:actor2, :actor3)
+  }
+)
+```
+
+| actor3 | director2 | actor2 | director1 | actor1 |
+| ------ | --------- | ------ | --------- | ------ |
+| Shelley Duval | Robert Altman | Robin Williams | Robert Altman | Jennifer Jason Leigh |
+| Robin Williams | Robert Altman | Shelley Duval | Robert Altman | Jennifer Jason Leigh |
+| Peter Sellers | Stanley Kubrik | Shelley Duval | Robert Altman | Jennifer Jason Leigh |
+| Robin Williams | Robert Altman | Shelley Duval | Stanley Kubrik | Peter Sellers |
+| Shelley Duval | Robert Altman | Jennifer Jason Leigh | Robert Altman | Robin Williams |
+
+Like before, the final `restrict` makes sure the "beginning" and "end" of the chain are ordered, to exclude tuples that are identical but in reverse order. However, we only impose the condition that `actor1` and `actor2` are *different* not ordered, and likewise for `actor2` and `actor3`. Otherwise we would have excluded valid tuples.
+
+From the resulting relation, we can for example learn that:
+
+> Peter Sellers and Jennifer Jason Leigh are related in that Sellers worked with Stanley Kubrik, who also worked with Shelley Duval, who in turn worked with Robert Altman, who also worked with Sellers!
+
+Extending our query required only two invokations of the extracted methods, and a modification of the final `restrict`. This kind of modularity is in general impossible to achieve in SQL, unless you succumb to concatenating query strings. This might seem like an unfair comparison, since we are using a general-purpose programming language. However, even [Object-Relational Mappings](https://en.wikipedia.org/wiki/Object%E2%80%93relational_mapping) and other database wrappers have problems expressing this kind of composition in a natural way. As we have noted earlier, this is because they target SQL:s *syntax*, which, as we have noted earlier, was not created with composability in mind.
+
