@@ -9,6 +9,7 @@ import sitemap from "@astrojs/sitemap";
 export default defineConfig({
   site: "https://www.relational-algebra.dev",
   integrations: [starlight({
+    credits: true,
     head: [
       {
         tag: 'script',
