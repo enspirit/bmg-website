@@ -13,7 +13,7 @@ curl -O https://raw.githubusercontent.com/enspirit/bmg/master/spec/suppliers-and
 
 (Consult the [Operations overview](/reference/overview/) for the database schema.)
 
-Then simply open the file and use it as the basis for relations:
+Then simply open the file and use it as a source for relations:
 
 ```ruby title="my_bmg_script.rb"
 require 'bundler/inline'
@@ -26,7 +26,6 @@ gemfile do
   gem 'sqlite3'
 end
 
-require 'json'
 require 'bmg/sequel'
 
 db = Bmg::Database.sequel("sqlite://./suppliers-and-parts.db")
@@ -97,13 +96,13 @@ If you want to understand exactly what this query does, just try removing one li
 
 ## Understanding SQL Compilation
 
-In the example above, we can't run `to_sql` on the second relation (`total_weights_in_paris`) because the `extend` is written in pure Ruby, which prevents both `extend` and `summarize` to be translated to SQL.
+In the example above, we can't run `to_sql` on the second relation (`total_weights_in_paris`) because the `extend` uses a native Ruby function, which prevents both `extend` and `summarize` to be translated to SQL. (And `summarize` operations are also never translated.)
 
 ```shell
 with-rdbms.rb:24:in `<main>': undefined method `to_sql' for (summarize (NoMethodError)
 ```
 
-To better understand why the query works (`JSON.pretty_generate` returned expected result), let debug the query tree (`.debug` can always be chained, it returns the relation itself):
+To better understand why the query works (`JSON.pretty_generate` returns the expected result), let's debug the query tree (`.debug` can always be chained, it returns the relation itself):
 
 ```ruby
 total_weights_in_paris.debug
@@ -116,7 +115,9 @@ total_weights_in_paris.debug
   {:total_weight=>#<Bmg::Summarizer::Sum:0x0000000103808c08 @options={}, @functor=:total_weight>})
 ```
 
-As you can see, `extend` and `summarize` enclose the SQL query and will be executed by Bmg itself. This does not prevent chaining further, Bmg will even optimize queries and push everything it can to the SQL engine. In the example below, observe how the restriction on 'Smith' yields a WHERE clause in SQL while the `restrict` operator is not the top of the tree:
+As you can see, `extend` and `summarize` enclose the SQL query and will be executed by Bmg itself, after the SQL part has been executed and a result obtained from the database. This does not prevent chaining further, Bmg will even optimize subsequent chained operations and push everything it can to the SQL engine.
+
+In the example below, observe how the restriction on "Smith" yields a `WHERE` clause in SQL, although the `restrict` operator is not at the top of the query tree:
 
 ```ruby
 total_weights_in_paris
