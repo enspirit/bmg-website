@@ -5,12 +5,95 @@ sidebar:
   order: 1
 ---
 
-```ruby
-require 'bmg'
+To start experimenting with Bmg as an interface to a SQL database, fetch the *Suppliers and parts* example database in SQLite format:
+
+```bash
+curl -O https://raw.githubusercontent.com/enspirit/bmg/master/spec/suppliers-and-parts.db
+```
+
+(Consult the [Operations overview](/reference/overview/) for the database schema.)
+
+Then simply open the file and use it as the basis for relations:
+
+```ruby title="my_bmg_script.rb"
+require 'bundler/inline'
+
+gemfile do
+  source 'https://rubygems.org'
+  gem 'bmg'
+  gem 'json'
+  gem 'sequel'
+  gem 'sqlite3'
+end
+
 require 'bmg/sequel'
-DB = Sequel.connect("sqlite://./spec/suppliers-and-parts.db")
+
+DB = Sequel.connect("sqlite://./suppliers-and-parts.db")
+
 parts = Bmg.sequel(:parts, DB)
 cities = Bmg.sequel(:cities, DB)
 supplies = Bmg.sequel(:supplies, DB)
 suppliers = Bmg.sequel(:suppliers, DB)
+
+parts_in_paris = suppliers
+  .restrict(Predicate.eq(:city, "Paris"))
+  .project([:sid])
+  .join(supplies, [:sid])
+  .join(parts, [:pid])
+  .project([:name, :weight, :qty])
+
+puts "Parts in Paris:"
+puts JSON.pretty_generate(parts_in_paris)
+puts "\nSQL:"
+puts parts_in_paris.to_sql
+
+total_weights_in_paris = parts_in_paris
+  .extend(total_weight: -> (t) { t[:qty] * t[:weight] } )
+  .summarize([:name], total_weight: :sum)
+
+puts "\nTotal weights in Paris:"
+puts JSON.pretty_generate(total_weights_in_paris)
 ```
+
+Output:
+
+```json
+Parts in Paris:
+[
+  {
+    "qty": 300,
+    "name": "Nut",
+    "weight": 12.0
+  },
+  {
+    "qty": 400,
+    "name": "Bolt",
+    "weight": 17.0
+  },
+  {
+    "qty": 200,
+    "name": "Bolt",
+    "weight": 17.0
+  }
+]
+
+SQL:
+SELECT DISTINCT `t2`.`qty`, `t3`.`name`, `t3`.`weight` FROM `suppliers` AS 't1' INNER JOIN `supplies` AS 't2' ON (`t1`.`sid` = `t2`.`sid`) INNER JOIN `parts` AS 't3' ON (`t2`.`pid` = `t3`.`pid`) WHERE (`t1`.`city` = 'Paris')
+
+Total weights in Paris:
+[
+  {
+    "total_weight": 3600.0,
+    "name": "Nut"
+  },
+  {
+    "total_weight": 10200.0,
+    "name": "Bolt"
+  }
+```
+
+If you want to understand exactly what this query does, just try removing one line at a time from the bottom (starting with `summarize`) and re-run the script!
+
+:::note
+We can't run `to_sql` on the second relation (`total_weights_in_paris`) because `summarize` isn't translated to SQL. However, Bmg does its best to delegate as much work as possible to the SQL database, even in the presence of operations which can't be compiled, by reordering operations when possible.
+:::
