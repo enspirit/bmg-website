@@ -96,7 +96,7 @@ If you want to understand exactly what this query does, just try removing one li
 
 ## Understanding SQL Compilation
 
-In the example above, we can't run `to_sql` on the second relation (`total_weights_in_paris`) because the `extend` uses a native Ruby function, which prevents both `extend` and `summarize` to be translated to SQL. (And `summarize` operations are also never translated.)
+In the example above, we can't run `to_sql` on the second relation (`total_weights_in_paris`) because the `extend` uses a native Ruby function, which prevents both `extend` and `summarize` to be translated to SQL.
 
 ```shell
 with-rdbms.rb:24:in `<main>': undefined method `to_sql' for (summarize (NoMethodError)
