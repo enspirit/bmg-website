@@ -4,13 +4,17 @@ sidebar:
   order: 7
 ---
 
-We will conclude this primer with a somewhat more advanced example of composing operations in Relational Algebra to construct a new operation. **Division** is one of the classical operations of Relational Algebra, but it hasn't been implemented in SQL and is relatively unknown. Nevertheless, once you know about it, it can come in handy in many situations.
+We will conclude this primer with a somewhat more advanced example of composing operations in relational algebra to construct a new operation. **Division** is one of the classical operations of relational algebra, but it hasn't been implemented in SQL and is relatively unknown. Nevertheless, once you know about it, it can come in handy in many situations.
+
+In short, relational division answers questions like, *Which products are available in **all** requested colors?*
 
 :::note
-The examples and equations in this section only work because relations have set semantics, meaning they can have no duplicate tuples.
+More abstractly, given relations **A** and **B**, where **B's** attribute are a subset of **A's** attributes, we want to find out which of **B's** tuples are paired in **A** with *every possible combination* of remaining attributes. (The remaining attributes being those that are not also in **B**.)
+
+Doing this is to divide **A** by **B**. This will hopefully make sense by the end of this section!
 :::
 
-What does it mean to divide one relation by another? It means the inverse of a Cross product, similar to how, in arithmetic, division is the inverse of multiplication. In other words, division is a way to "undo" multiplication, and multiplication is a way to "undo" division. If **X = Y * Z**, then **X / Y = Z** and **X / Z = Y**. It's the same thing with divison in Relational Algebra: if a relation **R1** is formed as the Cross product of **R2** and **R3**, then **R1 ÷ R2 = R3** and **R1 ÷ R3 = R2**.
+**Division** is the inverse of **Cross product**, similar to how, in arithmetic, division is the inverse of multiplication. In other words, division is a way to "undo" multiplication, and multiplication is a way to "undo" division. If **X = Y * Z**, then **X / Y = Z** and **X / Z = Y**. It's the same thing with divison in relational algebra: if a relation **R1** is formed as the Cross product of **R2** and **R3**, then **R1 ÷ R2 = R3** and **R1 ÷ R3 = R2**.
 
 ## A First Approximation
 
