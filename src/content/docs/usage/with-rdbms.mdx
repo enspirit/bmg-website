@@ -117,7 +117,7 @@ total_weights_in_paris.debug
 
 As you can see, `extend` and `summarize` enclose the SQL query and will be executed by Bmg itself, after the SQL part has been executed and a result obtained from the database. This does not prevent chaining further, Bmg will even optimize subsequent chained operations and push everything it can to the SQL engine.
 
-In the example below, observe how the restriction on "Smith" yields a `WHERE` clause in SQL, although the `restrict` operator is not at the top of the query tree:
+In the example below, observe how the restriction on "Smith" yields a `WHERE` clause in SQL, although the `restrict` operation is chained after `extend` and `summarize`:
 
 ```ruby
 total_weights_in_paris
