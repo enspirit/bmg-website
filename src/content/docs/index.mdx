@@ -16,18 +16,18 @@ import enspiritLogoLight from "../../assets/enspirit-logo-light.png";
 import enspiritLogoDark from "../../assets/enspirit-logo-dark.png";
 
 <CardGrid>
-	<LinkCard
-	  title="Want to learn relational algebra?"
-	  description="Dive into our comprehensive primer on relational algebra."
-	  href="/ra-primer/introduction"
-	>
-	</LinkCard>
-	<LinkCard
-	  title="Want to use Bmg in your Ruby project?"
-	  description="Get started in no time with our tutorials and operations reference."
-	  href="/usage/getting-started/"
-	>
-	</LinkCard>
+        <LinkCard
+          title="Want to learn relational algebra?"
+          description="Dive into our comprehensive primer on relational algebra."
+          href="/ra-primer/introduction"
+        >
+        </LinkCard>
+        <LinkCard
+          title="Want to use Bmg in your Ruby project?"
+          description="Get started in no time with our tutorials and operations reference."
+          href="/usage/getting-started/"
+        >
+        </LinkCard>
 </CardGrid>
 
 <div class="text-4xl pt-12 pb-4 underline decoration-amber-500">
@@ -51,33 +51,96 @@ purchases
   What is it good for?
 </div>
 <CardGrid>
-	<Card title="A solid foundation">
-	  Bmg stays faithful to the mathematical foundations of relational databases. Everything is a relation and operations can always be chained.
-	</Card>
-	<Card title="Works with any data">
-	  Query, transform, and combine data from SQL databases, CSV files, spreadsheets, Redis and more.
-	</Card>
-	<Card title="Unlimited composability">
-	  It's trivial to extract and compose operations on relations in Bmg.
-	</Card>
-	<Card title="Fits in any project">
-	  You can use Bmg in any Ruby codebase, by itself or alongside ActiveRecord or any other database wrapper.	
-	</Card>
+        <Card title="A solid foundation">
+          Bmg stays faithful to the mathematical foundations of relational databases. Everything is a relation and operations can always be chained.
+        </Card>
+        <Card title="Works with any data">
+          Query, transform, and combine data from SQL databases, CSV files, spreadsheets, Redis and more.
+        </Card>
+        <Card title="Unlimited composability">
+          It's trivial to extract and compose operations on relations in Bmg.
+        </Card>
+        <Card title="Fits in any project">
+          You can use Bmg in any Ruby codebase, by itself or alongside ActiveRecord or any other database wrapper.      
+        </Card>
 </CardGrid>
+
+
+<div class="text-4xl pt-12 pb-4 underline decoration-amber-500">
+  Think in relations, get SQL 
+</div>
+<CardGrid>
+        <Card>
+        ```ruby
+        suppliers
+          .restrict(Predicate.eq(:city, "Paris"))
+          .project([:sid])
+          .join(supplies, [:sid])
+          .join(parts, [:pid])
+          .project([:name, :weight, :qty])
+        ```
+        </Card>
+        <Card>
+        ```sql
+        SELECT DISTINCT `t2`.`qty`, `t3`.`name`, `t3`.`weight`
+        FROM `suppliers` AS 't1'
+        INNER JOIN `supplies` AS 't2' ON (`t1`.`sid` = `t2`.`sid`)
+        INNER JOIN `parts` AS 't3' ON (`t2`.`pid` = `t3`.`pid`)
+        WHERE (`t1`.`city` = 'Paris')
+        ```
+        </Card>
+        <Card> 
+        ```ruby
+        suppliers
+          .not_matching(supplies, [:sid])
+        ```
+        </Card>
+        <Card>
+        ```sql
+        SELECT `t1`.`sid`, `t1`.`name`, `t1`.`status`, `t1`.`city`
+        FROM `suppliers` AS 't1'
+        WHERE NOT (
+          EXISTS (
+            SELECT * FROM `supplies` AS 't2'
+            WHERE (`t1`.`sid` = `t2`.`sid`)
+          )
+        )
+        ```
+        </Card>
+        <Card> 
+        ```ruby
+        suppliers
+          .project([:city])
+          .union(
+            parts.project([:city])
+          )
+        ```
+        </Card>
+        <Card>
+        ```sql
+        SELECT DISTINCT `t1`.`city`
+        FROM `suppliers` AS 't1'
+        UNION
+        SELECT DISTINCT `t1`.`city`
+        FROM `parts` AS 't1'
+        ```
+        </Card>
+</CardGrid>
+
 
 <div class="h-8 !mt-16 w-full flex justify-center">
   <span class="text-lg object-contain">Created with ♥️ by</span>
   <a class="flex h-full size-fit py-1.5 w-32 float-end"
      href="https://www.enspirit.dev">
       <Image
-	src={enspiritLogoLight}
-	alt="Enspirit logo"
-	class="dark:sl-hidden object-contain"
+        src={enspiritLogoLight}
+        alt="Enspirit logo"
+        class="dark:sl-hidden object-contain"
       />
       <Image
-	src={enspiritLogoDark}
-	alt="Enspirit logo"
-	class="light:sl-hidden object-contain !m-0"
+        src={enspiritLogoDark}
+        alt="Enspirit logo"
+        class="light:sl-hidden object-contain !m-0"
       />
   </a>
 </div>
