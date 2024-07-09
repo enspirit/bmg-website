@@ -8,6 +8,8 @@ import { Aside, Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
 
 This pages summarizes usual SQL queries and their equivalent in Bmg. Please carefully read the notes below each example, as subtle semantics differences exist between Bmg and SQL regarding: duplicate tuples, duplicate attribute names, tuple ordering and null.
 
+**And remember**: [Bmg truly composes](/ra-primer/algebra/#the-benefits-of-algebras). You can for instance use `union` or `restrict` after a group by (`summarize`), use `restrict` multiple times in a row, and make any other composition that would fail in SQL or with query composer libraries.
+
 ## SELECT
 
 <CardGrid>
@@ -454,7 +456,7 @@ Bmg allows providing an optional 'default' tuple for missing ones on right opera
   <Card>
   ```sql
   SELECT
-    city, MAX(status)
+    city, MAX(status) AS status
   FROM
     suppliers s
   GROUP BY
@@ -487,6 +489,33 @@ Bmg allows providing an optional 'default' tuple for missing ones on right opera
   ```
   </Card>
 </CardGrid>
+
+### HAVING
+
+<CardGrid>
+  <Card>
+  ```sql
+  SELECT
+    city, MAX(status) AS status
+  FROM
+    suppliers s
+  GROUP BY
+    city
+  HAVING
+    status < 100
+  ```
+  </Card>
+  <Card>
+  ```ruby
+  suppliers
+    .summarize([:city], :status => :max)
+    .restrict(Predicate.lt(:status, 100))
+  ```
+  </Card>
+</CardGrid>
+
+Bmg has no special `HAVING` construct, it's as simple as using `restrict` (`WHERE`)
+like SQL should do.
 
 ## LIMIT / OFFSET
 
