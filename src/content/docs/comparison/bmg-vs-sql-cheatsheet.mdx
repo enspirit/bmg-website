@@ -1,0 +1,525 @@
+---
+title: Using Bmg when coming from SQL, a cheatsheet
+sidebar:
+  order: 1
+  label: SQL (a cheatsheet)
+---
+import { Aside, Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+This pages summarizes usual SQL queries and their equivalent in Bmg. Please carefully read the notes below each example, as subtle semantics differences exist between Bmg and SQL regarding: duplicate tuples, duplicate attribute names, tuple ordering and null.
+
+## SELECT
+
+<CardGrid>
+  <Card>
+  ```sql
+  SELECT * FROM suppliers
+  ```
+  </Card>
+  <Card>
+  ```ruby
+  suppliers
+  ```
+  </Card>
+</CardGrid>
+
+<CardGrid>
+  <Card>
+  ```sql
+  SELECT sid, name FROM suppliers
+  ```
+  </Card>
+  <Card>
+  ```ruby
+  suppliers
+    .project([:sid, :name])
+  ```
+  </Card>
+</CardGrid>
+
+### DISTINCT
+
+<CardGrid>
+  <Card>
+  ```sql
+  SELECT DISTINCT city FROM suppliers
+  ```
+  </Card>
+  <Card>
+  ```ruby
+  suppliers
+    .project([:city])
+  ```
+  </Card>
+</CardGrid>
+
+Unlike SQL, Bmg never returns duplicates, hence the absence of a `.distinct` operator. Bmg's SQL compiler will automatically introduce `DISTINCT` if needed to filter duplicates.
+
+### Renaming...
+
+<CardGrid>
+  <Card>
+  ```sql
+  SELECT
+    sid AS supplier_id
+  FROM suppliers
+  ```
+  </Card>
+  <Card>
+  ```ruby
+  suppliers
+    .rename(:sid => :supplier_id)
+  ```
+  </Card>
+</CardGrid>
+
+<CardGrid>
+  <Card>
+  ```sql
+  SELECT
+    id AS supplier_id,
+    name AS supplier_name,
+    city AS supplier_city,
+    status AS supplier_status
+  FROM suppliers
+  ```
+  </Card>
+  <Card>
+  ```ruby
+  suppliers
+    .prefix(:supplier_)
+  ```
+  </Card>
+</CardGrid>
+
+<CardGrid>
+  <Card>
+  ```sql
+  SELECT
+    id AS id_supplier,
+    name AS name_supplier,
+    city AS city_supplier,
+    status AS status_supplier
+  FROM suppliers
+  ```
+  </Card>
+  <Card>
+  ```ruby
+  suppliers
+    .suffix(:_supplier)
+  ```
+  </Card>
+</CardGrid>
+
+Unlike SQL, Bmg does not support multiple attributes having the same name (aka duplicate attributes). Bmg's `.prefix` and `.suffix` have no equivalent in SQL: you'll have to do the job manually, as in the example above.
+
+### All but an attribute...
+
+<CardGrid>
+  <Card>
+  ```sql
+  SELECT
+    sid,
+    name,
+    city
+  FROM suppliers
+  ```
+  </Card>
+  <Card>
+  ```ruby
+  suppliers
+    .allbut([:status])
+  ```
+  </Card>
+</CardGrid>
+
+SQL does not support an `ALLBUT` keyword. You'll have to select all attributes but those that you want to throw away, as in the example above.
+
+## WHERE
+
+<CardGrid>
+  <Card>
+  ```sql
+  SELECT * FROM suppliers
+  WHERE city = 'London'
+  ```
+  </Card>
+  <Card>
+  ```ruby
+  suppliers
+    .restrict(city: 'London')
+  ```
+  or
+  ```ruby
+  p = Predicate.eq(:city, 'London')
+  suppliers
+    .restrict(p)
+  ```
+  </Card>
+</CardGrid>
+
+<CardGrid>
+  <Card>
+  ```sql
+  SELECT * FROM suppliers
+  WHERE city <> 'London'
+  ```
+  </Card>
+  <Card>
+  ```ruby
+  suppliers
+    .exclude(city: 'London')
+  ```
+  or
+  ```ruby
+  p = Predicate.neq(:city, 'London')
+  suppliers
+    .restrict(p)
+  ```
+  </Card>
+</CardGrid>
+
+<CardGrid>
+  <Card>
+  ```sql
+  SELECT * FROM suppliers
+  WHERE city IN ('London', 'Paris')
+  ```
+  </Card>
+  <Card>
+  ```ruby
+  suppliers
+    .restrict(city: ['London', 'Paris'])
+  ```
+  or
+  ```ruby
+  p = Predicate.in(:city, ['London', 'Paris'])
+  suppliers
+    .restrict(p)
+  ```
+  </Card>
+</CardGrid>
+
+Please refer to [Predicate's documentation](https://github.com/enspirit/predicate) or [Bmg's README](https://github.com/enspirit/bmg) for the full list of supported predicates.
+
+### EXISTS / IN
+
+<CardGrid>
+  <Card>
+  ```sql
+  SELECT * FROM suppliers s
+  WHERE EXISTS (
+    SELECT * FROM supplies ss
+    WHERE ss.sid = s.sid
+  )
+  ```
+  </Card>
+  <Card>
+  ```ruby
+  suppliers
+    .matching(supplies, [:sid])
+  ```
+  </Card>
+</CardGrid>
+
+<CardGrid>
+  <Card>
+  ```sql
+  SELECT * FROM suppliers s
+  WHERE NOT EXISTS (
+    SELECT * FROM supplies ss
+    WHERE ss.sid = s.sid
+  )
+  ```
+  </Card>
+  <Card>
+  ```ruby
+  suppliers
+    .not_matching(supplies, [:sid])
+  ```
+  </Card>
+</CardGrid>
+
+We discourage the usage of `WHERE (NOT) IN` in SQL since its semantics in presence of `NULL` may generate subtle bugs. Bmg's `matching` and `not_matching` can be used everytime you'd be using `IN` in SQL.
+
+## JOIN
+
+### CROSS
+
+<CardGrid>
+  <Card>
+  ```sql
+  SELECT s.*, p.*
+  FROM
+    suppliers s,
+    parts p
+  ```
+  </Card>
+  <Card>
+  ```ruby
+  suppliers
+    .cross_join(parts)
+  ```
+  or
+  ```ruby
+  suppliers
+    .join(parts, [])
+  ```
+  </Card>
+</CardGrid>
+
+Please note that Bmg does not allow duplicate attribute names. Hence, the examples above are only equivalent if `suppliers` and `parts` have no attribute in common. In practice, Bmg simply ignores attributes of the right operand that already exist on the left operand, in the join result.
+
+In other words, the following compilation actually applies:
+
+<CardGrid>
+  <Card>
+  ```ruby
+  suppliers
+    .cross_join(parts)
+  ```
+  </Card>
+  <Card>
+  ```sql
+  SELECT
+    s.sid,
+    s.name,
+    s.status,
+    s.city,
+    p.pid
+    -- p.name, p.status and p.city are ignored
+  FROM
+    suppliers s,
+    parts p
+  ```
+  </Card>
+</CardGrid>
+
+### EQUI
+
+<CardGrid>
+  <Card>
+  ```sql
+  SELECT s.*, ss.*
+  FROM
+    suppliers s
+  JOIN
+    supplies ss ON ss.sid = s.sid
+  ```
+  </Card>
+  <Card>
+  ```ruby
+  suppliers
+    .join(supplies, [:sid])
+  ```
+  </Card>
+</CardGrid>
+
+<CardGrid>
+  <Card>
+  ```sql
+  SELECT s.*, ss.*
+  FROM
+    suppliers s
+  JOIN
+    supplies ss ON ss.supplier_id = s.id
+  ```
+  </Card>
+  <Card>
+  ```ruby
+  suppliers
+    .join(supplies, :supplier_id => :sid)
+  ```
+  </Card>
+</CardGrid>
+
+The same remark about duplicate attribute names applies here. In presence of conflictual attributes, the following compilation applies:
+
+<CardGrid>
+  <Card>
+  ```ruby
+  suppliers
+    .join(parts, [:city])
+  ```
+  </Card>
+  <Card>
+  ```sql
+  SELECT
+    s.sid,
+    s.name,
+    s.city,
+    s.status,
+    p.pid
+    -- p.name, p.status and p.city are ignored
+  FROM
+    suppliers s
+  JOIN
+    parts p ON p.city = s.city
+  ```
+  </Card>
+</CardGrid>
+
+### THETA
+
+<CardGrid>
+  <Card>
+  ```sql
+  SELECT s.*, p.*
+  FROM
+    suppliers s
+  JOIN
+    parts p ON s.status > p.status
+  ```
+  </Card>
+  <Card>
+  ```ruby
+  suppliers
+    .rename(:status => :s_status)
+    .cross_join(parts.rename(:status => :p_status))
+    .restrict(Predicate.gt(:s_status, :p_status))
+  ```
+  </Card>
+</CardGrid>
+
+The same remark about duplicate attribute names applies here.
+
+### LEFT
+
+<CardGrid>
+  <Card>
+  ```sql
+  SELECT
+    s.sid,
+    s.name,
+    s.city,
+    s.status,
+    COALESCE(p.pid, 'none') AS pid
+  FROM
+    suppliers s
+  LEFT JOIN
+    parts p ON s.city = p.city
+  ```
+  </Card>
+  <Card>
+  ```ruby
+  suppliers
+    .left_join(parts, [:city], :pid => 'none')
+  ```
+  </Card>
+</CardGrid>
+
+Bmg allows providing an optional 'default' tuple for missing ones on right operand. Not using it generates `NULL`/`nil` like SQL, which may expose subtle bugs further down in your data transformation.
+
+## UNION
+
+<CardGrid>
+  <Card>
+  ```sql
+  SELECT city FROM suppliers
+  UNION
+  SELECT city FROM parts
+  ```
+  </Card>
+  <Card>
+  ```ruby
+  suppliers
+    .project([:city])
+    .union(parts.project([:city]))
+  ```
+  </Card>
+</CardGrid>
+
+## MINUS
+
+<CardGrid>
+  <Card>
+  ```sql
+  SELECT city FROM suppliers
+  MINUS
+  SELECT city FROM parts
+  ```
+  </Card>
+  <Card>
+  ```ruby
+  suppliers
+    .project([:city])
+    .minus(parts.project([:city]))
+  ```
+  </Card>
+</CardGrid>
+
+## GROUP BY
+
+<CardGrid>
+  <Card>
+  ```sql
+  SELECT
+    city, MAX(status)
+  FROM
+    suppliers s
+  GROUP BY
+    city
+  ```
+  </Card>
+  <Card>
+  ```ruby
+  suppliers
+    .summarize([:city], :status => :max)
+  ```
+  </Card>
+</CardGrid>
+
+<CardGrid>
+  <Card>
+  ```sql
+  SELECT
+    city, COUNT(*) AS c
+  FROM
+    suppliers s
+  GROUP BY
+    city
+  ```
+  </Card>
+  <Card>
+  ```ruby
+  suppliers
+    .summarize([:city], :c => Bmg::Summarizer.count)
+  ```
+  </Card>
+</CardGrid>
+
+## LIMIT / OFFSET
+
+<CardGrid>
+  <Card>
+  ```sql
+  SELECT * FROM suppliers s
+  ORDER BY status DESC
+  LIMIT 3
+  ```
+  </Card>
+  <Card>
+  ```ruby
+  suppliers
+    .page([[:status, :desc]], 1, :page_size => 3)
+  ```
+  </Card>
+</CardGrid>
+
+<CardGrid>
+  <Card>
+  ```sql
+  SELECT * FROM suppliers s
+  ORDER BY status DESC
+  OFFSET 6 LIMIT 3
+  ```
+  </Card>
+  <Card>
+  ```ruby
+  suppliers
+    .page([[:status, :desc]], 3, :page_size => 3)
+  ```
+  </Card>
+</CardGrid>
+
+Unlike SQL, Bmg does not support limit/offset without specifying an ordering relation (SQL's `ORDER BY`), since the result is non deterministic.

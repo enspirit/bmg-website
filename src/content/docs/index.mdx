@@ -65,14 +65,17 @@ Keep scrolling for more examples!
           It's trivial to extract and compose operations on relations in Bmg.
         </Card>
         <Card title="Fits in any project">
-          You can use Bmg in any Ruby codebase, by itself or alongside ActiveRecord or any other database wrapper.      
+          You can use Bmg in any Ruby codebase, by itself or alongside ActiveRecord or any other database wrapper.
         </Card>
 </CardGrid>
 
 
 <div class="text-4xl pt-12 pb-4 underline decoration-amber-500">
-  Think relations, get SQL 
+  Think relations, get SQL
 </div>
+
+Get more examples in our [SQL vs. Bmg cheatsheet](/comparison/bmg-vs-sql-cheatsheet/).
+
 <CardGrid>
         <Card>
         ```ruby
@@ -95,7 +98,7 @@ Keep scrolling for more examples!
         WHERE (`t1`.`city` = 'Paris')
         ```
         </Card>
-        <Card> 
+        <Card>
         ```ruby
         suppliers
           .not_matching(supplies, [:sid])
@@ -113,7 +116,7 @@ Keep scrolling for more examples!
         )
         ```
         </Card>
-        <Card> 
+        <Card>
         ```ruby
         suppliers
           .project([:city])
@@ -132,7 +135,6 @@ Keep scrolling for more examples!
         ```
         </Card>
 </CardGrid>
-
 
 <div class="h-8 !mt-16 w-full flex justify-center">
   <span class="text-lg object-contain">Created with ♥️ by</span>

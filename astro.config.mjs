@@ -38,6 +38,11 @@ export default defineConfig({
         directory: 'ra-primer'
       }
     }, {
+      label: 'Bmg compared to',
+      autogenerate: {
+        directory: 'comparison'
+      }
+    }, {
       label: 'Usage',
       autogenerate: {
         directory: 'usage'

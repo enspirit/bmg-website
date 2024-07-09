@@ -1,3 +1,7 @@
+:root {
+  --sl-sidebar-width: 15rem;
+  --sl-content-width: 60rem;
+}
 .sl-markdown-content ol {
   list-style: decimal;
   list-style-position: inside;
