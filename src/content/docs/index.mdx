@@ -38,11 +38,11 @@ import enspiritLogoDark from "../../assets/enspirit-logo-dark.png";
 
 ```ruby
 # List the total number of purchases, excluding samples,
-# for each product in the cheeze category
+# for each product in the cheese category
 purchases
   .restrict(Predicate.neq(:product_type, 'sample'))
   .join(products, :product_id => :id)
-  .restrict(Predicate.eq(:category, 'cheeze'))
+  .restrict(Predicate.eq(:category, 'cheese'))
   .project([:product_id, :quantity])
   .summarize([:product_id], :quantity => :sum)
 ```
