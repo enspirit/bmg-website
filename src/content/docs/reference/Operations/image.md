@@ -1,0 +1,121 @@
+---
+title: image
+---
+
+```ruby
+left.image(right, :images, [:foreign_key])
+left.image(right, :images, [:foreign_key], array: true)
+```
+
+### Problem
+
+Extend each tuple with its related tuples from another relation, creating a nested sub-relation.
+
+Example: *I want each supplier along with all the parts they supply as a nested collection.*
+
+### Description
+
+The `image` operator extends each tuple from the left relation with a new attribute containing all matching tuples from the right relation. This creates a hierarchical/nested structure.
+
+For each left tuple, the operator finds all right tuples that match on the specified join attributes, collects them into a relation (or array), and adds them as a new attribute.
+
+Parameters:
+- `right` - The relation to get the image from
+- `as` - The name of the new attribute (default: `:image`)
+- `on` - The attributes to join on (default: `[]`)
+- `options` - Additional options:
+  - `array: true` - Convert the image to an Array instead of a Relation
+  - `preserve: true` - Keep the join attributes in the nested tuples
+
+### Requirements
+
+The join attributes must exist in both relations.
+
+### Examples
+
+*Consult the [Overview page](/reference/overview) for the data model used in these examples.*
+
+#### Basic image
+
+Get each supplier with their supplies as a nested relation:
+
+```ruby
+suppliers.image(supplies, :supplies, [:sid]).to_a
+
+=>
+[{:sid=>"S1", :name=>"Smith", :status=>20, :city=>"London",
+  :supplies=>#<Bmg::Relation ...>},
+ {:sid=>"S2", :name=>"Jones", :status=>10, :city=>"Paris",
+  :supplies=>#<Bmg::Relation ...>},
+ {:sid=>"S3", :name=>"Blake", :status=>30, :city=>"Paris",
+  :supplies=>#<Bmg::Relation ...>},
+ {:sid=>"S4", :name=>"Clark", :status=>20, :city=>"London",
+  :supplies=>#<Bmg::Relation ...>},
+ {:sid=>"S5", :name=>"Adams", :status=>30, :city=>"Athens",
+  :supplies=>#<Bmg::Relation []>}]
+```
+
+Note that S5 has an empty relation because they have no supplies.
+
+#### Image as array
+
+Get each supplier with their supplies as an array (useful for JSON serialization):
+
+```ruby
+suppliers.image(supplies, :supplies, [:sid], array: true)
+  .project([:sid, :name, :supplies])
+  .to_a
+
+=>
+[{:sid=>"S1", :name=>"Smith",
+  :supplies=>[{:pid=>"P1", :qty=>300}, {:pid=>"P2", :qty=>200}, ...]},
+ {:sid=>"S2", :name=>"Jones",
+  :supplies=>[{:pid=>"P1", :qty=>300}, {:pid=>"P2", :qty=>400}]},
+ {:sid=>"S3", :name=>"Blake",
+  :supplies=>[{:pid=>"P2", :qty=>200}]},
+ {:sid=>"S4", :name=>"Clark",
+  :supplies=>[{:pid=>"P2", :qty=>200}, {:pid=>"P4", :qty=>300}, {:pid=>"P5", :qty=>400}]},
+ {:sid=>"S5", :name=>"Adams",
+  :supplies=>[]}]
+```
+
+#### Building hierarchical data
+
+Create a nested structure with parts and their suppliers:
+
+```ruby
+parts
+  .image(
+    supplies.join(suppliers.project([:sid, :name]), [:sid]),
+    :supplied_by,
+    [:pid],
+    array: true
+  )
+  .project([:pid, :name, :supplied_by])
+  .to_a
+
+=>
+[{:pid=>"P1", :name=>"Nut",
+  :supplied_by=>[{:sid=>"S1", :name=>"Smith", :qty=>300},
+                 {:sid=>"S2", :name=>"Jones", :qty=>300}]},
+ {:pid=>"P2", :name=>"Bolt",
+  :supplied_by=>[{:sid=>"S1", :name=>"Smith", :qty=>200}, ...]},
+ ...]
+```
+
+### Comparison with join
+
+The key difference between `image` and `join`:
+
+- `join` produces one result tuple for each match (flattened, may duplicate left tuples)
+- `image` produces one result tuple per left tuple, with matches nested inside
+
+```ruby
+# join: one row per supplier-supply combination
+suppliers.join(supplies, [:sid]).count
+=> 12  # Multiple rows for suppliers with multiple supplies
+
+# image: one row per supplier, supplies nested
+suppliers.image(supplies, :supplies, [:sid]).count
+=> 5   # One row per supplier
+```
