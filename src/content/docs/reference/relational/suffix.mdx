@@ -2,9 +2,20 @@
 title: suffix
 ---
 
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+<Tabs syncKey="lang">
+  <TabItem label="Ruby">
 ```ruby
 rel.suffix(:_foo, but: [:a, ...])
 ```
+  </TabItem>
+  <TabItem label="TypeScript">
+```typescript
+rel.suffix('_foo', { but: ['a', ...] })
+```
+  </TabItem>
+</Tabs>
 
 ### Problem
 
@@ -24,6 +35,8 @@ None specific. The `but` attributes, if specified, must exist in the input relat
 
 *Consult the [Overview page](/reference/overview) for the data model used in this example.*
 
+<Tabs syncKey="lang">
+  <TabItem label="Ruby">
 ```ruby
 suppliers.suffix(:_supplier).to_a
 
@@ -47,3 +60,30 @@ suppliers.suffix(:_supplier, but: [:sid]).to_a
  {:sid=>"S4", :name_supplier=>"Clark", :status_supplier=>20, :city_supplier=>"London"},
  {:sid=>"S5", :name_supplier=>"Adams", :status_supplier=>30, :city_supplier=>"Athens"}]
 ```
+  </TabItem>
+  <TabItem label="TypeScript">
+```typescript
+suppliers.suffix('_supplier').toArray()
+
+// =>
+// [{ sid_supplier: "S1", name_supplier: "Smith", status_supplier: 20, city_supplier: "London" },
+//  { sid_supplier: "S2", name_supplier: "Jones", status_supplier: 10, city_supplier: "Paris" },
+//  { sid_supplier: "S3", name_supplier: "Blake", status_supplier: 30, city_supplier: "Paris" },
+//  { sid_supplier: "S4", name_supplier: "Clark", status_supplier: 20, city_supplier: "London" },
+//  { sid_supplier: "S5", name_supplier: "Adams", status_supplier: 30, city_supplier: "Athens" }]
+```
+
+With the `but` option to exclude certain attributes:
+
+```typescript
+suppliers.suffix('_supplier', { but: ['sid'] }).toArray()
+
+// =>
+// [{ sid: "S1", name_supplier: "Smith", status_supplier: 20, city_supplier: "London" },
+//  { sid: "S2", name_supplier: "Jones", status_supplier: 10, city_supplier: "Paris" },
+//  { sid: "S3", name_supplier: "Blake", status_supplier: 30, city_supplier: "Paris" },
+//  { sid: "S4", name_supplier: "Clark", status_supplier: 20, city_supplier: "London" },
+//  { sid: "S5", name_supplier: "Adams", status_supplier: 30, city_supplier: "Athens" }]
+```
+  </TabItem>
+</Tabs>

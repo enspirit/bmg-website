@@ -1,6 +1,6 @@
 ---
 title: B⋈G
-description: A Ruby library for data querying and tranformation using relational algebra
+description: Relational algebra libraries for Ruby and TypeScript
 tableOfContents: false
 hero:
   tagline: Relational Algebra for Modern Times
@@ -23,9 +23,15 @@ import enspiritLogoDark from "../../assets/enspirit-logo-dark.png";
         >
         </LinkCard>
         <LinkCard
-          title="Want to use Bmg in your Ruby project?"
+          title="Want to use Bmg in Ruby?"
           description="Get started in no time with our tutorials and operations reference."
           href="/usage/getting-started/"
+        >
+        </LinkCard>
+        <LinkCard
+          title="Want to use Bmg.js in TypeScript?"
+          description="Bring relational algebra to your JavaScript/TypeScript projects."
+          href="/usage/getting-started-ts/"
         >
         </LinkCard>
 </CardGrid>
@@ -36,6 +42,10 @@ import enspiritLogoDark from "../../assets/enspirit-logo-dark.png";
   </span>
 </div>
 
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+<Tabs syncKey="lang">
+  <TabItem label="Ruby">
 ```ruby
 # List the total number of purchases, excluding samples,
 # for each product in the cheese category
@@ -46,6 +56,20 @@ purchases
   .project([:product_id, :quantity])
   .summarize([:product_id], :quantity => :sum)
 ```
+  </TabItem>
+  <TabItem label="TypeScript">
+```typescript
+// List the total number of purchases, excluding samples,
+// for each product in the cheese category
+purchases
+  .exclude({ product_type: 'sample' })
+  .join(products, { product_id: 'id' })
+  .restrict({ category: 'cheese' })
+  .project(['product_id', 'quantity'])
+  .summarize(['product_id'], { quantity: { op: 'sum', attr: 'quantity' } })
+```
+  </TabItem>
+</Tabs>
 
 <div class="min-w-fit max-w-fit bg-orange-500/75 py-2 px-4 font-bold rounded-md">
 Keep scrolling for more examples!

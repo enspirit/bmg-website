@@ -1,0 +1,133 @@
+---
+title: autowrap
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+<Tabs syncKey="lang">
+  <TabItem label="Ruby">
+```ruby
+rel.autowrap
+rel.autowrap(split: "_")
+rel.autowrap(postprocessor: :nil)
+```
+  </TabItem>
+  <TabItem label="TypeScript">
+```typescript
+rel.autowrap()
+rel.autowrap({ split: "_" })
+```
+  </TabItem>
+</Tabs>
+
+### Problem
+
+Automatically structure flat tuples into nested objects based on attribute naming conventions.
+
+Example: *I have flat results from a SQL join with columns like `customer_id`, `customer_name`, and I want to nest them into a `customer` object.*
+
+### Description
+
+The `autowrap` operator transforms flat tuples into nested structures by detecting naming patterns. Attributes with names like `prefix_suffix` are automatically grouped under the prefix as a nested object.
+
+This is particularly useful when working with:
+- Results from SQL joins that produce flat column names
+- Data that needs to be serialized to JSON with nested objects
+- Denormalized data that should be re-structured
+
+<Tabs syncKey="lang">
+  <TabItem label="Ruby">
+**Options:**
+
+| Option | Description |
+|--------|-------------|
+| `split` | The separator to use for detecting nesting (default: `"_"`) |
+| `postprocessor` | How to handle all-nil nested objects: `:none` (default), `:nil` (replace with nil), or `:delete` (remove attribute) |
+  </TabItem>
+  <TabItem label="TypeScript">
+**Options:**
+
+| Option | Description |
+|--------|-------------|
+| `split` | The separator to use for detecting nesting (default: `"_"`) |
+  </TabItem>
+</Tabs>
+
+### Requirements
+
+No special requirements. Works on any relation.
+
+### Examples
+
+#### Basic autowrap
+
+<Tabs syncKey="lang">
+  <TabItem label="Ruby">
+```ruby
+flat = Bmg::Relation.new([
+  { id: 1, name: "Order 1", customer_id: 100, customer_name: "Alice", customer_city: "London" },
+  { id: 2, name: "Order 2", customer_id: 101, customer_name: "Bob", customer_city: "Paris" }
+])
+
+flat.autowrap.to_a
+
+=>
+[{:id=>1, :name=>"Order 1", :customer=>{:id=>100, :name=>"Alice", :city=>"London"}},
+ {:id=>2, :name=>"Order 2", :customer=>{:id=>101, :name=>"Bob", :city=>"Paris"}}]
+```
+  </TabItem>
+  <TabItem label="TypeScript">
+```typescript
+const flat = Bmg([
+  { id: 1, name: "Order 1", customer_id: 100, customer_name: "Alice", customer_city: "London" },
+  { id: 2, name: "Order 2", customer_id: 101, customer_name: "Bob", customer_city: "Paris" }
+])
+
+flat.autowrap().toArray()
+
+// =>
+// [{ id: 1, name: "Order 1", customer: { id: 100, name: "Alice", city: "London" } },
+//  { id: 2, name: "Order 2", customer: { id: 101, name: "Bob", city: "Paris" } }]
+```
+  </TabItem>
+</Tabs>
+
+#### Multi-level nesting
+
+Autowrap supports multiple levels of nesting:
+
+<Tabs syncKey="lang">
+  <TabItem label="Ruby">
+```ruby
+deep = Bmg::Relation.new([
+  { id: 1, ship_address_city: "London", ship_address_zip: "SW1", ship_address_country_name: "UK" }
+])
+
+deep.autowrap.to_a
+
+=>
+[{:id=>1, :ship=>{:address=>{:city=>"London", :zip=>"SW1", :country=>{:name=>"UK"}}}}]
+```
+  </TabItem>
+  <TabItem label="TypeScript">
+```typescript
+const deep = Bmg([
+  { id: 1, ship_address_city: "London", ship_address_zip: "SW1", ship_address_country_name: "UK" }
+])
+
+deep.autowrap().toArray()
+
+// =>
+// [{ id: 1, ship: { address: { city: "London", zip: "SW1", country: { name: "UK" } } } }]
+```
+  </TabItem>
+</Tabs>
+
+### Comparison with unwrap
+
+`autowrap` and `unwrap` are conceptual inverses:
+
+- `autowrap` - Detects naming patterns and creates nested objects
+- `unwrap` - Flattens nested objects back to top-level attributes
+
+However, they're not perfect inverses because `autowrap` uses naming conventions while `unwrap` simply merges keys.

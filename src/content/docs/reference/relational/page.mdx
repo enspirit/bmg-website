@@ -2,6 +2,10 @@
 title: page
 ---
 
+import { Badge } from '@astrojs/starlight/components';
+
+<Badge text="Ruby only" variant="note" />
+
 ```ruby
 rel.page([[:name, :asc]], 1, page_size: 10)
 rel.page([[:created_at, :desc]], 2, page_size: 25)
@@ -93,19 +97,6 @@ parts
  {:pid=>"P3", :name=>"Screw", :color=>"Blue", :weight=>17.0, :city=>"Oslo"}]
 ```
 
-#### Building a paginated API
-
-```ruby
-def get_suppliers(page: 1, per_page: 10, sort_by: :name, sort_dir: :asc)
-  suppliers
-    .page([[sort_by, sort_dir]], page, page_size: per_page)
-    .to_a
-end
-
-# Usage
-get_suppliers(page: 1, per_page: 5, sort_by: :status, sort_dir: :desc)
-```
-
 ### Empty pages
 
 Requesting a page beyond the available data returns an empty result:
@@ -118,8 +109,3 @@ suppliers.page([[:name, :asc]], 100, page_size: 10).to_a
 ### Note on ordering
 
 The ordering parameter is required because pagination without ordering produces unpredictable results. Each page request needs consistent ordering to ensure tuples don't appear on multiple pages or get skipped.
-
-```ruby
-# Always specify ordering for predictable pagination
-rel.page([[:id, :asc]], 1, page_size: 10)
-```

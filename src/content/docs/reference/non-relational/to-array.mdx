@@ -1,0 +1,84 @@
+---
+title: toArray / to_a
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+<Tabs syncKey="lang">
+  <TabItem label="Ruby">
+```ruby
+rel.to_a
+```
+  </TabItem>
+  <TabItem label="TypeScript">
+```typescript
+rel.toArray()
+```
+  </TabItem>
+</Tabs>
+
+### Problem
+
+Convert a relation to a plain array for further processing or output.
+
+Example: *I've built my query and now want the results as an array for JSON serialization.*
+
+### Description
+
+This operator materializes a relation into a plain array of tuples/objects. This is typically the final step in a query chain when you need to work with the results as regular data.
+
+### Requirements
+
+None. Works on any relation.
+
+### Examples
+
+<Tabs syncKey="lang">
+  <TabItem label="Ruby">
+```ruby
+suppliers
+  .restrict(city: "Paris")
+  .project([:sid, :name])
+  .to_a
+
+=> [{:sid=>"S2", :name=>"Jones"}]
+```
+  </TabItem>
+  <TabItem label="TypeScript">
+```typescript
+suppliers
+  .restrict({ city: "Paris" })
+  .project(['sid', 'name'])
+  .toArray()
+
+// => [{ sid: "S2", name: "Jones" }]
+```
+  </TabItem>
+</Tabs>
+
+#### For JSON serialization
+
+<Tabs syncKey="lang">
+  <TabItem label="Ruby">
+```ruby
+require 'json'
+
+data = suppliers
+  .project([:name, :city])
+  .to_a
+
+JSON.generate(data)
+# => '[{"name":"Smith","city":"London"},{"name":"Jones","city":"Paris"}]'
+```
+  </TabItem>
+  <TabItem label="TypeScript">
+```typescript
+const data = suppliers
+  .project(['name', 'city'])
+  .toArray()
+
+JSON.stringify(data)
+// => '[{"name":"Smith","city":"London"},{"name":"Jones","city":"Paris"}]'
+```
+  </TabItem>
+</Tabs>

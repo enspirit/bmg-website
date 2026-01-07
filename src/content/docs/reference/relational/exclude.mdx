@@ -1,0 +1,136 @@
+---
+title: exclude
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+<Tabs syncKey="lang">
+  <TabItem label="Ruby">
+```ruby
+rel.exclude(Predicate.eq(:a, "foo"))
+rel.exclude(a: "foo", b: "bar", ...)
+rel.exclude(->(t) { t[:a] == "foo" })
+```
+  </TabItem>
+  <TabItem label="TypeScript">
+```typescript
+rel.exclude({ a: "foo" })
+rel.exclude({ a: "foo", b: "bar" })
+rel.exclude(t => t.a === "foo")
+```
+  </TabItem>
+</Tabs>
+
+### Problem
+
+Remove tuples from a relation that match a given criterion.
+
+Example: *Which products are NOT discontinued?*
+
+### Description
+
+The `exclude` operator is the inverse of [`restrict`](/reference/operators/restrict). While `restrict` keeps tuples that match the predicate, `exclude` removes them.
+
+`exclude(predicate)` is equivalent to `restrict(NOT predicate)`.
+
+<Tabs syncKey="lang">
+  <TabItem label="Ruby">
+Predicates can be specified as Predicate objects (e.g., `Predicate.eq(:status, "inactive")`), a hash for equality matching (e.g., `{ status: "inactive" }`), or a lambda that returns true for tuples to exclude.
+  </TabItem>
+  <TabItem label="TypeScript">
+Predicates can be specified as an object with attribute-value pairs for equality matching (`{ status: "inactive" }`) or a function that receives a tuple and returns a boolean (`t => t.status === "inactive"`).
+  </TabItem>
+</Tabs>
+
+### Requirements
+
+The specified attributes referenced by the predicate must be part of the input relation's heading.
+
+### Examples
+
+*Consult the [Overview page](/reference/overview) for the data model used in these examples.*
+
+#### Basic exclude
+
+<Tabs syncKey="lang">
+  <TabItem label="Ruby">
+```ruby
+# Get all suppliers except those in Paris
+suppliers.exclude(city: "Paris").to_a
+
+=>
+[{:sid=>"S1", :name=>"Smith", :status=>20, :city=>"London"},
+ {:sid=>"S4", :name=>"Clark", :status=>20, :city=>"London"},
+ {:sid=>"S5", :name=>"Adams", :status=>30, :city=>"Athens"}]
+```
+  </TabItem>
+  <TabItem label="TypeScript">
+```typescript
+// Get all suppliers except those in Paris
+suppliers.exclude({ city: "Paris" }).toArray()
+
+// =>
+// [{ sid: "S1", name: "Smith", status: 20, city: "London" },
+//  { sid: "S4", name: "Clark", status: 20, city: "London" },
+//  { sid: "S5", name: "Adams", status: 30, city: "Athens" }]
+```
+  </TabItem>
+</Tabs>
+
+#### With function predicate
+
+<Tabs syncKey="lang">
+  <TabItem label="Ruby">
+```ruby
+# Exclude suppliers with status >= 30
+suppliers.exclude(->(t) { t[:status] >= 30 }).to_a
+
+=>
+[{:sid=>"S1", :name=>"Smith", :status=>20, :city=>"London"},
+ {:sid=>"S2", :name=>"Jones", :status=>10, :city=>"Paris"},
+ {:sid=>"S4", :name=>"Clark", :status=>20, :city=>"London"}]
+```
+  </TabItem>
+  <TabItem label="TypeScript">
+```typescript
+// Exclude suppliers with status >= 30
+suppliers.exclude(t => t.status >= 30).toArray()
+
+// =>
+// [{ sid: "S1", name: "Smith", status: 20, city: "London" },
+//  { sid: "S2", name: "Jones", status: 10, city: "Paris" },
+//  { sid: "S4", name: "Clark", status: 20, city: "London" }]
+```
+  </TabItem>
+</Tabs>
+
+### Comparison with restrict
+
+`exclude` and `restrict` are complementary operations:
+
+<Tabs syncKey="lang">
+  <TabItem label="Ruby">
+```ruby
+# These produce the same result:
+suppliers.exclude(city: "Paris")
+suppliers.restrict(Predicate.neq(:city, "Paris"))
+
+# Together they partition the relation:
+paris = suppliers.restrict(city: "Paris")
+not_paris = suppliers.exclude(city: "Paris")
+# paris.union(not_paris) equals suppliers
+```
+  </TabItem>
+  <TabItem label="TypeScript">
+```typescript
+// These produce the same result:
+suppliers.exclude({ city: "Paris" })
+suppliers.restrict(t => t.city !== "Paris")
+
+// Together they partition the relation:
+const paris = suppliers.restrict({ city: "Paris" })
+const notParis = suppliers.exclude({ city: "Paris" })
+// paris.union(notParis) equals suppliers
+```
+  </TabItem>
+</Tabs>

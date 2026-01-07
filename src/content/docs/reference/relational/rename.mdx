@@ -2,9 +2,20 @@
 title: rename
 ---
 
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+<Tabs syncKey="lang">
+  <TabItem label="Ruby">
 ```ruby
-rel.rename(:a => :x, :b => :y, ...])
+rel.rename(:a => :x, :b => :y, ...)
 ```
+  </TabItem>
+  <TabItem label="TypeScript">
+```typescript
+rel.rename({ a: 'x', b: 'y' })
+```
+  </TabItem>
+</Tabs>
 
 ### Problem
 
@@ -24,6 +35,8 @@ The specified attributes must be part of the input relation's heading.
 
 *Consult the [Overview page](/reference/overview) for the data model used in this example.*
 
+<Tabs syncKey="lang">
+  <TabItem label="Ruby">
 ```ruby
 suppliers.rename(:sid => :supplier_id).to_a
 
@@ -44,3 +57,17 @@ SELECT `t1`.`sid` AS 'supplier_id',
        `t1`.`city`
 FROM `suppliers` AS 't1'
 ```
+  </TabItem>
+  <TabItem label="TypeScript">
+```typescript
+suppliers.rename({ sid: 'supplier_id' }).toArray()
+
+// =>
+// [{ supplier_id: "S1", name: "Smith", status: 20, city: "London" },
+//  { supplier_id: "S2", name: "Jones", status: 10, city: "Paris" },
+//  { supplier_id: "S3", name: "Blake", status: 30, city: "Paris" },
+//  { supplier_id: "S4", name: "Clark", status: 20, city: "London" },
+//  { supplier_id: "S5", name: "Adams", status: 30, city: "Athens" }]
+```
+  </TabItem>
+</Tabs>

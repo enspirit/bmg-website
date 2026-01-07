@@ -2,9 +2,20 @@
 title: prefix
 ---
 
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+<Tabs syncKey="lang">
+  <TabItem label="Ruby">
 ```ruby
 rel.prefix(:foo_, but: [:a, ...])
 ```
+  </TabItem>
+  <TabItem label="TypeScript">
+```typescript
+rel.prefix('foo_', { but: ['a', ...] })
+```
+  </TabItem>
+</Tabs>
 
 ### Problem
 
@@ -24,6 +35,8 @@ None specific. The `but` attributes, if specified, must exist in the input relat
 
 *Consult the [Overview page](/reference/overview) for the data model used in this example.*
 
+<Tabs syncKey="lang">
+  <TabItem label="Ruby">
 ```ruby
 suppliers.prefix(:supplier_).to_a
 
@@ -47,3 +60,30 @@ suppliers.prefix(:supplier_, but: [:sid]).to_a
  {:sid=>"S4", :supplier_name=>"Clark", :supplier_status=>20, :supplier_city=>"London"},
  {:sid=>"S5", :supplier_name=>"Adams", :supplier_status=>30, :supplier_city=>"Athens"}]
 ```
+  </TabItem>
+  <TabItem label="TypeScript">
+```typescript
+suppliers.prefix('supplier_').toArray()
+
+// =>
+// [{ supplier_sid: "S1", supplier_name: "Smith", supplier_status: 20, supplier_city: "London" },
+//  { supplier_sid: "S2", supplier_name: "Jones", supplier_status: 10, supplier_city: "Paris" },
+//  { supplier_sid: "S3", supplier_name: "Blake", supplier_status: 30, supplier_city: "Paris" },
+//  { supplier_sid: "S4", supplier_name: "Clark", supplier_status: 20, supplier_city: "London" },
+//  { supplier_sid: "S5", supplier_name: "Adams", supplier_status: 30, supplier_city: "Athens" }]
+```
+
+With the `but` option to exclude certain attributes:
+
+```typescript
+suppliers.prefix('supplier_', { but: ['sid'] }).toArray()
+
+// =>
+// [{ sid: "S1", supplier_name: "Smith", supplier_status: 20, supplier_city: "London" },
+//  { sid: "S2", supplier_name: "Jones", supplier_status: 10, supplier_city: "Paris" },
+//  { sid: "S3", supplier_name: "Blake", supplier_status: 30, supplier_city: "Paris" },
+//  { sid: "S4", supplier_name: "Clark", supplier_status: 20, supplier_city: "London" },
+//  { sid: "S5", supplier_name: "Adams", supplier_status: 30, supplier_city: "Athens" }]
+```
+  </TabItem>
+</Tabs>

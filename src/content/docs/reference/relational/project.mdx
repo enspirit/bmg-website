@@ -2,9 +2,20 @@
 title: project
 ---
 
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+<Tabs syncKey="lang">
+  <TabItem label="Ruby">
 ```ruby
 rel.project([:a, :b, ...])
 ```
+  </TabItem>
+  <TabItem label="TypeScript">
+```typescript
+rel.project(['a', 'b', ...])
+```
+  </TabItem>
+</Tabs>
 
 ### Problem
 
@@ -26,6 +37,8 @@ The specified attributes must be part of the input relation's heading.
 
 *Consult the [Overview page](/reference/overview) for the data model used in this example.*
 
+<Tabs syncKey="lang">
+  <TabItem label="Ruby">
 ```ruby
 suppliers.project([:city]).to_a
 
@@ -43,3 +56,17 @@ suppliers.project([:city]).to_a
 SELECT DISTINCT `t1`.`city`
 FROM `suppliers` AS 't1'
 ```
+  </TabItem>
+  <TabItem label="TypeScript">
+```typescript
+suppliers.project(['city']).toArray()
+
+// =>
+// [
+//   { city: "London" },
+//   { city: "Paris" },
+//   { city: "Athens" }
+// ]
+```
+  </TabItem>
+</Tabs>

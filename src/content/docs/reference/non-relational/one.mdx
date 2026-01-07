@@ -1,0 +1,82 @@
+---
+title: one
+---
+
+import { Badge } from '@astrojs/starlight/components';
+
+<Badge text="TypeScript only" variant="tip" />
+
+```typescript
+rel.one()
+```
+
+### Problem
+
+Extract a single tuple from a relation when you expect exactly one result.
+
+Example: *I want to get the user with a specific ID, expecting exactly one match.*
+
+### Description
+
+The `one` operator extracts a single tuple from a relation. It validates that the relation contains exactly one tuple and throws an error otherwise.
+
+This is useful when:
+- You've filtered to a unique result (e.g., by primary key)
+- You expect exactly one match and want to fail fast if that assumption is wrong
+
+### Requirements
+
+The relation must contain exactly one tuple. An error is thrown if the relation:
+- Is empty (no tuples)
+- Contains more than one tuple
+
+### Examples
+
+#### Extract by unique key
+
+```typescript
+const suppliers = Bmg([
+  { sid: "S1", name: "Smith", status: 20, city: "London" },
+  { sid: "S2", name: "Jones", status: 10, city: "Paris" },
+])
+
+const smith = suppliers.restrict({ sid: "S1" }).one()
+// => { sid: "S1", name: "Smith", status: 20, city: "London" }
+```
+
+#### Error on empty relation
+
+```typescript
+const result = suppliers.restrict({ sid: "S99" }).one()
+// Throws Error: Expected exactly one tuple, got 0
+```
+
+#### Error on multiple tuples
+
+```typescript
+const result = suppliers.restrict({ city: "Paris" }).one()
+// Throws Error: Expected exactly one tuple, got 2 (if multiple Paris suppliers)
+```
+
+### Best practices
+
+Use `one()` when you have a strong expectation of exactly one result:
+
+```typescript
+// Good: fetching by unique ID
+const user = users.restrict({ id: userId }).one()
+
+// Good: after summarizing to a single result
+const total = orders.summarize([], { total: { op: 'sum', attr: 'amount' } }).one()
+
+// Risky: when multiple matches are possible
+// Use .toArray() and handle the array instead
+const parisSuppliers = suppliers.restrict({ city: "Paris" }).toArray()
+```
+
+### Comparison with toArray
+
+| Method | Returns | Use when |
+|--------|---------|----------|
+| `one()` | Single tuple | You expect exactly one result and want to fail otherwise |
+| `toArray()` | Array of tuples | You want all results or need to handle 0/many cases |

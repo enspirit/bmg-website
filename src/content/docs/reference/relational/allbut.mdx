@@ -2,9 +2,20 @@
 title: allbut
 ---
 
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+<Tabs syncKey="lang">
+  <TabItem label="Ruby">
 ```ruby
 rel.allbut([:a, :b, ...])
 ```
+  </TabItem>
+  <TabItem label="TypeScript">
+```typescript
+rel.allbut(['a', 'b', ...])
+```
+  </TabItem>
+</Tabs>
 
 ### Problem
 
@@ -24,6 +35,8 @@ The specified attributes must be part of the input relation's heading.
 
 *Consult the [Overview page](/reference/overview) for the data model used in this example.*
 
+<Tabs syncKey="lang">
+  <TabItem label="Ruby">
 ```ruby
 suppliers.allbut([:city]).to_a
 =>
@@ -37,7 +50,20 @@ suppliers.allbut([:city]).to_a
 ##### Generated SQL
 
 ```sql
-SELECT DISTINCT `t1`.`city`
+SELECT DISTINCT `t1`.`sid`, `t1`.`name`, `t1`.`status`
 FROM `suppliers` AS 't1'
 ```
+  </TabItem>
+  <TabItem label="TypeScript">
+```typescript
+suppliers.allbut(['city']).toArray()
 
+// =>
+// [{ sid: "S1", name: "Smith", status: 20 },
+//  { sid: "S2", name: "Jones", status: 10 },
+//  { sid: "S3", name: "Blake", status: 30 },
+//  { sid: "S4", name: "Clark", status: 20 },
+//  { sid: "S5", name: "Adams", status: 30 }]
+```
+  </TabItem>
+</Tabs>

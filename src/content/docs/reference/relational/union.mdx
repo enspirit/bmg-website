@@ -1,0 +1,99 @@
+---
+title: union
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+<Tabs syncKey="lang">
+  <TabItem label="Ruby">
+```ruby
+left.union(right)
+```
+  </TabItem>
+  <TabItem label="TypeScript">
+```typescript
+left.union(right)
+```
+  </TabItem>
+</Tabs>
+
+### Problem
+
+Given two relations with the same heading, create a relation with all tuples from both relations.
+
+Example: *I want the list of all managers plus all employees.*
+
+### Description
+
+The set union of two relations. The result contains all tuples from `left` as well as all tuples from `right`.
+
+The result's heading is identical with that of the inputs'. Duplicate tuples are automatically removed (since relations are sets).
+
+### Requirements
+
+The headings of the two relations must be identical.
+
+### Example
+
+<Tabs syncKey="lang">
+  <TabItem label="Ruby">
+```ruby
+my_purchases = Bmg::Relation.new([
+  { product_id: 10, quantity: 2 },
+  { product_id: 10, quantity: 4 },
+  { product_id: 20, quantity: 1 },
+])
+
+your_purchases = Bmg::Relation.new([
+  { product_id: 10, quantity: 2 },
+  { product_id: 10, quantity: 4 },
+  { product_id: 20, quantity: 5 },
+  { product_id: 30, quantity: 1 },
+])
+
+my_purchases.union(your_purchases).to_a
+
+=>
+[{ product_id: 10, quantity: 2 },
+ { product_id: 10, quantity: 4 },
+ { product_id: 20, quantity: 1 },
+ { product_id: 20, quantity: 5 },
+ { product_id: 30, quantity: 1 }]
+```
+
+##### Generated SQL
+
+```sql
+SELECT `t1`.`product_id`, `t1`.`quantity`
+FROM `my_purchases` AS 't1'
+UNION
+SELECT `t1`.`product_id`, `t1`.`quantity`
+FROM `your_purchases` AS 't1'
+```
+  </TabItem>
+  <TabItem label="TypeScript">
+```typescript
+const myPurchases = Bmg([
+  { product_id: 10, quantity: 2 },
+  { product_id: 10, quantity: 4 },
+  { product_id: 20, quantity: 1 },
+])
+
+const yourPurchases = Bmg([
+  { product_id: 10, quantity: 2 },
+  { product_id: 10, quantity: 4 },
+  { product_id: 20, quantity: 5 },
+  { product_id: 30, quantity: 1 },
+])
+
+myPurchases.union(yourPurchases).toArray()
+
+// =>
+// [{ product_id: 10, quantity: 2 },
+//  { product_id: 10, quantity: 4 },
+//  { product_id: 20, quantity: 1 },
+//  { product_id: 20, quantity: 5 },
+//  { product_id: 30, quantity: 1 }]
+```
+  </TabItem>
+</Tabs>

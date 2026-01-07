@@ -2,10 +2,21 @@
 title: ungroup
 ---
 
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+<Tabs syncKey="lang">
+  <TabItem label="Ruby">
 ```ruby
 rel.ungroup([:attr])
 rel.ungroup([:attr1, :attr2])
 ```
+  </TabItem>
+  <TabItem label="TypeScript">
+```typescript
+rel.ungroup('attr')
+```
+  </TabItem>
+</Tabs>
 
 ### Problem
 
@@ -19,7 +30,14 @@ The `ungroup` operator is the inverse of `group`. It takes a relation that has a
 
 If the nested relation is empty, the outer tuple is removed from the result (similar to an inner join).
 
+<Tabs syncKey="lang">
+  <TabItem label="Ruby">
 Multiple attributes can be ungrouped in a single operation by passing an array of attribute names.
+  </TabItem>
+  <TabItem label="TypeScript">
+The attribute name to ungroup is passed as a string.
+  </TabItem>
+</Tabs>
 
 ### Requirements
 
@@ -29,6 +47,8 @@ The specified attributes must be relation-valued attributes in the input relatio
 
 #### Basic ungroup
 
+<Tabs syncKey="lang">
+  <TabItem label="Ruby">
 Starting with a grouped relation:
 
 ```ruby
@@ -59,41 +79,40 @@ grouped.ungroup([:supplied_parts]).to_a
  {:sid=>"S4", :pid=>"P4", :qty=>300},
  {:sid=>"S4", :pid=>"P5", :qty=>400}]
 ```
+  </TabItem>
+  <TabItem label="TypeScript">
+Starting with a grouped relation:
 
-#### Ungrouping image results
+```typescript
+// First, create a grouped relation
+const grouped = supplies.group(['pid', 'qty'], 'supplied_parts')
 
-Ungroup can be used to flatten the results of an `image` operation:
+// Now ungroup to flatten back
+grouped.ungroup('supplied_parts').toArray()
 
-```ruby
-# Create nested structure
-nested = suppliers.image(supplies, :supplies, [:sid])
-
-# Flatten back to individual rows
-nested.ungroup([:supplies]).to_a
-
-=>
-[{:sid=>"S1", :name=>"Smith", :status=>20, :city=>"London", :pid=>"P1", :qty=>300},
- {:sid=>"S1", :name=>"Smith", :status=>20, :city=>"London", :pid=>"P2", :qty=>200},
- ...
- {:sid=>"S4", :name=>"Clark", :status=>20, :city=>"London", :pid=>"P5", :qty=>400}]
+// =>
+// [{ sid: "S1", pid: "P1", qty: 300 },
+//  { sid: "S1", pid: "P2", qty: 200 },
+//  { sid: "S1", pid: "P3", qty: 400 },
+//  { sid: "S1", pid: "P4", qty: 200 },
+//  { sid: "S1", pid: "P5", qty: 100 },
+//  { sid: "S1", pid: "P6", qty: 100 },
+//  { sid: "S2", pid: "P1", qty: 300 },
+//  { sid: "S2", pid: "P2", qty: 400 },
+//  { sid: "S3", pid: "P2", qty: 200 },
+//  { sid: "S4", pid: "P2", qty: 200 },
+//  { sid: "S4", pid: "P4", qty: 300 },
+//  { sid: "S4", pid: "P5", qty: 400 }]
 ```
-
-Note: S5 (Adams) is not in the result because their supplies relation was empty.
-
-#### Multiple ungroup
-
-When you have multiple nested attributes, you can ungroup them all at once:
-
-```ruby
-doubly_grouped.ungroup([:attr1, :attr2])
-```
-
-This is equivalent to chaining ungroup operations but may be more efficient.
+  </TabItem>
+</Tabs>
 
 ### Relationship with group
 
 `ungroup` and `group` are inverse operations:
 
+<Tabs syncKey="lang">
+  <TabItem label="Ruby">
 ```ruby
 # Starting with supplies
 supplies.to_a
@@ -106,16 +125,19 @@ grouped = supplies.group([:pid, :qty], :items)
 grouped.ungroup([:items]).to_a
 => [{:sid=>"S1", :pid=>"P1", :qty=>300}, ...]  # Same as original
 ```
+  </TabItem>
+  <TabItem label="TypeScript">
+```typescript
+// Starting with supplies
+supplies.toArray()
+// => [{ sid: "S1", pid: "P1", qty: 300 }, ...]
 
-### Empty nested relations
+// Group by sid
+const grouped = supplies.group(['pid', 'qty'], 'items')
 
-When a nested relation is empty, the outer tuple is excluded from the result:
-
-```ruby
-# S5 has no supplies, so after image they have an empty relation
-with_image = suppliers.image(supplies, :supplies, [:sid])
-
-# After ungroup, S5 disappears entirely
-with_image.ungroup([:supplies]).restrict(sid: "S5").to_a
-=> []  # S5 is not in the result
+// Ungroup back - returns to original
+grouped.ungroup('items').toArray()
+// => [{ sid: "S1", pid: "P1", qty: 300 }, ...]  // Same as original
 ```
+  </TabItem>
+</Tabs>

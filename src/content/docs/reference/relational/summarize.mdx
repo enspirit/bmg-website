@@ -1,0 +1,120 @@
+---
+title: summarize
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+<Tabs syncKey="lang">
+  <TabItem label="Ruby">
+```ruby
+rel.summarize([:a, :b, ...], x: :sum, y: :max, ...)
+rel.summarize([:a, :b, ...], x: -> (t,m) { m ? (m + t[:x]) : t[:x] } )
+```
+  </TabItem>
+  <TabItem label="TypeScript">
+```typescript
+rel.summarize(['a', 'b', ...], { x: { op: 'sum', attr: 'x' }, y: { op: 'max', attr: 'y' } })
+rel.summarize(['a', 'b', ...], { total: { op: 'count' } })
+```
+  </TabItem>
+</Tabs>
+
+### Problem
+
+Place tuples in groups and calculate aggregate values for each group.
+
+Example: *For every city where we have stores, how big is the total revenue per city?*
+
+### Description
+
+The first argument specifies attributes to group by, the second argument specifies aggregation operations.
+
+<Tabs syncKey="lang">
+  <TabItem label="Ruby">
+Like the [`group`](/reference/operators/group) operation, `summarize` uses a number of *grouping attributes* to slice up the input relation. However, `summarize` does not create a nested relation. Instead, `summarize` extends the output relation with one or several attributes containing *aggregated values* computed over tuples that [match](/reference/operators/matching) the grouping tuples on all their attributes.
+
+The aggregation is specified as a hash with attribute names as keys and aggregation operations as values.
+  </TabItem>
+  <TabItem label="TypeScript">
+Like the [`group`](/reference/operators/group) operation, `summarize` uses a number of *grouping attributes* to slice up the input relation. However, `summarize` does not create a nested relation. Instead, `summarize` extends the output relation with one or several attributes containing *aggregated values*.
+
+The aggregation is specified as an object where keys are the output attribute names and values are aggregation descriptors like `{ op: 'sum', attr: 'qty' }`.
+  </TabItem>
+</Tabs>
+
+### Supported aggregation operations
+
+<Tabs syncKey="lang">
+  <TabItem label="Ruby">
+| Name           | SQL? | Numerical? | Description                               |
+|----------------|------|------------|-------------------------------------------|
+| avg            | ✔    | ✔          | Numerical average |
+| collect        | --   |            | Creates an array containing all values (including duplicates) |
+| concat         | --   |            | String concatenation |
+| count          | ✔    |            | Number of values (including duplicates) |
+| distinct       | --   |            | Like `collect`, with duplicates removed |
+| distinct_count | ✔    |            | Like `count`, but duplicates not counted |
+| max            | ✔    |            | Picks out the largest value |
+| min            | ✔    |            | Picks out the smallest value |
+| sum            | ✔    | ✔          | The sum of all values |
+  </TabItem>
+  <TabItem label="TypeScript">
+| Name    | Description                               |
+|---------|-------------------------------------------|
+| count   | Number of tuples in the group |
+| sum     | Sum of values for an attribute |
+| avg     | Average of values for an attribute |
+| min     | Minimum value for an attribute |
+| max     | Maximum value for an attribute |
+| collect | Collect all values into an array |
+  </TabItem>
+</Tabs>
+
+### Examples
+
+*Consult the [Overview page](/reference/overview) for the data model used in this example.*
+
+<Tabs syncKey="lang">
+  <TabItem label="Ruby">
+```ruby
+supplies.summarize([:sid], qty: :sum).to_a
+
+=> [{:sid=>"S1", :qty=>1300},
+    {:sid=>"S2", :qty=>700},
+    {:sid=>"S3", :qty=>200},
+    {:sid=>"S4", :qty=>900}]
+```
+
+##### Generated SQL
+
+```sql
+SELECT `t1`.`sid`, sum(`t1`.`qty`) AS 'qty'
+FROM `supplies` AS 't1'
+GROUP BY `t1`.`sid`
+```
+  </TabItem>
+  <TabItem label="TypeScript">
+```typescript
+supplies.summarize(['sid'], { qty: { op: 'sum', attr: 'qty' } }).toArray()
+
+// => [{ sid: "S1", qty: 1300 },
+//     { sid: "S2", qty: 700 },
+//     { sid: "S3", qty: 200 },
+//     { sid: "S4", qty: 900 }]
+```
+
+#### Multiple aggregations
+
+```typescript
+supplies.summarize(['sid'], {
+  total_qty: { op: 'sum', attr: 'qty' },
+  part_count: { op: 'count' }
+}).toArray()
+
+// => [{ sid: "S1", total_qty: 1300, part_count: 6 },
+//     { sid: "S2", total_qty: 700, part_count: 2 },
+//     { sid: "S3", total_qty: 200, part_count: 1 },
+//     { sid: "S4", total_qty: 900, part_count: 3 }]
+```
+  </TabItem>
+</Tabs>

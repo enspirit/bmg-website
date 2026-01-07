@@ -2,9 +2,20 @@
 title: minus
 ---
 
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+<Tabs syncKey="lang">
+  <TabItem label="Ruby">
 ```ruby
 left.minus(right)
 ```
+  </TabItem>
+  <TabItem label="TypeScript">
+```typescript
+left.minus(right)
+```
+  </TabItem>
+</Tabs>
 
 ### Problem
 
@@ -24,6 +35,8 @@ The headings of the two relations must be identical.
 
 ### Example
 
+<Tabs syncKey="lang">
+  <TabItem label="Ruby">
 ```ruby
 my_purchases = Bmg::Relation.new([
   { product_id: 10, quantity: 2 },
@@ -41,18 +54,38 @@ your_purchases = Bmg::Relation.new([
 my_purchases.minus(your_purchases).to_a
 
 =>
-
 [{ product_id: 20, quantity: 1 }]
 ```
 
 ##### Generated SQL
 
 ```sql
-SELECT `t1`.`product_id`, `t1`.`quantitiy`
+SELECT `t1`.`product_id`, `t1`.`quantity`
 FROM `my_purchases` AS 't1'
 EXCEPT
-SELECT `t1`.`product_id`, `t1`.`quantitiy`
+SELECT `t1`.`product_id`, `t1`.`quantity`
 FROM `your_purchases` AS 't1'
 ```
+  </TabItem>
+  <TabItem label="TypeScript">
+```typescript
+const myPurchases = Bmg([
+  { product_id: 10, quantity: 2 },
+  { product_id: 10, quantity: 4 },
+  { product_id: 20, quantity: 1 },
+])
 
-Note that the scoping of the table alias `t1` is limited to the respective `SELECT` clauses, which is why the same alias is used in both clauses.
+const yourPurchases = Bmg([
+  { product_id: 10, quantity: 2 },
+  { product_id: 10, quantity: 4 },
+  { product_id: 20, quantity: 5 },
+  { product_id: 30, quantity: 1 },
+])
+
+myPurchases.minus(yourPurchases).toArray()
+
+// =>
+// [{ product_id: 20, quantity: 1 }]
+```
+  </TabItem>
+</Tabs>

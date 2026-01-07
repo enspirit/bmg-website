@@ -1,0 +1,58 @@
+---
+title: intersect
+---
+
+import { Badge } from '@astrojs/starlight/components';
+
+<Badge text="TypeScript only" variant="tip" />
+
+```typescript
+left.intersect(right)
+```
+
+### Problem
+
+Given two relations with the same heading, find tuples that appear in both.
+
+Example: *I want to find products that are both bestsellers AND on sale.*
+
+### Description
+
+The set intersection of two relations. The result contains only those tuples that exist in both `left` and `right`.
+
+The result's heading is identical with that of the inputs'.
+
+### Requirements
+
+The headings of the two relations must be identical.
+
+### Example
+
+```typescript
+const myPurchases = Bmg([
+  { product_id: 10, quantity: 2 },
+  { product_id: 10, quantity: 4 },
+  { product_id: 20, quantity: 1 },
+])
+
+const yourPurchases = Bmg([
+  { product_id: 10, quantity: 2 },
+  { product_id: 10, quantity: 4 },
+  { product_id: 20, quantity: 5 },
+  { product_id: 30, quantity: 1 },
+])
+
+myPurchases.intersect(yourPurchases).toArray()
+
+// =>
+// [{ product_id: 10, quantity: 2 },
+//  { product_id: 10, quantity: 4 }]
+```
+
+### Relationship to other set operations
+
+| Operator | Result |
+|----------|--------|
+| `union` | Tuples in either relation |
+| `intersect` | Tuples in both relations |
+| `minus` | Tuples in left but not right |

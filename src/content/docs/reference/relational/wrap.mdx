@@ -1,0 +1,72 @@
+---
+title: wrap
+---
+
+import { Badge } from '@astrojs/starlight/components';
+
+<Badge text="TypeScript only" variant="tip" />
+
+```typescript
+rel.wrap(['a', 'b', ...], 'wrapped')
+```
+
+### Problem
+
+Combine multiple attributes into a single tuple-valued attribute.
+
+Example: *I want to group address fields (street, city, zip) into a single `address` object.*
+
+### Description
+
+The `wrap` operator takes specified attributes and combines them into a single nested object attribute. This is the inverse of [`unwrap`](/reference/operators/unwrap).
+
+Parameters:
+- First argument: Array of attribute names to wrap
+- Second argument: Name of the new nested attribute
+
+### Requirements
+
+The specified attributes must exist in the input relation.
+
+### Examples
+
+#### Basic wrap
+
+```typescript
+const flat = Bmg([
+  { id: 1, name: "Alice", city: "London", country: "UK" },
+  { id: 2, name: "Bob", city: "Paris", country: "France" }
+])
+
+flat.wrap(['city', 'country'], 'address').toArray()
+
+// =>
+// [{ id: 1, name: "Alice", address: { city: "London", country: "UK" } },
+//  { id: 2, name: "Bob", address: { city: "Paris", country: "France" } }]
+```
+
+#### Preparing for JSON output
+
+```typescript
+const order = Bmg([
+  { order_id: 1, product: "Widget",
+    shipping_street: "123 Main St", shipping_city: "London", shipping_zip: "SW1" }
+])
+
+order
+  .wrap(['shipping_street', 'shipping_city', 'shipping_zip'], 'shipping')
+  .toArray()
+
+// =>
+// [{ order_id: 1, product: "Widget",
+//    shipping: { shipping_street: "123 Main St", shipping_city: "London", shipping_zip: "SW1" } }]
+```
+
+### Comparison with group
+
+| Operator | Result |
+|----------|--------|
+| `wrap` | Creates a single tuple-valued attribute from multiple attributes |
+| `group` | Creates a relation-valued attribute (collection of tuples) |
+
+Use `wrap` when you want to nest attributes into an object. Use `group` when you want to create nested collections.

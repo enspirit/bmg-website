@@ -1,0 +1,99 @@
+---
+title: isEqual
+---
+
+import { Badge } from '@astrojs/starlight/components';
+
+<Badge text="TypeScript only" variant="tip" />
+
+```typescript
+rel1.isEqual(rel2)
+```
+
+### Problem
+
+Check if two relations contain exactly the same tuples.
+
+Example: *I want to verify that my query transformation produces the same result as the expected output.*
+
+### Description
+
+The `isEqual` operator compares two relations for set equality. Two relations are equal if and only if they contain exactly the same tuples (regardless of order).
+
+This is useful for:
+- Testing query correctness
+- Validating data transformations
+- Implementing relational assertions
+
+### Requirements
+
+Both relations should have the same heading (same attribute names) for a meaningful comparison.
+
+### Examples
+
+#### Equal relations
+
+```typescript
+const r1 = Bmg([
+  { a: 1, b: 2 },
+  { a: 3, b: 4 },
+])
+
+const r2 = Bmg([
+  { a: 3, b: 4 },  // Different order
+  { a: 1, b: 2 },
+])
+
+r1.isEqual(r2)
+// => true (order doesn't matter)
+```
+
+#### Unequal relations
+
+```typescript
+const r1 = Bmg([
+  { a: 1, b: 2 },
+  { a: 3, b: 4 },
+])
+
+const r2 = Bmg([
+  { a: 1, b: 2 },
+  { a: 5, b: 6 },  // Different tuple
+])
+
+r1.isEqual(r2)
+// => false
+```
+
+#### Testing query results
+
+```typescript
+const expected = Bmg([
+  { sid: "S2", name: "Jones" },
+  { sid: "S3", name: "Blake" },
+])
+
+const actual = suppliers
+  .restrict({ city: "Paris" })
+  .project(['sid', 'name'])
+
+if (!actual.isEqual(expected)) {
+  throw new Error("Query result doesn't match expected")
+}
+```
+
+### Relational semantics
+
+Because relations are sets:
+- Order of tuples doesn't matter
+- Duplicate tuples are automatically removed
+- Only the presence/absence of each unique tuple matters
+
+```typescript
+// These are equal (duplicates are eliminated)
+const r1 = Bmg([{ a: 1 }, { a: 1 }, { a: 2 }])
+const r2 = Bmg([{ a: 1 }, { a: 2 }])
+
+r1.isEqual(r2)
+// => true
+```

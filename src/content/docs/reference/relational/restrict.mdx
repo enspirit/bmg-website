@@ -2,11 +2,24 @@
 title: restrict
 ---
 
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+<Tabs syncKey="lang">
+  <TabItem label="Ruby">
 ```ruby
 rel.restrict(Predicate.eq(:a, "foo"))
 rel.restrict(a: "foo", b: "bar", ...)
 rel.restrict(->(t) { t[:a] == "foo" })
 ```
+  </TabItem>
+  <TabItem label="TypeScript">
+```typescript
+rel.restrict({ a: "foo" })
+rel.restrict({ a: "foo", b: "bar" })
+rel.restrict(t => t.a === "foo")
+```
+  </TabItem>
+</Tabs>
 
 Alias: `where`
 
@@ -20,6 +33,8 @@ Example: *Which are all the products with price less than 500?*
 
 Creates a new relation by selecting some tuples of the original using a predicate, so that the tuples of the output are a subset of the tuples of the original.
 
+<Tabs syncKey="lang">
+  <TabItem label="Ruby">
 Predicates are instances of the [`predicate` gem](https://github.com/enspirit/predicate), which also handles conversion of predicates to SQL. This means predicates can be created and composed in a flexible and composable way. Read more about creating and composing predicates on the [Predicates](/usage/predicates) page.
 
 Apart from using the predicate factory methods `Predicate.eq`, `Predicate.neq` etc, one can pass a hash specifying a predicate using equality. For example, in:
@@ -31,6 +46,21 @@ the argument is equivalent to `Predicate.eq(:a, "foo") & Predicate.eq(:b, "bar")
 It is also possible to define the predicate in terms of a lambda (or proc). The lambda will be passed one tuple at a time, and returns `true`/`false` to determine which tuples are kept and which are discarded. Note that `restrict` using a lambda cannot be compiled to SQL (but can be arbitrarily chained with operations that can). See the documentation on [using a RDBMS backend](/usage/with-rdbms) for more information.
 
 In some contexts it can also be convenient to create a predicate which selects everything (`Predicate.tautology`) or one that selects nothing (`Predicate.contradiction`).
+  </TabItem>
+  <TabItem label="TypeScript">
+Predicates can be specified as:
+- An object with attribute-value pairs for equality matching: `{ city: "Paris" }`
+- A function that receives a tuple and returns a boolean: `t => t.status > 20`
+
+When using an object predicate, all conditions are combined with AND logic. For example:
+
+`rel.restrict({ a: "foo", b: "bar" })`
+
+matches tuples where both `a === "foo"` AND `b === "bar"`.
+
+For more complex predicates (OR, NOT, comparisons), use a function predicate.
+  </TabItem>
+</Tabs>
 
 ### Requirements
 
@@ -40,8 +70,10 @@ The specified attributes referenced by the predicate must be part of the input r
 
 *Consult the [Overview page](/reference/overview) for the data model used in these examples.*
 
-#### With regular predicate
+#### With equality predicate
 
+<Tabs syncKey="lang">
+  <TabItem label="Ruby">
 ```ruby
 suppliers.restrict(Predicate.gt(:status, 20) | Predicate.eq(:sid, "S1")).to_a
 
@@ -58,9 +90,23 @@ SELECT `t1`.`sid`, `t1`.`name`, `t1`.`status`, `t1`.`city`
 FROM `suppliers` AS 't1'
 WHERE ((`t1`.`status` > 20) OR (`t1`.`sid` = 'S1'))
 ```
+  </TabItem>
+  <TabItem label="TypeScript">
+```typescript
+suppliers.restrict(t => t.status > 20 || t.sid === "S1").toArray()
 
-#### With lambda predicate
+// =>
+// [{ sid: "S1", name: "Smith", status: 20, city: "London" },
+//  { sid: "S3", name: "Blake", status: 30, city: "Paris" },
+//  { sid: "S5", name: "Adams", status: 30, city: "Athens" }]
+```
+  </TabItem>
+</Tabs>
 
+#### With function predicate
+
+<Tabs syncKey="lang">
+  <TabItem label="Ruby">
 ```ruby
 suppliers.restrict(->(t) { t[:city].length < 6 }).to_a
 
@@ -72,3 +118,14 @@ suppliers.restrict(->(t) { t[:city].length < 6 }).to_a
 ##### Generated SQL
 
 Predicates using lambdas are not compiled to SQL.
+  </TabItem>
+  <TabItem label="TypeScript">
+```typescript
+suppliers.restrict(t => t.city.length < 6).toArray()
+
+// =>
+// [{ sid: "S2", name: "Jones", status: 10, city: "Paris" },
+//  { sid: "S3", name: "Blake", status: 30, city: "Paris" }]
+```
+  </TabItem>
+</Tabs>

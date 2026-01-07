@@ -2,6 +2,10 @@
 title: generator
 ---
 
+import { Badge } from '@astrojs/starlight/components';
+
+<Badge text="Ruby only" variant="note" />
+
 ```ruby
 Bmg.generate(1, 10)
 Bmg.generate(1, 100, step: 10)
@@ -74,15 +78,6 @@ Bmg.generate(5, 1, step: -1).to_a
 [{:i=>5}, {:i=>4}, {:i=>3}, {:i=>2}, {:i=>1}]
 ```
 
-#### Float sequences
-
-```ruby
-Bmg.generate(0.0, 1.0, step: 0.25).to_a
-
-=>
-[{:i=>0.0}, {:i=>0.25}, {:i=>0.5}, {:i=>0.75}, {:i=>1.0}]
-```
-
 #### Date sequences
 
 Generate consecutive dates:
@@ -112,18 +107,6 @@ Bmg.generate(1, 10, step: ->(i) { i * 2 }).to_a
 [{:i=>1}, {:i=>2}, {:i=>4}, {:i=>8}]
 ```
 
-#### Join with other data
-
-Generate sequences to join with existing relations:
-
-```ruby
-# Create a calendar of dates
-dates = Bmg.generate(Date.new(2024, 1, 1), Date.new(2024, 1, 31), as: :date)
-
-# Left join with events to see all dates (including those without events)
-dates.left_join(events, [:date], { title: nil, location: nil })
-```
-
 #### Generate test data
 
 ```ruby
@@ -139,15 +122,6 @@ Bmg.generate(1, 100, as: :id)
 [{:id=>1, :name=>"User 1", :email=>"user1@example.com"},
  {:id=>2, :name=>"User 2", :email=>"user2@example.com"},
  ...]
-```
-
-#### Empty result
-
-If `from > to` with a positive step, the result is empty:
-
-```ruby
-Bmg.generate(10, 1).to_a
-=> []
 ```
 
 ### Note

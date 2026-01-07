@@ -42,14 +42,27 @@ export default defineConfig({
       }
     }, {
       label: 'Usage',
-      autogenerate: {
-        directory: 'usage'
-      }
+      items: [
+        { slug: 'usage/getting-started' },
+        { slug: 'usage/getting-started-ts' },
+        { slug: 'usage/with-rdbms' }
+      ]
     }, {
-      label: 'Operators reference',
-      autogenerate: {
-        directory: 'reference'
-      }
+      label: 'Reference',
+      items: [
+        { label: 'Overview', slug: 'reference/overview' },
+        {
+          label: 'Relational Operators',
+          collapsed: true,
+          autogenerate: { directory: 'reference/relational' }
+        },
+        {
+          label: 'Non-Relational Operators',
+          collapsed: true,
+          autogenerate: { directory: 'reference/non-relational' }
+        },
+        { label: 'Library Alignment', slug: 'reference/library-alignment' }
+      ]
     }],
     expressiveCode: {
       themes: ['dracula']

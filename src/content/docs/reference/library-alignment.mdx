@@ -1,0 +1,154 @@
+---
+title: Library Alignment
+sidebar:
+  order: 99
+---
+
+import { Badge, Card, CardGrid } from '@astrojs/starlight/components';
+
+This page documents operators that are currently available in only one of the Bmg implementations, along with suggestions for potential cross-implementation alignment.
+
+## Currently in Ruby Only
+
+The following operators are available in Bmg (Ruby) but not yet in Bmg.js (TypeScript):
+
+<CardGrid>
+  <Card title="page">
+    **Pagination with ordering**
+
+    ```ruby
+    rel.page([[:name, :asc]], 1, page_size: 10)
+    ```
+
+    Retrieves a specific page of results with consistent ordering. Useful for building paginated APIs.
+  </Card>
+
+  <Card title="rxmatch">
+    **Regex match restriction**
+
+    ```ruby
+    rel.rxmatch(:name, /^S/)
+    ```
+
+    Filter tuples where an attribute matches a regular expression pattern.
+  </Card>
+
+  <Card title="autosummarize">
+    **Automatic summarization**
+
+    ```ruby
+    rel.autosummarize([:group_key], :sum)
+    ```
+
+    Automatically summarizes all non-key numeric attributes using the specified aggregator.
+  </Card>
+
+  <Card title="undress">
+    **Convert to scalars**
+
+    ```ruby
+    rel.undress
+    ```
+
+    Converts single-attribute tuples to scalar values.
+  </Card>
+
+  <Card title="images">
+    **Multiple image shortcut**
+
+    ```ruby
+    rel.images(other1, other2, ...)
+    ```
+
+    Shortcut for applying multiple `image` operations in sequence.
+  </Card>
+
+  <Card title="generator">
+    **Sequence generation**
+
+    ```ruby
+    Bmg.generate(1, 100)
+    ```
+
+    Creates a relation from a sequence of values, similar to PostgreSQL's `generate_series`.
+  </Card>
+</CardGrid>
+
+## Currently in TypeScript Only
+
+The following operators are available in Bmg.js (TypeScript) but not yet in Bmg (Ruby):
+
+<CardGrid>
+  <Card title="intersect">
+    **Set intersection**
+
+    ```typescript
+    left.intersect(right)
+    ```
+
+    Returns tuples that exist in both relations.
+  </Card>
+
+  <Card title="wrap">
+    **Wrap attributes**
+
+    ```typescript
+    rel.wrap(['a', 'b'], 'nested')
+    ```
+
+    Combines multiple attributes into a single tuple-valued attribute.
+  </Card>
+
+  <Card title="one">
+    **Extract single tuple**
+
+    ```typescript
+    rel.one()
+    ```
+
+    Extracts a single tuple, throwing if not exactly one exists.
+  </Card>
+
+  <Card title="isEqual">
+    **Set equality check**
+
+    ```typescript
+    rel1.isEqual(rel2)
+    ```
+
+    Checks if two relations contain the same tuples.
+  </Card>
+
+</CardGrid>
+
+## Alignment Opportunities
+
+### High Priority
+
+These would provide the most value if implemented in both libraries:
+
+| Operator | Missing from | Rationale |
+|----------|-------------|-----------|
+| `intersect` | Ruby | Common set operation, completes the set algebra |
+| `wrap` | Ruby | Inverse of `unwrap`, needed for structural completeness |
+| `page` | TypeScript | Essential for building paginated APIs |
+
+### Medium Priority
+
+| Operator | Missing from | Rationale |
+|----------|-------------|-----------|
+| `one` | Ruby | Useful for extracting single results safely |
+| `isEqual` | Ruby | Valuable for testing and assertions |
+| `rxmatch` | TypeScript | Useful for pattern-based filtering |
+
+### Notes
+
+- `to_a` (Ruby) and `toArray()` (TypeScript) serve the same purpose
+- `y_by_x` (Ruby) and `yByX` (TypeScript) serve the same purpose
+- Some operators like `autosummarize` and `undress` are Ruby-specific conveniences that may not fit TypeScript's design philosophy
+
+## Contributing
+
+Contributions to align the libraries are welcome! See the respective repositories:
+- [Bmg (Ruby)](https://github.com/enspirit/bmg)
+- [Bmg.js (TypeScript)](https://github.com/enspirit/bmg-js)

@@ -1,0 +1,140 @@
+---
+title: yByX / y_by_x
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+<Tabs syncKey="lang">
+  <TabItem label="Ruby">
+```ruby
+rel.y_by_x(:value_attr, :key_attr)
+```
+  </TabItem>
+  <TabItem label="TypeScript">
+```typescript
+rel.yByX('valueAttr', 'keyAttr')
+```
+  </TabItem>
+</Tabs>
+
+### Problem
+
+Create a lookup object/hash from a relation where one attribute becomes the key and another becomes the value.
+
+Example: *I want to create a mapping from product IDs to product names for quick lookups.*
+
+### Description
+
+This operator creates a Hash/object where keys come from one attribute and values from another. This is useful for creating lookup tables or dictionaries from relational data.
+
+Parameters:
+- First argument (`y`) - The attribute to use as values
+- Second argument (`x`) - The attribute to use as keys
+
+The result is a plain Hash/object (not a relation).
+
+### Requirements
+
+- Both specified attributes must exist in the relation
+- The key attribute values should be unique (later values overwrite earlier ones for duplicate keys)
+
+### Examples
+
+#### Basic lookup table
+
+<Tabs syncKey="lang">
+  <TabItem label="Ruby">
+```ruby
+suppliers = Bmg::Relation.new([
+  { sid: "S1", name: "Smith", city: "London" },
+  { sid: "S2", name: "Jones", city: "Paris" },
+  { sid: "S3", name: "Blake", city: "Paris" },
+])
+
+# Create a sid -> name mapping
+name_by_id = suppliers.y_by_x(:name, :sid)
+
+# => { "S1" => "Smith", "S2" => "Jones", "S3" => "Blake" }
+
+# Use for quick lookups
+name_by_id["S1"]  # => "Smith"
+```
+  </TabItem>
+  <TabItem label="TypeScript">
+```typescript
+const suppliers = Bmg([
+  { sid: "S1", name: "Smith", city: "London" },
+  { sid: "S2", name: "Jones", city: "Paris" },
+  { sid: "S3", name: "Blake", city: "Paris" },
+])
+
+// Create a sid -> name mapping
+const nameById = suppliers.yByX('name', 'sid')
+
+// => { S1: "Smith", S2: "Jones", S3: "Blake" }
+
+// Use for quick lookups
+console.log(nameById['S1'])  // => "Smith"
+```
+  </TabItem>
+</Tabs>
+
+#### Creating a price lookup
+
+<Tabs syncKey="lang">
+  <TabItem label="Ruby">
+```ruby
+products = Bmg::Relation.new([
+  { sku: "WIDGET-01", name: "Widget", price: 9.99 },
+  { sku: "GADGET-02", name: "Gadget", price: 19.99 },
+])
+
+price_by_sku = products.y_by_x(:price, :sku)
+
+# => { "WIDGET-01" => 9.99, "GADGET-02" => 19.99 }
+```
+  </TabItem>
+  <TabItem label="TypeScript">
+```typescript
+const products = Bmg([
+  { sku: "WIDGET-01", name: "Widget", price: 9.99 },
+  { sku: "GADGET-02", name: "Gadget", price: 19.99 },
+])
+
+const priceBySku = products.yByX('price', 'sku')
+
+// => { "WIDGET-01": 9.99, "GADGET-02": 19.99 }
+```
+  </TabItem>
+</Tabs>
+
+### Note on duplicates
+
+If multiple tuples have the same key value, later values will overwrite earlier ones:
+
+<Tabs syncKey="lang">
+  <TabItem label="Ruby">
+```ruby
+data = Bmg::Relation.new([
+  { key: "A", value: 1 },
+  { key: "A", value: 2 },  # Overwrites previous
+])
+
+data.y_by_x(:value, :key)
+# => { "A" => 2 }  # Only one value is kept
+```
+  </TabItem>
+  <TabItem label="TypeScript">
+```typescript
+const data = Bmg([
+  { key: "A", value: 1 },
+  { key: "A", value: 2 },  // Overwrites previous
+])
+
+data.yByX('value', 'key')
+// => { A: 2 }  // Only the last value is kept
+```
+  </TabItem>
+</Tabs>
+
+To handle duplicates, consider using `summarize` with `collect` first.

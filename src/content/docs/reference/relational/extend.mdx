@@ -2,11 +2,24 @@
 title: extend
 ---
 
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+<Tabs syncKey="lang">
+  <TabItem label="Ruby">
 ```ruby
 rel.extend(b: :a)
 rel.extend(b: ->(t) { t[:a] * 2 })
 rel.extend(b: :a, c: ->(t) { t[:a] + t[:b] })
 ```
+  </TabItem>
+  <TabItem label="TypeScript">
+```typescript
+rel.extend({ b: 'a' })
+rel.extend({ b: t => t.a * 2 })
+rel.extend({ b: 'a', c: t => t.a + t.b })
+```
+  </TabItem>
+</Tabs>
 
 ### Problem
 
@@ -18,6 +31,8 @@ Example: *I want to display the full name of each customer, computed from their 
 
 Creates a new relation by adding new attributes to each tuple. The values of the new attributes are computed from existing attribute values.
 
+<Tabs syncKey="lang">
+  <TabItem label="Ruby">
 The extension is specified as a hash where:
 - Keys are the names of the new attributes to add
 - Values specify how to compute the attribute:
@@ -25,11 +40,22 @@ The extension is specified as a hash where:
   - A **Proc/Lambda** computes the value from the tuple (e.g., `b: ->(t) { t[:a] * 2 }`)
 
 Multiple attributes can be added in a single `extend` call.
+  </TabItem>
+  <TabItem label="TypeScript">
+The extension is specified as an object where:
+- Keys are the names of the new attributes to add
+- Values specify how to compute the attribute:
+  - A **string** copies the value from an existing attribute (e.g., `{ b: 'a' }` copies the value of `a` to `b`)
+  - A **function** computes the value from the tuple (e.g., `{ b: t => t.a * 2 }`)
+
+Multiple attributes can be added in a single `extend` call.
+  </TabItem>
+</Tabs>
 
 ### Requirements
 
 - The new attribute names must not already exist in the input relation's heading.
-- When using a Symbol, the referenced attribute must exist in the input relation.
+- When using a Symbol/string, the referenced attribute must exist in the input relation.
 
 ### Examples
 
@@ -37,6 +63,8 @@ Multiple attributes can be added in a single `extend` call.
 
 #### Adding a computed attribute
 
+<Tabs syncKey="lang">
+  <TabItem label="Ruby">
 ```ruby
 parts.extend(heavy: ->(t) { t[:weight] > 15 }).to_a
 
@@ -48,9 +76,26 @@ parts.extend(heavy: ->(t) { t[:weight] > 15 }).to_a
  {:pid=>"P5", :name=>"Cam", :color=>"Blue", :weight=>12.0, :city=>"Paris", :heavy=>false},
  {:pid=>"P6", :name=>"Cog", :color=>"Red", :weight=>19.0, :city=>"London", :heavy=>true}]
 ```
+  </TabItem>
+  <TabItem label="TypeScript">
+```typescript
+parts.extend({ heavy: t => t.weight > 15 }).toArray()
+
+// =>
+// [{ pid: "P1", name: "Nut", color: "Red", weight: 12.0, city: "London", heavy: false },
+//  { pid: "P2", name: "Bolt", color: "Green", weight: 17.0, city: "Paris", heavy: true },
+//  { pid: "P3", name: "Screw", color: "Blue", weight: 17.0, city: "Oslo", heavy: true },
+//  { pid: "P4", name: "Screw", color: "Red", weight: 14.0, city: "London", heavy: false },
+//  { pid: "P5", name: "Cam", color: "Blue", weight: 12.0, city: "Paris", heavy: false },
+//  { pid: "P6", name: "Cog", color: "Red", weight: 19.0, city: "London", heavy: true }]
+```
+  </TabItem>
+</Tabs>
 
 #### Copying an attribute
 
+<Tabs syncKey="lang">
+  <TabItem label="Ruby">
 ```ruby
 suppliers.extend(location: :city).project([:sid, :name, :location]).to_a
 
@@ -61,9 +106,25 @@ suppliers.extend(location: :city).project([:sid, :name, :location]).to_a
  {:sid=>"S4", :name=>"Clark", :location=>"London"},
  {:sid=>"S5", :name=>"Adams", :location=>"Athens"}]
 ```
+  </TabItem>
+  <TabItem label="TypeScript">
+```typescript
+suppliers.extend({ location: 'city' }).project(['sid', 'name', 'location']).toArray()
+
+// =>
+// [{ sid: "S1", name: "Smith", location: "London" },
+//  { sid: "S2", name: "Jones", location: "Paris" },
+//  { sid: "S3", name: "Blake", location: "Paris" },
+//  { sid: "S4", name: "Clark", location: "London" },
+//  { sid: "S5", name: "Adams", location: "Athens" }]
+```
+  </TabItem>
+</Tabs>
 
 #### Multiple extensions
 
+<Tabs syncKey="lang">
+  <TabItem label="Ruby">
 ```ruby
 supplies
   .extend(
@@ -83,3 +144,22 @@ supplies
 ##### Generated SQL
 
 Extensions using lambdas are not compiled to SQL and are evaluated in memory.
+  </TabItem>
+  <TabItem label="TypeScript">
+```typescript
+supplies
+  .extend({
+    double_qty: t => t.qty * 2,
+    supply_key: t => `${t.sid}-${t.pid}`
+  })
+  .project(['supply_key', 'qty', 'double_qty'])
+  .restrict(t => t.qty > 300)
+  .toArray()
+
+// =>
+// [{ supply_key: "S1-P3", qty: 400, double_qty: 800 },
+//  { supply_key: "S2-P2", qty: 400, double_qty: 800 },
+//  { supply_key: "S4-P5", qty: 400, double_qty: 800 }]
+```
+  </TabItem>
+</Tabs>

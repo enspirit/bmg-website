@@ -4,33 +4,51 @@ sidebar:
   order: 1
 ---
 
-## Supported Operators
+import { Badge } from '@astrojs/starlight/components';
 
-| Category | Operator | Description |
-|----------|----------|-------------|
-| **Selection** | [`restrict`](/reference/operators/restrict) | Filter tuples matching a predicate (aka `where`) |
-| | [`matching`](/reference/operators/matching) | Semi join (where exists) |
-| | [`not_matching`](/reference/operators/not-matching) | Inverse semi join (where not exists) |
-| **Projection** | [`project`](/reference/operators/project) | Keep specified attributes only |
-| | [`allbut`](/reference/operators/allbut) | Remove specified attributes |
-| **Joining** | [`join`](/reference/operators/join) | Natural join on a join key |
-| | [`left_join`](/reference/operators/left-join) | Left join with optional default tuple |
-| | [`cross_product`](/reference/operators/cross-product) | Cross product (aka `cross_join`) |
-| **Set Operations** | [`union`](/reference/operators/union) | Set union |
-| | [`minus`](/reference/operators/minus) | Set difference |
-| **Renaming** | [`rename`](/reference/operators/rename) | Rename some attributes |
-| | [`prefix`](/reference/operators/prefix) | Add prefix to attribute names |
-| | [`suffix`](/reference/operators/suffix) | Add suffix to attribute names |
-| **Extension** | [`extend`](/reference/operators/extend) | Add computed attributes |
-| | [`constants`](/reference/operators/constants) | Add constant attributes |
-| | [`transform`](/reference/operators/transform) | Transform attribute values |
-| **Summarization** | [`summarize`](/reference/operators/summarize) | Relational summarization (group by + aggregate) |
-| **Structuring** | [`group`](/reference/operators/group) | Create relation-valued attribute from attributes |
-| | [`ungroup`](/reference/operators/ungroup) | Flatten relation-valued attributes |
-| | [`image`](/reference/operators/image) | Create relation-valued attribute from another relation |
-| | [`autowrap`](/reference/operators/autowrap) | Structure a flat relation (e.g. split on `_`) |
-| | [`unwrap`](/reference/operators/unwrap) | Merge tuple-valued attributes into parent tuple |
-| **Other** | [`page`](/reference/operators/page) | Pagination with explicit ordering |
+## Relational Operators
+
+Relational operators take relations as input and produce relations as output.
+
+| Category | Operator | Description | Ruby | TS |
+|----------|----------|-------------|:----:|:--:|
+| **Selection** | [`restrict`](/reference/relational/restrict) | Filter tuples matching a predicate (aka `where`) | ✓ | ✓ |
+| | [`exclude`](/reference/relational/exclude) | Filter tuples NOT matching a predicate | ✓ | ✓ |
+| | [`matching`](/reference/relational/matching) | Semi join (where exists) | ✓ | ✓ |
+| | [`not_matching`](/reference/relational/not-matching) | Inverse semi join (where not exists) | ✓ | ✓ |
+| **Projection** | [`project`](/reference/relational/project) | Keep specified attributes only | ✓ | ✓ |
+| | [`allbut`](/reference/relational/allbut) | Remove specified attributes | ✓ | ✓ |
+| **Joining** | [`join`](/reference/relational/join) | Natural join on a join key | ✓ | ✓ |
+| | [`left_join`](/reference/relational/left-join) | Left join with optional default tuple | ✓ | ✓ |
+| | [`cross_product`](/reference/relational/cross-product) | Cross product (aka `cross_join`) | ✓ | ✓ |
+| **Set Operations** | [`union`](/reference/relational/union) | Set union | ✓ | ✓ |
+| | [`minus`](/reference/relational/minus) | Set difference | ✓ | ✓ |
+| | [`intersect`](/reference/relational/intersect) | Set intersection | | ✓ |
+| **Renaming** | [`rename`](/reference/relational/rename) | Rename some attributes | ✓ | ✓ |
+| | [`prefix`](/reference/relational/prefix) | Add prefix to attribute names | ✓ | ✓ |
+| | [`suffix`](/reference/relational/suffix) | Add suffix to attribute names | ✓ | ✓ |
+| **Extension** | [`extend`](/reference/relational/extend) | Add computed attributes | ✓ | ✓ |
+| | [`constants`](/reference/relational/constants) | Add constant attributes | ✓ | ✓ |
+| | [`transform`](/reference/relational/transform) | Transform attribute values | ✓ | ✓ |
+| **Summarization** | [`summarize`](/reference/relational/summarize) | Relational summarization (group by + aggregate) | ✓ | ✓ |
+| **Structuring** | [`group`](/reference/relational/group) | Create relation-valued attribute from attributes | ✓ | ✓ |
+| | [`ungroup`](/reference/relational/ungroup) | Flatten relation-valued attributes | ✓ | ✓ |
+| | [`image`](/reference/relational/image) | Create relation-valued attribute from another relation | ✓ | ✓ |
+| | [`wrap`](/reference/relational/wrap) | Wrap attributes into tuple-valued attribute | | ✓ |
+| | [`autowrap`](/reference/relational/autowrap) | Structure a flat relation (e.g. split on `_`) | ✓ | ✓ |
+| | [`unwrap`](/reference/relational/unwrap) | Merge tuple-valued attributes into parent tuple | ✓ | ✓ |
+| **Pagination** | [`page`](/reference/relational/page) | Pagination with explicit ordering | ✓ | |
+
+## Non-Relational Operators
+
+Non-relational operators take relations as input but produce other values (tuples, arrays, booleans, objects).
+
+| Operator | Description | Ruby | TS |
+|----------|-------------|:----:|:--:|
+| [`one`](/reference/non-relational/one) | Extract single tuple from relation | | ✓ |
+| [`toArray`](/reference/non-relational/to-array) | Convert relation to array (Ruby: `to_a`) | ✓ | ✓ |
+| [`isEqual`](/reference/non-relational/is-equal) | Check set equality of two relations | | ✓ |
+| [`yByX`](/reference/non-relational/ybyx) | Create mapping object from relation (Ruby: `y_by_x`) | ✓ | ✓ |
 
 ## Suppliers and Parts
 

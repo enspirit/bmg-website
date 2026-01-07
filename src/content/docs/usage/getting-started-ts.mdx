@@ -1,0 +1,113 @@
+---
+title: Getting started in TypeScript
+sidebar:
+  order: 2
+---
+
+The quickest way to start experimenting with Bmg.js is to create a simple script and set up a relation.
+
+## Installation
+
+```bash
+npm install @enspirit/bmg-js
+```
+
+## Basic Usage
+
+```typescript title="my_bmg_script.ts"
+import { Bmg } from '@enspirit/bmg-js'
+
+const suppliers = Bmg([
+  { sid: "S1", name: "Smith", status: 20, city: "London" },
+  { sid: "S2", name: "Jones", status: 10, city: "Paris"  },
+  { sid: "S3", name: "Blake", status: 30, city: "Paris"  },
+  { sid: "S4", name: "Clark", status: 20, city: "London" },
+  { sid: "S5", name: "Adams", status: 30, city: "Athens" }
+])
+
+const byCity = suppliers
+  .exclude({ status: 30 })
+  .extend({ upname: (t) => t.name.toUpperCase() })
+  .group(['sid', 'name', 'upname', 'status'], 'suppliers_in')
+
+console.log(JSON.stringify(byCity.toArray(), null, 2))
+```
+
+This script will output:
+
+```json
+[
+  {
+    "city": "London",
+    "suppliers_in": [
+      {
+        "sid": "S1",
+        "name": "Smith",
+        "status": 20,
+        "upname": "SMITH"
+      },
+      {
+        "sid": "S4",
+        "name": "Clark",
+        "status": 20,
+        "upname": "CLARK"
+      }
+    ]
+  },
+  {
+    "city": "Paris",
+    "suppliers_in": [
+      {
+        "sid": "S2",
+        "name": "Jones",
+        "status": 10,
+        "upname": "JONES"
+      }
+    ]
+  }
+]
+```
+
+Here, we created a relation from an array of objects. The `Bmg` function wraps an array into a `Relation` that provides all relational operators.
+
+## TypeScript Support
+
+Bmg.js provides full TypeScript support with generic types:
+
+```typescript
+import { Bmg } from '@enspirit/bmg-js'
+
+interface Supplier {
+  sid: string
+  name: string
+  status: number
+  city: string
+}
+
+const suppliers = Bmg<Supplier>([
+  { sid: 'S1', name: 'Smith', status: 20, city: 'London' },
+])
+
+// Type-safe operations with autocomplete
+const projected = suppliers.project(['sid', 'name'])
+// Type: Relation<{ sid: string; name: string }>
+
+const one = suppliers.restrict({ sid: 'S1' }).one()
+// Type: Supplier
+```
+
+## Standalone Operators
+
+You can also use operators as standalone functions on plain arrays:
+
+```typescript
+import { restrict, project } from '@enspirit/bmg-js'
+
+const suppliers = [
+  { sid: 'S1', name: 'Smith', city: 'London' },
+  { sid: 'S2', name: 'Jones', city: 'Paris' },
+]
+
+const result = project(restrict(suppliers, { city: 'Paris' }), ['name'])
+// => [{ name: 'Jones' }]
+```
