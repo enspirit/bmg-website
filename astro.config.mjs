@@ -1,8 +1,6 @@
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
-
-import tailwind from "@astrojs/tailwind";
-
+import tailwindcss from "@tailwindcss/vite";
 import sitemap from "@astrojs/sitemap";
 
 // https://astro.build/config
@@ -29,9 +27,9 @@ export default defineConfig({
     customCss: [
       './src/styles/custom.css',
     ],
-    social: {
-      github: 'https://github.com/enspirit/bmg'
-    },
+    social: [
+      { icon: 'github', label: 'GitHub', href: 'https://github.com/enspirit/bmg' }
+    ],
     sidebar: [{
       label: 'Relational Algebra Primer',
       autogenerate: {
@@ -56,5 +54,8 @@ export default defineConfig({
     expressiveCode: {
       themes: ['dracula']
     }
-  }), tailwind(), sitemap()]
+  }), sitemap()],
+  vite: {
+    plugins: [tailwindcss()]
+  }
 });
