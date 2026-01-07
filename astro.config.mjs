@@ -9,6 +9,7 @@ export default defineConfig({
   integrations: [starlight({
     credits: true,
     head: [
+      // Analytics
       {
         tag: 'script',
         attrs: {
@@ -20,6 +21,78 @@ export default defineConfig({
       {
         tag: 'noscript',
         content: '<img src="https://queue.simpleanalyticscdn.com/noscript.gif" alt="" referrerpolicy="no-referrer-when-downgrade" />',
+      },
+      // Open Graph image
+      {
+        tag: 'meta',
+        attrs: {
+          property: 'og:image',
+          content: 'https://www.relational-algebra.dev/og-image.png',
+        },
+      },
+      {
+        tag: 'meta',
+        attrs: {
+          property: 'og:image:width',
+          content: '1200',
+        },
+      },
+      {
+        tag: 'meta',
+        attrs: {
+          property: 'og:image:height',
+          content: '630',
+        },
+      },
+      {
+        tag: 'meta',
+        attrs: {
+          property: 'og:image:alt',
+          content: 'Relational Algebra for Modern Times - Bmg documentation',
+        },
+      },
+      // Twitter Card metadata
+      {
+        tag: 'meta',
+        attrs: {
+          name: 'twitter:image',
+          content: 'https://www.relational-algebra.dev/og-image.png',
+        },
+      },
+      // JSON-LD Structured Data
+      {
+        tag: 'script',
+        attrs: {
+          type: 'application/ld+json',
+        },
+        content: JSON.stringify({
+          '@context': 'https://schema.org',
+          '@graph': [
+            {
+              '@type': 'Organization',
+              '@id': 'https://www.relational-algebra.dev/#organization',
+              'name': 'Bmg - Relational Algebra',
+              'url': 'https://www.relational-algebra.dev',
+              'logo': {
+                '@type': 'ImageObject',
+                'url': 'https://www.relational-algebra.dev/og-image.png',
+              },
+              'sameAs': [
+                'https://github.com/enspirit/bmg'
+              ]
+            },
+            {
+              '@type': 'WebSite',
+              '@id': 'https://www.relational-algebra.dev/#website',
+              'url': 'https://www.relational-algebra.dev',
+              'name': 'Relational Algebra for Modern Times',
+              'description': 'Documentation for Bmg, a relational algebra library for Ruby and TypeScript',
+              'publisher': {
+                '@id': 'https://www.relational-algebra.dev/#organization'
+              }
+            }
+          ]
+        }),
       },
     ],
     title: 'Relational Algebra for Modern Times',
