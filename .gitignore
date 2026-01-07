@@ -36,3 +36,4 @@ pnpm-debug.log*
 k8s/**/*secret.yaml
 
 implementations
+.claude/settings.local.json
