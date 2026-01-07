@@ -2,12 +2,16 @@ import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import tailwindcss from "@tailwindcss/vite";
 import sitemap from "@astrojs/sitemap";
+import vue from '@astrojs/vue';
 
 // https://astro.build/config
 export default defineConfig({
   site: "https://www.relational-algebra.dev",
-  integrations: [starlight({
+  integrations: [vue(), starlight({
     credits: true,
+    components: {
+      SocialIcons: './src/components/overrides/SocialIcons.astro',
+    },
     head: [
       // Analytics
       {

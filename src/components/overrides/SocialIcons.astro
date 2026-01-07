@@ -1,0 +1,38 @@
+---
+// Custom SocialIcons that adds a "Try" button before the social icons
+import Default from '@astrojs/starlight/components/SocialIcons.astro';
+---
+
+<div class="social-icons-wrapper">
+  <a href="/try" class="try-button">
+    Try it
+  </a>
+  <Default {...Astro.props} />
+</div>
+
+<style>
+  .social-icons-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .try-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.375rem 0.875rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--sl-color-bg);
+    background: var(--sl-color-accent);
+    border-radius: 999px;
+    text-decoration: none;
+    transition: opacity 0.15s, transform 0.15s;
+  }
+
+  .try-button:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+</style>

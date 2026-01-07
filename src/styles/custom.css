@@ -15,3 +15,69 @@
 .hero h1 {
   font-size: 96px;
 }
+
+/* Try Playground CTA on homepage */
+.try-cta {
+  margin-bottom: 1.5rem;
+}
+
+.try-cta-link {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  padding: 1rem 1.25rem;
+  background: linear-gradient(135deg, var(--sl-color-accent) 0%, color-mix(in srgb, var(--sl-color-accent) 80%, purple) 100%);
+  border-radius: 0.75rem;
+  text-decoration: none;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.try-cta-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.try-cta-badge {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--sl-color-accent);
+  background: var(--sl-color-bg);
+  border-radius: 999px;
+}
+
+.try-cta-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--sl-color-bg);
+}
+
+.try-cta-desc {
+  flex-basis: 100%;
+  font-size: 0.875rem;
+  color: color-mix(in srgb, var(--sl-color-bg) 85%, transparent);
+}
+
+.try-cta-arrow {
+  margin-left: auto;
+  font-size: 1.5rem;
+  color: var(--sl-color-bg);
+  transition: transform 0.15s;
+}
+
+.try-cta-link:hover .try-cta-arrow {
+  transform: translateX(4px);
+}
+
+@media (max-width: 480px) {
+  .try-cta-title {
+    font-size: 1rem;
+  }
+
+  .try-cta-arrow {
+    display: none;
+  }
+}

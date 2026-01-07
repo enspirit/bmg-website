@@ -1,0 +1,8 @@
+[
+  { "pid": "P1", "pname": "Nut", "color": "Red", "weight": 12.0, "city": "London" },
+  { "pid": "P2", "pname": "Bolt", "color": "Green", "weight": 17.0, "city": "Paris" },
+  { "pid": "P3", "pname": "Screw", "color": "Blue", "weight": 17.0, "city": "Oslo" },
+  { "pid": "P4", "pname": "Screw", "color": "Red", "weight": 14.0, "city": "London" },
+  { "pid": "P5", "pname": "Cam", "color": "Blue", "weight": 12.0, "city": "Paris" },
+  { "pid": "P6", "pname": "Cog", "color": "Red", "weight": 19.0, "city": "London" }
+]

@@ -1,0 +1,77 @@
+---
+import TryPlayground from '../components/try/TryPlayground.vue'
+---
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Try Bmg.js - Relational Algebra Playground</title>
+    <meta name="description" content="Interactive playground for relational algebra with Bmg.js" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  </head>
+  <body>
+    <TryPlayground client:only="vue" />
+  </body>
+</html>
+
+<style is:global>
+  * {
+    box-sizing: border-box;
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  /* Starlight-like CSS variables for theming */
+  :root {
+    --sl-color-bg: #fff;
+    --sl-color-text: #1a1a1a;
+    --sl-color-gray-1: #4a4a4a;
+    --sl-color-gray-2: #6a6a6a;
+    --sl-color-gray-3: #8a8a8a;
+    --sl-color-gray-4: #b0b0b0;
+    --sl-color-gray-5: #d0d0d0;
+    --sl-color-gray-6: #f0f0f0;
+    --sl-color-accent: #0066cc;
+    --sl-color-accent-high-contrast: #fff;
+    --sl-color-red: #dc2626;
+    --sl-color-red-low: #fef2f2;
+    --sl-color-blue: #2563eb;
+    --sl-color-blue-low: #eff6ff;
+    --sl-color-green: #16a34a;
+    --sl-color-green-low: #f0fdf4;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --sl-color-bg: #1a1a2e;
+      --sl-color-text: #e0e0e0;
+      --sl-color-gray-1: #c0c0c0;
+      --sl-color-gray-2: #a0a0a0;
+      --sl-color-gray-3: #808080;
+      --sl-color-gray-4: #606060;
+      --sl-color-gray-5: #404050;
+      --sl-color-gray-6: #2a2a3e;
+      --sl-color-accent: #4d9fff;
+      --sl-color-accent-high-contrast: #1a1a2e;
+      --sl-color-red: #f87171;
+      --sl-color-red-low: #3b1a1a;
+      --sl-color-blue: #60a5fa;
+      --sl-color-blue-low: #1e3a5f;
+      --sl-color-green: #4ade80;
+      --sl-color-green-low: #14532d;
+    }
+  }
+
+  body {
+    background: var(--sl-color-bg);
+    color: var(--sl-color-text);
+  }
+</style>
