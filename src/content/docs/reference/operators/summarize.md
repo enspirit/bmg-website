@@ -16,7 +16,7 @@ Example: *For every city where we have stores, how big is the total revenue per 
 
 The first argument specifies attributes to group by, the second argument is a hash with attribute names as keys and aggregation operations as values.
 
-Like the [`group`](/reference/Operations/group) operation, `summarize` uses a number of *grouping attributes* to slice up the input relation. However, `summarize` does not create a nested relation. Instead, `summarize` extends the output relation with one or several attributes containing *aggregated values* computed over tuples that [match](/reference/Operations/matching) the grouping tuples on all their attributes. (An important difference: while the attributes passed to `group` are the *grouped attributes*, `summarize` expects the *grouping attributes*.)
+Like the [`group`](/reference/operators/group) operation, `summarize` uses a number of *grouping attributes* to slice up the input relation. However, `summarize` does not create a nested relation. Instead, `summarize` extends the output relation with one or several attributes containing *aggregated values* computed over tuples that [match](/reference/operators/matching) the grouping tuples on all their attributes. (An important difference: while the attributes passed to `group` are the *grouped attributes*, `summarize` expects the *grouping attributes*.)
 
 A simple implementation of the count aggregation might look like this:
 

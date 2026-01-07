@@ -46,7 +46,7 @@ export default defineConfig({
         directory: 'usage'
       }
     }, {
-      label: 'Operations reference',
+      label: 'Operators reference',
       autogenerate: {
         directory: 'reference'
       }

@@ -4,9 +4,31 @@ sidebar:
   order: 1
 ---
 
-:::caution[Incomplete]
-We're in the process of documenting every operation provided by Bmg in depth, but only a subset has been finished so far. In the meantime, you can consult <u>[the complete list of operations](https://github.com/enspirit/bmg?tab=readme-ov-file#supported-operators)</u> in the README.
-:::
+## Supported Operators
+
+| Category | Operator | Description |
+|----------|----------|-------------|
+| **Selection** | [`restrict`](/reference/operators/restrict) | Filter tuples matching a predicate (aka `where`) |
+| | [`matching`](/reference/operators/matching) | Semi join (where exists) |
+| | [`not_matching`](/reference/operators/not-matching) | Inverse semi join (where not exists) |
+| **Projection** | [`project`](/reference/operators/project) | Keep specified attributes only |
+| | [`allbut`](/reference/operators/allbut) | Remove specified attributes |
+| **Joining** | [`join`](/reference/operators/join) | Natural join on a join key |
+| | [`left_join`](/reference/operators/left-join) | Left join with optional default tuple |
+| | [`cross_product`](/reference/operators/cross-product) | Cross product (aka `cross_join`) |
+| **Set Operations** | [`union`](/reference/operators/union) | Set union |
+| | [`minus`](/reference/operators/minus) | Set difference |
+| **Renaming** | [`rename`](/reference/operators/rename) | Rename some attributes |
+| **Extension** | [`extend`](/reference/operators/extend) | Add computed attributes |
+| | [`constants`](/reference/operators/constants) | Add constant attributes |
+| | [`transform`](/reference/operators/transform) | Transform attribute values |
+| **Summarization** | [`summarize`](/reference/operators/summarize) | Relational summarization (group by + aggregate) |
+| **Structuring** | [`group`](/reference/operators/group) | Create relation-valued attribute from attributes |
+| | [`ungroup`](/reference/operators/ungroup) | Flatten relation-valued attributes |
+| | [`image`](/reference/operators/image) | Create relation-valued attribute from another relation |
+| | [`autowrap`](/reference/operators/autowrap) | Structure a flat relation (e.g. split on `_`) |
+| | [`unwrap`](/reference/operators/unwrap) | Merge tuple-valued attributes into parent tuple |
+| **Other** | [`page`](/reference/operators/page) | Pagination with explicit ordering |
 
 ## Suppliers and Parts
 

@@ -14,7 +14,7 @@ Example: *What are the different T-shirt variants we stock, if we disregard colo
 
 ### Description
 
-Identical to [`project`](/reference/Operations/project) except that it keeps all attributes *except* those specified in the argument.
+Identical to [`project`](/reference/operators/project) except that it keeps all attributes *except* those specified in the argument.
 
 ### Requirements
 
