@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --sl-sidebar-width: 15rem;
-  --sl-content-width: 60rem;
+  --sl-sidebar-width: 20rem;
+  --sl-content-width: 55rem;
 }
 .sl-markdown-content ol {
   list-style: decimal;
