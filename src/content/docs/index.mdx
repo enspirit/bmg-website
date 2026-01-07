@@ -3,7 +3,7 @@ title: B⋈G
 description: Relational algebra libraries for Ruby and TypeScript
 tableOfContents: false
 hero:
-  tagline: Relational Algebra for Modern Times
+  tagline: Think in Relations. Query Any Data.
   image:
     file: ../../assets/impossible-object.png
 ---
@@ -15,150 +15,121 @@ import { Image } from "astro:assets";
 import enspiritLogoLight from "../../assets/enspirit-logo-light.png";
 import enspiritLogoDark from "../../assets/enspirit-logo-dark.png";
 
-<CardGrid>
-        <LinkCard
-          title="Want to learn relational algebra?"
-          description="Dive into our comprehensive primer on relational algebra."
-          href="/ra-primer/introduction"
-        >
-        </LinkCard>
-        <LinkCard
-          title="Want to use Bmg in Ruby?"
-          description="Get started in no time with our tutorials and operations reference."
-          href="/usage/getting-started/"
-        >
-        </LinkCard>
-        <LinkCard
-          title="Want to use Bmg.js in TypeScript?"
-          description="Bring relational algebra to your JavaScript/TypeScript projects."
-          href="/usage/getting-started-ts/"
-        >
-        </LinkCard>
-</CardGrid>
+<LinkCard
+  title="What is Relational Algebra?"
+  description="A powerful way to reason, query and transform data. Learn the fundamentals."
+  href="/ra-primer/introduction"
+/>
 
-<div class="text-4xl pt-12 pb-4 underline decoration-amber-500">
-  <span class="">
-  What does it look like?
-  </span>
+<div class="text-2xl pt-8 pb-4">
+  Use it in your projects
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+  <a href="/usage/getting-started/" class="block p-4 rounded-lg border border-gray-600 hover:border-amber-500 hover:bg-amber-500/10 transition-all duration-200 no-underline">
+    <span class="inline-block px-2 py-0.5 mb-2 text-sm font-semibold rounded bg-red-700 text-white">Ruby</span>
+    <p class="font-bold text-lg !mt-0 !text-[var(--sl-color-white)]">Bmg</p>
+    <p class="!mt-1 text-sm !text-[var(--sl-color-gray-3)]">Full-featured library with SQL compilation and ActiveRecord integration.</p>
+  </a>
+  <a href="/usage/getting-started-ts/" class="block p-4 rounded-lg border border-gray-600 hover:border-amber-500 hover:bg-amber-500/10 transition-all duration-200 no-underline">
+    <span class="inline-block px-2 py-0.5 mb-2 text-sm font-semibold rounded bg-blue-700 text-white">TypeScript</span>
+    <p class="font-bold text-lg !mt-0 !text-[var(--sl-color-white)]">Bmg.js</p>
+    <p class="!mt-1 text-sm !text-[var(--sl-color-gray-3)]">Type-safe in-memory operations for JavaScript/TypeScript projects.</p>
+  </a>
 </div>
 
 import { Tabs, TabItem } from '@astrojs/starlight/components';
 
+<div class="text-4xl pt-12 pb-4 underline decoration-amber-500">
+  Works with any data
+</div>
+
+Arrays, CSV files, JSON, Redis, SQL databases — same operations everywhere.
+
 <Tabs syncKey="lang">
   <TabItem label="Ruby">
 ```ruby
-# List the total number of purchases, excluding samples,
-# for each product in the cheese category
+# In-memory array
+purchases = Bmg::Relation.new([
+  { product_id: 1, quantity: 5, type: 'sale' },
+  { product_id: 2, quantity: 3, type: 'sample' },
+])
+
+# Or load from CSV
+purchases = Bmg.csv("purchases.csv")
+
+# Or connect to a SQL database
+purchases = Bmg.sequel(:purchases, db)
+
+# Same operations, any source
 purchases
-  .restrict(Predicate.neq(:product_type, 'sample'))
-  .join(products, :product_id => :id)
-  .restrict(Predicate.eq(:category, 'cheese'))
-  .project([:product_id, :quantity])
-  .summarize([:product_id], :quantity => :sum)
+  .restrict(Predicate.neq(:type, 'sample'))
+  .summarize([:product_id], quantity: :sum)
 ```
   </TabItem>
   <TabItem label="TypeScript">
 ```typescript
-// List the total number of purchases, excluding samples,
-// for each product in the cheese category
+// In-memory array
+const purchases = Bmg([
+  { product_id: 1, quantity: 5, type: 'sale' },
+  { product_id: 2, quantity: 3, type: 'sample' },
+])
+
+// Same operations, full type safety
 purchases
-  .exclude({ product_type: 'sample' })
-  .join(products, { product_id: 'id' })
-  .restrict({ category: 'cheese' })
-  .project(['product_id', 'quantity'])
+  .exclude({ type: 'sample' })
   .summarize(['product_id'], { quantity: { op: 'sum', attr: 'quantity' } })
 ```
   </TabItem>
 </Tabs>
 
-<div class="min-w-fit max-w-fit bg-orange-500/75 py-2 px-4 font-bold rounded-md">
-Keep scrolling for more examples!
-</div>
-
 <div class="text-4xl pt-12 pb-4 underline decoration-amber-500">
   What is it good for?
 </div>
 <CardGrid>
-        <Card title="A solid foundation">
-          Bmg stays faithful to the mathematical foundations of relational databases. Everything is a relation and operations can always be chained.
+        <Card title="Think in relations">
+          Relational algebra gives you a powerful mental model for data manipulation. Chain operations naturally.
         </Card>
-        <Card title="Works with any data">
-          Query, transform, and combine data from SQL databases, CSV files, spreadsheets, Redis and more.
+        <Card title="Query anything">
+          Same operations work on arrays, files, Redis, or SQL. Your code doesn't change when your data source does.
         </Card>
-        <Card title="Unlimited composability">
-          It's trivial to extract and compose operations on relations in Bmg.
+        <Card title="Compose freely">
+          Extract, reuse, and combine query fragments. Build complex transformations from simple pieces.
         </Card>
-        <Card title="Fits in any project">
-          You can use Bmg in any Ruby codebase, by itself or alongside ActiveRecord or any other database wrapper.
+        <Card title="Drop in anywhere">
+          Works alongside ActiveRecord, Sequel, or standalone. No framework lock-in.
         </Card>
 </CardGrid>
 
 
 <div class="text-4xl pt-12 pb-4 underline decoration-amber-500">
-  Think relations, get SQL
+  SQL Compilation
 </div>
 
-Get more examples in our [SQL vs. Bmg cheatsheet](/comparison/bmg-vs-sql-cheatsheet/).
+When your data lives in a database, Bmg compiles your queries to efficient SQL.
+Currently available in Ruby — coming soon to TypeScript.
 
 <CardGrid>
         <Card>
         ```ruby
         suppliers
           .restrict(Predicate.eq(:city, "Paris"))
-          .project([:sid])
           .join(supplies, [:sid])
-          .join(parts, [:pid])
-          .project([:name, :weight, :qty])
+          .project([:name, :qty])
         ```
         </Card>
         <Card>
         ```sql
-        SELECT DISTINCT `t2`.`qty`, `t3`.`name`, `t3`.`weight`
+        SELECT DISTINCT `t2`.`qty`, `t1`.`name`
         FROM `suppliers` AS 't1'
         INNER JOIN `supplies` AS 't2'
           ON (`t1`.`sid` = `t2`.`sid`)
-        INNER JOIN `parts` AS 't3'
-          ON (`t2`.`pid` = `t3`.`pid`)
         WHERE (`t1`.`city` = 'Paris')
         ```
         </Card>
-        <Card>
-        ```ruby
-        suppliers
-          .not_matching(supplies, [:sid])
-        ```
-        </Card>
-        <Card>
-        ```sql
-        SELECT `t1`.`sid`, `t1`.`name`, `t1`.`status`, `t1`.`city`
-        FROM `suppliers` AS 't1'
-        WHERE NOT (
-          EXISTS (
-            SELECT * FROM `supplies` AS 't2'
-            WHERE (`t1`.`sid` = `t2`.`sid`)
-          )
-        )
-        ```
-        </Card>
-        <Card>
-        ```ruby
-        suppliers
-          .project([:city])
-          .union(
-            parts.project([:city])
-          )
-        ```
-        </Card>
-        <Card>
-        ```sql
-        SELECT DISTINCT `t1`.`city`
-        FROM `suppliers` AS 't1'
-        UNION
-        SELECT DISTINCT `t1`.`city`
-        FROM `parts` AS 't1'
-        ```
-        </Card>
 </CardGrid>
+
+See more in our [SQL vs. Bmg cheatsheet](/comparison/bmg-vs-sql-cheatsheet/).
 
 <div class="h-8 !mt-16 w-full flex justify-center">
   <span class="text-lg object-contain">Created with ♥️ by</span>

@@ -22,7 +22,7 @@ export default defineConfig({
         content: '<img src="https://queue.simpleanalyticscdn.com/noscript.gif" alt="" referrerpolicy="no-referrer-when-downgrade" />',
       },
     ],
-    title: 'Bmg documentation',
+    title: 'Relational Algebra for Modern Times',
     favicon: '/favicon.ico',
     customCss: [
       './src/styles/custom.css',
