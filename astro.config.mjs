@@ -78,7 +78,9 @@ export default defineConfig({
                 'url': 'https://www.relational-algebra.dev/og-image.png',
               },
               'sameAs': [
-                'https://github.com/enspirit/bmg'
+                'https://github.com/enspirit/bmg',
+                'https://github.com/enspirit/bmg.js',
+                'https://github.com/enspirit/bmg-website'
               ]
             },
             {
@@ -101,7 +103,7 @@ export default defineConfig({
       './src/styles/custom.css',
     ],
     social: [
-      { icon: 'github', label: 'GitHub', href: 'https://github.com/enspirit/bmg' }
+      { icon: 'github', label: 'GitHub', href: 'https://github.com/enspirit/bmg-website' }
     ],
     sidebar: [{
       label: 'Relational Algebra Primer',
