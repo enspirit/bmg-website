@@ -120,7 +120,7 @@ const handleLoadDefaults = () => {
 
       <main class="main-content">
         <div class="editor-pane">
-          <CodeEditor v-model="code" @run="handleRun" />
+          <CodeEditor v-model="code" :dataSources="dataSources" @run="handleRun" />
         </div>
         <div class="results-pane">
           <ResultsPanel

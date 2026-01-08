@@ -17,9 +17,15 @@ dependencies:
   '@astrojs/vue':
     specifier: ^5.1.4
     version: 5.1.4(astro@5.16.7)(vue@3.5.26)
+  '@codemirror/autocomplete':
+    specifier: ^6.20.0
+    version: 6.20.0
   '@codemirror/lang-javascript':
     specifier: ^6.2.4
     version: 6.2.4
+  '@codemirror/lint':
+    specifier: ^6.9.2
+    version: 6.9.2
   '@codemirror/state':
     specifier: ^6.5.3
     version: 6.5.3
@@ -30,8 +36,8 @@ dependencies:
     specifier: ^6.39.9
     version: 6.39.9
   '@enspirit/bmg-js':
-    specifier: ^1.0.1
-    version: 1.0.1
+    specifier: ^1.0.2
+    version: 1.0.2
   '@tailwindcss/vite':
     specifier: ^4.1.18
     version: 4.1.18(vite@7.3.1)
@@ -738,8 +744,8 @@ packages:
     dev: false
     optional: true
 
-  /@enspirit/bmg-js@1.0.1:
-    resolution: {integrity: sha512-gzGaUKG5kryvzRMy2nys+YwOjtcMPR/s0SvygqLEcGgIu24g9efdiJxZuCXVxYji6BAbOlsWn+2XCglr2Hs6Vg==}
+  /@enspirit/bmg-js@1.0.2:
+    resolution: {integrity: sha512-fm07ylPMulQK0rZoyOVurhSJAXmKjjjgQ6K3I7PWgNBjjf+lCf+tTQkWEecXf7XBwsRB+LhXJOKYEFdFy1jlsg==}
     dev: false
 
   /@esbuild/aix-ppc64@0.25.12:
@@ -2112,6 +2118,7 @@ packages:
 
   /@types/node@17.0.45:
     resolution: {integrity: sha512-w+tIMs3rq2afQdsPJlODhoUEKzFP1ayaoyl1CcnwtIlsVe7K7bA1NGm4s3PraqTLlXnbIN84zuBlxBWo1u9BLw==}
+    dev: false
 
   /@types/node@20.19.27:
     resolution: {integrity: sha512-N2clP5pJhB2YnZJ3PIHFk5RkygRX5WO/5f0WC08tp0wd+sv0rsJk3MqWn3CbNmT2J505a5336jaQj4ph1AdMug==}
@@ -2119,10 +2126,16 @@ packages:
       undici-types: 6.21.0
     dev: true
 
+  /@types/node@25.0.3:
+    resolution: {integrity: sha512-W609buLVRVmeW693xKfzHeIV6nJGGz98uCPfeXI1ELMLXVeKYZ9m15fAMSaUPBHYLGFsVRcMmSCksQOrZV9BYA==}
+    dependencies:
+      undici-types: 7.16.0
+    dev: true
+
   /@types/papaparse@5.5.2:
     resolution: {integrity: sha512-gFnFp/JMzLHCwRf7tQHrNnfhN4eYBVYYI897CGX4MY1tzY9l2aLkVyx2IlKZ/SAqDbB3I1AOZW5gTMGGsqWliA==}
     dependencies:
-      '@types/node': 17.0.45
+      '@types/node': 25.0.3
     dev: true
 
   /@types/sax@1.2.7:
@@ -2703,8 +2716,8 @@ packages:
     resolution: {integrity: sha512-kwDPIFCGx0NZHog36dj+tHiwP4QMzsZ3AgMViUBKI0+V5n4U0ufTCUMhnQ04diaRI8EX/QcPfql7zlhZ7j4zgg==}
     dev: false
 
-  /baseline-browser-mapping@2.9.12:
-    resolution: {integrity: sha512-Mij6Lij93pTAIsSYy5cyBQ975Qh9uLEc5rwGTpomiZeXZL9yIS6uORJakb3ScHgfs0serMMfIbXzokPMuEiRyw==}
+  /baseline-browser-mapping@2.9.13:
+    resolution: {integrity: sha512-WhtvB2NG2wjr04+h77sg3klAIwrgOqnjS49GGudnUPGFFgg7G17y7Qecqp+2Dr5kUDxNRBca0SK7cG8JwzkWDQ==}
     hasBin: true
     dev: false
 
@@ -2760,8 +2773,8 @@ packages:
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
     hasBin: true
     dependencies:
-      baseline-browser-mapping: 2.9.12
-      caniuse-lite: 1.0.30001762
+      baseline-browser-mapping: 2.9.13
+      caniuse-lite: 1.0.30001763
       electron-to-chromium: 1.5.267
       node-releases: 2.0.27
       update-browserslist-db: 1.2.3(browserslist@4.28.1)
@@ -2779,8 +2792,8 @@ packages:
     engines: {node: '>=16'}
     dev: false
 
-  /caniuse-lite@1.0.30001762:
-    resolution: {integrity: sha512-PxZwGNvH7Ak8WX5iXzoK1KPZttBXNPuaOvI2ZYU7NrlM+d9Ov+TUvlLOBNGzVXAntMSMMlJPd+jY6ovrVjSmUw==}
+  /caniuse-lite@1.0.30001763:
+    resolution: {integrity: sha512-mh/dGtq56uN98LlNX9qdbKnzINhX0QzhiWBFEkFfsFO4QyCvL8YegrJAazCwXIeqkIob8BlZPGM3xdnY+sgmvQ==}
     dev: false
 
   /ccount@2.0.1:
@@ -5357,8 +5370,9 @@ packages:
       queue-microtask: 1.2.3
     dev: false
 
-  /sax@1.4.3:
-    resolution: {integrity: sha512-yqYn1JhPczigF94DMS+shiDMjDowYO6y9+wB/4WgO0Y19jWYk0lQ4tuG5KI7kj4FTp1wxPj5IFfcrz/s1c3jjQ==}
+  /sax@1.4.4:
+    resolution: {integrity: sha512-1n3r/tGXO6b6VXMdFT54SHzT9ytu9yr7TaELowdYpMqY/Ao7EnlQGmAQ1+RatX7Tkkdm6hONI2owqNx2aZj5Sw==}
+    engines: {node: '>=11.0.0'}
     dev: false
 
   /semver@6.3.1:
@@ -5458,7 +5472,7 @@ packages:
       '@types/node': 17.0.45
       '@types/sax': 1.2.7
       arg: 5.0.2
-      sax: 1.4.3
+      sax: 1.4.4
     dev: false
 
   /smol-toml@1.6.0:
@@ -5587,7 +5601,7 @@ packages:
       css-what: 6.2.2
       csso: 5.0.5
       picocolors: 1.1.1
-      sax: 1.4.3
+      sax: 1.4.4
     dev: false
 
   /tailwindcss@4.1.18:
@@ -5696,6 +5710,10 @@ packages:
 
   /undici-types@6.21.0:
     resolution: {integrity: sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==}
+    dev: true
+
+  /undici-types@7.16.0:
+    resolution: {integrity: sha512-Zz+aZWSj8LE6zoxD+xrjh4VfkIG8Ya6LvYkZqtUQGJPZjYl53ypCaUwWqo7eI0x66KBGeRo+mlBEkMSeSZ38Nw==}
     dev: true
 
   /unicorn-magic@0.3.0:

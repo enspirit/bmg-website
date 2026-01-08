@@ -1,4 +1,4 @@
 {
   "extends": "astro/tsconfigs/strictest",
-  "exclude": ["implementations"]
+  "exclude": ["implementations", "dist", "src/components/try/workers"]
 }

@@ -1,13 +1,17 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, toRef } from 'vue'
 import { Codemirror } from 'vue-codemirror'
 import { javascript } from '@codemirror/lang-javascript'
 import { oneDark } from '@codemirror/theme-one-dark'
 import { EditorView, keymap } from '@codemirror/view'
 import { Prec } from '@codemirror/state'
+import { linter, lintGutter } from '@codemirror/lint'
+import { useTypeScriptLinting } from './composables/useTypeScriptLinting'
+import type { DataSource } from './composables/useDataSources'
 
 const props = defineProps<{
   modelValue: string
+  dataSources: DataSource[]
 }>()
 
 const emit = defineEmits<{
@@ -19,6 +23,10 @@ const code = computed({
   get: () => props.modelValue,
   set: (value: string) => emit('update:modelValue', value)
 })
+
+// TypeScript linting
+const dataSourcesRef = toRef(props, 'dataSources')
+const { createLintSource, isReady: lintingReady } = useTypeScriptLinting(dataSourcesRef)
 
 // Example queries
 const examples = [
@@ -216,7 +224,11 @@ const extensions = computed(() => {
   const base = [
     javascript({ typescript: true }),
     EditorView.lineWrapping,
-    runKeymap
+    runKeymap,
+    lintGutter(),
+    linter(createLintSource(), {
+      delay: 500 // Debounce time in ms
+    })
   ]
   if (isDark.value) {
     base.push(oneDark)
@@ -425,6 +437,57 @@ suppliers
 .editor-container :deep(.cm-scroller) {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 0.875rem;
+}
+
+/* Linting styles */
+.editor-container :deep(.cm-lintRange-error) {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='3'%3E%3Cpath d='M0 3 L2 0 L4 3 L6 0' stroke='%23e53935' fill='none' stroke-width='1'/%3E%3C/svg%3E");
+  background-repeat: repeat-x;
+  background-position: bottom left;
+  padding-bottom: 2px;
+}
+
+.editor-container :deep(.cm-lintRange-warning) {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='3'%3E%3Cpath d='M0 3 L2 0 L4 3 L6 0' stroke='%23fb8c00' fill='none' stroke-width='1'/%3E%3C/svg%3E");
+  background-repeat: repeat-x;
+  background-position: bottom left;
+  padding-bottom: 2px;
+}
+
+.editor-container :deep(.cm-lint-marker-error) {
+  content: '';
+}
+
+.editor-container :deep(.cm-lint-marker-warning) {
+  content: '';
+}
+
+.editor-container :deep(.cm-tooltip-lint) {
+  background: var(--sl-color-bg);
+  border: 1px solid var(--sl-color-gray-5);
+  border-radius: 0.375rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  max-width: 400px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.editor-container :deep(.cm-diagnostic) {
+  padding: 0.25rem 0;
+}
+
+.editor-container :deep(.cm-diagnostic-error) {
+  border-left: 3px solid #e53935;
+  padding-left: 0.5rem;
+}
+
+.editor-container :deep(.cm-diagnostic-warning) {
+  border-left: 3px solid #fb8c00;
+  padding-left: 0.5rem;
+}
+
+.editor-container :deep(.cm-gutter-lint) {
+  width: 1rem;
 }
 
 @media (max-width: 768px) {
