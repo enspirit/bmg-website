@@ -13,18 +13,13 @@ export default defineConfig({
       SocialIcons: './src/components/overrides/SocialIcons.astro',
     },
     head: [
-      // Analytics
+      // Analytics (Matomo)
       {
         tag: 'script',
         attrs: {
-          src: 'https://scripts.simpleanalyticscdn.com/latest.js',
+          src: '/matomo.js',
           defer: true,
-          async: true,
         },
-      },
-      {
-        tag: 'noscript',
-        content: '<img src="https://queue.simpleanalyticscdn.com/noscript.gif" alt="" referrerpolicy="no-referrer-when-downgrade" />',
       },
       // Open Graph image
       {
